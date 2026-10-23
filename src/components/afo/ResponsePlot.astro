@@ -1,0 +1,31 @@
+---
+// Anti-alias filter response from the ngspice run (src/data/afo/frequency-response.json).
+import data from '../../data/afo/frequency-response.json';
+const W = 760, H = 300, l = 56, r = 16, t = 16, b = 40;
+const fMin = 10, fMax = 20000, dbMin = -40, dbMax = 3;
+const x = (f: number) => l + (Math.log10(f / fMin) / Math.log10(fMax / fMin)) * (W - l - r);
+const y = (db: number) => t + ((dbMax - db) / (dbMax - dbMin)) * (H - t - b);
+const all = (data.points as [number, number][]).filter(([f]) => f >= fMin && f <= fMax);
+const pts = all.filter(([, g]) => g >= dbMin);
+const d = pts.map(([f, g], i) => `${i ? 'L' : 'M'}${x(f).toFixed(1)} ${y(Math.max(g, dbMin)).toFixed(1)}`).join('');
+// Interpolate the -3 dB crossing.
+let f3 = 0;
+for (let i = 1; i < all.length; i++) if (all[i - 1][1] > -3 && all[i][1] <= -3) { const [fa, ga] = all[i - 1], [fb, gb] = all[i]; f3 = fa * Math.pow(fb / fa, (-3 - ga) / (gb - ga)); break; }
+const decades = [10, 100, 1000, 10000];
+const minors = decades.flatMap(dec => [2, 3, 4, 5, 6, 7, 8, 9].map(k => dec * k)).filter(f => f <= fMax);
+const dbs = [0, -10, -20, -30, -40];
+const fmt = (f: number) => f >= 1000 ? `${f / 1000} kHz` : `${f} Hz`;
+---
+<svg class="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Simulated anti-alias filter response; minus 3 dB at about ${Math.round(f3)} hertz`}>
+  {minors.map(f => <path class="grid" d={`M${x(f)} ${t}V${H - b}`} stroke-opacity=".5"/>)}
+  {decades.map(f => <g><path class="grid" d={`M${x(f)} ${t}V${H - b}`}/><text x={x(f)} y={H - b + 18} text-anchor="middle">{fmt(f)}</text></g>)}
+  {dbs.map(db => <g><path class="grid" d={`M${l} ${y(db)}H${W - r}`}/><text x={l - 8} y={y(db) + 4} text-anchor="end">{db} dB</text></g>)}
+  <path class="fill" d={`${d}L${x(pts[pts.length - 1][0])} ${y(dbMin)}L${x(fMin)} ${y(dbMin)}Z`}/>
+  <path class="trace-accent" d={d}/>
+  <path class="mark" d={`M${x(f3)} ${t}V${H - b}`}/>
+  <path class="mark" d={`M${l} ${y(-3)}H${W - r}`} stroke-opacity=".5"/>
+  <circle cx={x(f3)} cy={y(-3)} r="4" fill="var(--accent)"/>
+  <text class="lbl" x={x(f3) + 8} y={y(-3) - 8}>−3 dB ≈ {Math.round(f3)} Hz</text>
+  <path class="axis" d={`M${x(4000)} ${t}V${H - b}`} stroke-dasharray="1 4"/>
+  <text class="lbl" x={x(4000) + 6} y={t + 14}>Nyquist, 4 kHz</text>
+</svg>

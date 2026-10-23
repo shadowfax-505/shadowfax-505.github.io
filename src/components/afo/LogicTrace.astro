@@ -1,0 +1,55 @@
+---
+// Logic-analyzer view drawn from the Wokwi capture (src/data/afo/logic-window.json, made by scripts/data/extract-logic.py).
+import data from '../../data/afo/logic-window.json';
+interface Props { from?: number; to?: number; rows?: string[]; title: string; annotate?: boolean }
+const { from = 0, to = data.meta.window_us, rows = ['CONVST', 'BUSY', 'CS', 'SCLK', 'DOUTA', 'FOOT_CS'], title, annotate = true } = Astro.props;
+const names: Record<string, string> = { CONVST: 'CONVST', BUSY: 'BUSY', CS: 'ADC CS', SCLK: 'SCLK', DOUTA: 'DOUT A', FOOT_CS: 'IMU CS' };
+const W = 760, left = 74, right = 12, rowH = 34, top = annotate ? 30 : 12, hi = 8, lo = 24;
+const plotW = W - left - right;
+const H = top + rows.length * rowH + 30;
+const x = (t: number) => left + ((t - from) / (to - from)) * plotW;
+const series = data.series as unknown as Record<string, { initial: number; edges: [number, number][] }>;
+function path(name: string, y0: number) {
+  const s = series[name];
+  let level = s.initial;
+  for (const [t, v] of s.edges) { if (t <= from) level = v; else break; }
+  const edges = s.edges.filter(([t]) => t > from && t < to);
+  // Per-pixel min/max reduction, as a logic analyzer does when edges are denser than pixels.
+  const cols = Math.round(plotW);
+  const segs: string[] = [];
+  const blocks: string[] = [];
+  let i = 0;
+  let prevX = left, prevLevel = level;
+  for (let c = 0; c < cols; c++) {
+    const t1 = from + ((c + 1) / cols) * (to - from);
+    let toggles = 0;
+    while (i < edges.length && edges[i][0] <= t1) { level = edges[i][1]; toggles++; i++; }
+    const cx = left + c + 1;
+    if (toggles > 1) blocks.push(`M${cx - 1} ${y0 + hi}h1V${y0 + lo}h-1z`);
+    if (toggles >= 1 || c === cols - 1) {
+      const yPrev = y0 + (prevLevel ? hi : lo);
+      segs.push(`M${prevX} ${yPrev}H${cx - (toggles ? 1 : 0)}`);
+      if (toggles === 1) segs.push(`M${cx - 1} ${y0 + hi}V${y0 + lo}`);
+      prevX = cx; prevLevel = level;
+    }
+  }
+  return { line: segs.join(''), block: blocks.join('') };
+}
+const ticks = (() => { const span = to - from; const step = span > 100 ? 50 : span > 20 ? 5 : span > 4 ? 1 : .5; const out: number[] = []; for (let t = Math.ceil(from / step) * step; t <= to + 1e-9; t += step) out.push(+t.toFixed(3)); return out; })();
+const conv = series.CONVST.edges.filter(([t, v]) => v === 1 && t >= from && t <= to).map(([t]) => t);
+const cs = series.CS.edges.filter(([t]) => t >= from && t <= to);
+---
+<svg class="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={title}>
+  <title>{title}</title>
+  {ticks.map(t => <g><path class="grid" d={`M${x(t)} ${top - 6}V${top + rows.length * rowH}`}/><text x={x(t)} y={top + rows.length * rowH + 16} text-anchor="middle">{t} µs</text></g>)}
+  {annotate && conv.length > 1 && <g>
+    <path class="mark" d={`M${x(conv[0])} ${top - 2}H${x(conv[1])}`}/>
+    <text class="lbl" x={(x(conv[0]) + x(conv[1])) / 2} y={top - 8} text-anchor="middle">{(conv[1] - conv[0]).toFixed(1)} µs between conversions ≈ 8 kHz</text>
+  </g>}
+  {rows.map((name, r) => { const y0 = top + r * rowH; const p = path(name, y0); return <g>
+    <text x="0" y={y0 + 20}>{names[name]}</text>
+    <path d={p.block} fill={name === 'SCLK' || name === 'DOUTA' ? 'var(--accent)' : 'var(--ink)'} fill-opacity=".55"/>
+    <path class={name === 'SCLK' || name === 'DOUTA' ? 'trace-accent' : 'trace'} d={p.line} stroke-width="1.4"/>
+  </g>; })}
+  {annotate && cs.length >= 2 && rows.includes('CS') && <text class="lbl" x={x(cs[1][0]) + 6} y={top + rows.indexOf('CS') * rowH + 22}>{(cs[1][0] - cs[0][0]).toFixed(0)} µs read</text>}
+</svg>

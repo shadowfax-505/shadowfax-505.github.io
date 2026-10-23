@@ -1,0 +1,19 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { profile } from '../../data/profile';
+export async function getStaticPaths() {
+  return (await getCollection('notes', ({ data }) => !data.draft)).map(note => ({ params: { slug: note.id }, props: { note } }));
+}
+interface Props { note: CollectionEntry<'notes'> }
+const { note } = Astro.props;
+const { Content } = await render(note);
+const schema = [{ '@context': 'https://schema.org', '@type': 'BlogPosting', headline: note.data.title, description: note.data.summary, datePublished: note.data.date.toISOString(), author: { '@id': new URL('/#person', Astro.site).href } }];
+---
+<Layout title={`${note.data.title} — ${profile.name}`} description={note.data.summary} schema={schema}>
+<main id="main" tabindex="-1">
+  <header class="page-head container"><a class="crumb label" href="/notes/">← Notes</a><h1>{note.data.title}</h1><p class="label">{note.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p></header>
+  <article class="container prose" style="padding-bottom:80px"><Content/></article>
+</main>
+</Layout>

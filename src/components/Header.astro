@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import { getCollection } from 'astro:content';
+const path = Astro.url.pathname;
+const hasNotes = (await getCollection('notes', ({ data }) => !data.draft)).length > 0;
+const links = [
+  { href: '/#work', label: 'Work', active: path.startsWith('/work/') },
+  { href: '/#services', label: 'Services', active: false },
+  { href: '/research/', label: 'Research', active: path.startsWith('/research/') },
+  ...(hasNotes ? [{ href: '/notes/', label: 'Notes', active: path.startsWith('/notes/') }] : []),
+  { href: '/cv/', label: 'CV', active: path.startsWith('/cv/') },
+  { href: '/#contact', label: 'Contact', active: false },
+];
+---
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner container">
+    <a class="wordmark" href="/"><span class="wordmark-mark" aria-hidden="true">MR</span><span>Muttakin Rahman</span></a>
+    <nav class="nav" aria-label="Main">{links.map(l => <a href={l.href} aria-current={l.active ? 'page' : undefined}>{l.label}</a>)}</nav>
+    <div class="header-actions">
+      <button class="icon-button" type="button" data-theme-toggle aria-label="Switch colour theme" title="Switch colour theme"><Icon name="moon" class="when-light"/><Icon name="sun" class="when-dark"/></button>
+      <button class="icon-button" type="button" data-motion-toggle aria-pressed="false" aria-label="Pause animation" title="Pause animation"><Icon name="pause" class="when-on"/><Icon name="play" class="when-off"/></button>
+      <details class="menu">
+        <summary class="icon-button" aria-label="Open menu"><Icon name="menu"/></summary>
+        <nav class="menu-panel" aria-label="Mobile">{links.map(l => <a href={l.href}>{l.label}</a>)}</nav>
+      </details>
+    </div>
+  </div>
+</header>
+<style is:global>
+  .when-dark, html[data-motion="off"] .when-on, html[data-motion="on"] .when-off { display: none; }
+  html[data-theme="dark"] .when-dark { display: block; } html[data-theme="dark"] .when-light { display: none; }
+  @media (prefers-color-scheme: dark) { html:not([data-theme="light"]) .when-dark { display: block; } html:not([data-theme="light"]) .when-light { display: none; } }
+</style>

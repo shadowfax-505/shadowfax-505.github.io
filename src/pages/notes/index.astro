@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { profile } from '../../data/profile';
+const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort((a, b) => +b.data.date - +a.data.date);
+---
+<Layout title={`Notes — ${profile.name}`} description="Short engineering notes by Muttakin Rahman: what I built, what broke and what I measured along the way." noindex={notes.length === 0}>
+<main id="main" tabindex="-1">
+  <header class="page-head container"><p class="label">Notes</p><h1>Notes.</h1><p>Short write-ups on things I learned while building.</p></header>
+  <div class="container" style="padding-bottom:80px">
+    {notes.length === 0 ? <p class="muted">Nothing published yet.</p> :
+    <ol class="research-full">{notes.map(n => <li><p class="label">{n.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p><div><h2><a href={`/notes/${n.id}/`}>{n.data.title}</a></h2><p class="muted">{n.data.summary}</p></div></li>)}</ol>}
+  </div>
+</main>
+</Layout>

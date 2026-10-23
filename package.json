@@ -1,0 +1,30 @@
+{
+  "name": "shadowfax-505.github.io",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "astro build",
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check",
+    "test": "node scripts/verify-content.mjs",
+    "verify:links": "node scripts/verify-content.mjs --online"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/ibm-plex-serif": "5.3.0",
+    "astro": "7.3.8",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@types/three": "0.186.0",
+    "lighthouse": "13.5.0",
+    "puppeteer-core": "25.13.0",
+    "sharp": "0.35.5",
+    "typescript": "5.9.3"
+  }
+}

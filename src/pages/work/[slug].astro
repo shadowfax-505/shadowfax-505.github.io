@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import Chips from '../../components/Chips.astro';
+import DroneStudy from '../../components/DroneStudy.astro';
+import SignalChain from '../../components/afo/SignalChain.astro';
+import LogicTrace from '../../components/afo/LogicTrace.astro';
+import ResponsePlot from '../../components/afo/ResponsePlot.astro';
+import { profile, press } from '../../data/profile';
+
+export async function getStaticPaths() {
+  return (await getCollection('work')).map(project => ({ params: { slug: project.id }, props: { project } }));
+}
+interface Props { project: CollectionEntry<'work'> }
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { data } = project;
+const all = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const next = all[(all.findIndex(p => p.id === project.id) + 1) % all.length];
+const isScreen = ['researchhub', 'civiclens'].includes(project.id);
+const article = project.id === 'drone' ? press[0] : undefined;
+const schema = [{
+  '@context': 'https://schema.org', '@type': 'CreativeWork', name: data.title, description: data.summary,
+  url: new URL(Astro.url.pathname, Astro.site).href, dateCreated: /^\d{4}$/.test(data.year) ? data.year : undefined,
+  creator: { '@id': new URL('/#person', Astro.site).href }, keywords: data.stack.join(', '),
+  image: data.cover ? new URL(data.cover.src, Astro.site).href : undefined,
+}];
+---
+<Layout title={`${data.title} — ${profile.name}`} description={data.summary} schema={schema}>
+<main id="main" tabindex="-1">
+  <header class="case-head container">
+    <a class="crumb label" href="/#work"><Icon name="left" size={14}/> All work</a>
+    <Chips items={data.statuses}/>
+    <h1>{data.title}</h1>
+    <p class="case-summary">{data.summary}</p>
+    <dl class="facts">
+      <div><dt class="label">Year</dt><dd>{data.year}</dd></div>
+      <div><dt class="label">Role</dt><dd>{data.role}</dd></div>
+      <div><dt class="label">Stack</dt><dd>{data.stack.join(', ')}</dd></div>
+      <div><dt class="label">Links</dt><dd>{data.links.length ? data.links.map(l => <a href={l.url} target="_blank" rel="noopener">{l.label} ↗</a>) : <span class="muted">None public</span>}</dd></div>
+    </dl>
+  </header>
+
+  {data.cover && <figure class:list={['case-cover container', { screen: isScreen }]}>
+    <div class="frame"><img src={data.cover.src} width={data.cover.width} height={data.cover.height} alt={data.cover.alt} fetchpriority="high"/></div>
+    {data.cover.caption && <figcaption>{data.cover.caption}</figcaption>}
+  </figure>}
+
+  {project.id === 'drone' && <figure class="case-cover container">
+    <div class="drone-panel"><DroneStudy/></div>
+    <figcaption>3D reconstruction of an F450-class quadcopter with a GPS mast, the class of frame we used. Original photos lost. Drag to orbit.</figcaption>
+  </figure>}
+
+  {data.metrics.length > 0 && <div class="container"><div class="metrics" style="margin-top:32px">{data.metrics.map(m => <div class="metric"><strong>{m.value}</strong><span>{m.label}</span>{m.status && <Chips items={[m.status]}/>}</div>)}</div></div>}
+
+  <div class="case-body container">
+    <aside class="case-aside">
+      <p class="label">Case study</p>
+      {article && <a class="press-card" href={article.url} target="_blank" rel="noopener" style="text-decoration:none">
+        <span class="label">{article.outlet} · 1 April 2019</span>
+        <span class="bn" lang="bn">{article.title}</span>
+        <span class="muted" style="font-size:14.5px">“{article.translation}” ↗</span>
+        <span class="muted" style="font-size:13px">{article.note}</span>
+      </a>}
+    </aside>
+    <article class="prose"><Content/></article>
+  </div>
+
+  {project.id === 'afo-recorder' && <section class="evidence container" aria-label="Evidence">
+    <figure>
+      <div class="frame"><SignalChain/></div>
+      <figcaption>Signal chain of the two-channel AD7606 build.</figcaption>
+    </figure>
+    <figure>
+      <div class="frame"><LogicTrace title="Logic-analyzer capture from the Wokwi simulation of firmware 1.12: three ADC conversion cycles"/></div>
+      <figcaption>Three conversion cycles from the Wokwi logic analyzer, running the production firmware (simulated). Each CONVST starts a conversion; after BUSY falls, the ESP32 reads the results in one 16 µs, 128-clock SPI transfer. The IMU's own SPI transaction shows on the last row.</figcaption>
+    </figure>
+    <figure>
+      <div class="frame"><LogicTrace from={22} to={24.2} rows={['CS', 'SCLK', 'DOUTA']} annotate={false} title="Zoom: the first two microseconds of one ADC read, SCLK at 8 MHz"/></div>
+      <figcaption>Zoomed into the start of one read: 8 MHz SCLK with data on DOUT A.</figcaption>
+    </figure>
+    <figure>
+      <div class="frame"><ResponsePlot/></div>
+      <figcaption>Anti-alias filter response from ngspice (simulated). Flat through the main EMG band, −3 dB at about 660 Hz, and falling steeply before the 4 kHz Nyquist limit.</figcaption>
+    </figure>
+  </section>}
+
+  {data.figures.length > 0 && <section class="evidence container" aria-label="More figures">
+    <div class="figure-pair">
+      {data.figures.map(f => <figure><div class="frame"><img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/></div>{f.caption && <figcaption>{f.caption}</figcaption>}</figure>)}
+    </div>
+  </section>}
+
+  <nav class="next container" aria-label="Next project">
+    <a href={`/work/${next.id}/`}><div><p class="label">Next project</p><h2>{next.data.title}</h2></div><Icon name="right" size={40}/></a>
+  </nav>
+</main>
+</Layout>

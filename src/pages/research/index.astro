@@ -1,0 +1,32 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Chips from '../../components/Chips.astro';
+import { profile } from '../../data/profile';
+const research = (await getCollection('research')).sort((a, b) => a.data.order - b.data.order);
+const entries = await Promise.all(research.map(async r => ({ r, Content: (await render(r)).Content })));
+---
+<Layout title={`Research — ${profile.name}`} description="Four unpublished studies by Muttakin Rahman in Bangla language technology, software security, compilers for LLM code generation, and inventory statistics: the questions, methods and status.">
+<main id="main" tabindex="-1">
+  <header class="page-head container">
+    <p class="label">Research</p>
+    <h1>Questions, methods, status.</h1>
+    <p>None of these studies is published yet, so this page describes what each one asks and how, not what it found. Results will appear here with the paper or preprint.</p>
+  </header>
+  <div class="container">
+    <ol class="research-full">
+      {entries.map(({ r, Content }) => <li id={r.id}>
+        <div><p class="label">{r.data.area}</p><div style="margin-top:12px"><Chips items={[r.data.status]}/></div></div>
+        <div>
+          <h2>{r.data.title}</h2>
+          <dl class="qm">
+            <div><dt class="label">Question</dt><dd>{r.data.question}</dd></div>
+            <div><dt class="label">Method</dt><dd>{r.data.method}</dd></div>
+          </dl>
+          <div class="prose"><Content/></div>
+        </div>
+      </li>)}
+    </ol>
+  </div>
+</main>
+</Layout>

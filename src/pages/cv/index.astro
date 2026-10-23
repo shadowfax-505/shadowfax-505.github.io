@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import { profile, skills, achievements, community, elsewhere, press } from '../../data/profile';
+import { statuses } from '../../data/status';
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const research = (await getCollection('research')).sort((a, b) => a.data.order - b.data.order);
+const site = Astro.site?.host;
+---
+<Layout title={`CV — ${profile.fullName}`} description={`Curriculum vitae of ${profile.fullName}: ${profile.degree} at ${profile.university}; embedded systems, full-stack web and research software.`}>
+<main id="main" tabindex="-1" class="cv">
+  <div class="cv-actions no-print">
+    <button class="button" type="button" data-print hidden><Icon name="print" size={16}/> Print or save as PDF</button>
+    <a class="button button-ghost" href={`mailto:${profile.email}`}><Icon name="mail" size={16}/> Email me</a>
+  </div>
+  <header class="cv-head">
+    <div><h1>{profile.fullName}</h1><p class="muted" style="margin:6px 0 0">Embedded systems and software · {profile.availability}</p></div>
+    <ul class="cv-contact">
+      <li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
+      <li><a href={`https://${site}`}>{site}</a></li>
+      <li><a href={profile.github}>github.com/shadowfax-505</a></li>
+      <li><a href={profile.linkedin}>linkedin.com/in/muttakin-rahman</a></li>
+      <li>{profile.location}</li>
+    </ul>
+  </header>
+
+  <section><h2>Education</h2>
+    <div class="cv-item"><h3>{profile.degree}</h3><span class="when">In progress</span><p>{profile.university} ({profile.universityShort}), Khulna</p></div>
+    <div class="cv-item"><h3>Higher Secondary Certificate, Science</h3><span class="when">2022</span><p>Jashore Board Talent Scholarship</p></div>
+  </section>
+
+  <section><h2>Projects</h2>
+    {work.map(w => <div class="cv-item"><h3>{w.data.title}</h3><span class="when">{w.data.year}</span><p>{w.data.summary}</p><p class="stack">{w.data.role} · {w.data.statuses.map(s => statuses[s]).join(', ')}</p></div>)}
+    {elsewhere.map(e => <div class="cv-item"><h3>{e.title}</h3><p>{e.text}</p></div>)}
+  </section>
+
+  <section><h2>Research (unpublished)</h2>
+    {research.map(r => <div class="cv-item"><h3>{r.data.title}</h3><span class="when">{statuses[r.data.status]}</span><p>{r.data.question}</p></div>)}
+  </section>
+
+  <section><h2>Skills</h2>
+    <div class="cv-skills">{skills.map(s => <div><b>{s.group}</b> {s.items.join(', ')}</div>)}</div>
+  </section>
+
+  <section><h2>Recognition</h2>
+    {achievements.map(a => <div class="cv-item"><h3>{a.title}</h3><span class="when">{a.date}</span><p>{a.detail}</p></div>)}
+    {press.map(p => <div class="cv-item"><h3>Press: {p.outlet}</h3><span class="when">2019</span><p>School drone project, reported as “{p.translation}”.</p></div>)}
+  </section>
+
+  <section style="border-bottom:0"><h2>Community</h2>
+    {community.map(c => <div class="cv-item"><h3>{c.title}</h3><span class="when">{c.since}</span><p>{c.role}</p></div>)}
+  </section>
+</main>
+</Layout>

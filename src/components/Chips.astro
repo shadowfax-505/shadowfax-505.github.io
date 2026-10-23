@@ -1,0 +1,6 @@
+---
+import { statuses, type Status } from '../data/status';
+interface Props { items: Status[] }
+const { items } = Astro.props;
+---
+<ul class="chips" aria-label="Status">{items.map(s => <li class={`chip chip-${s}`}>{statuses[s]}</li>)}</ul>

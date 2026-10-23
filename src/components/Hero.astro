@@ -1,0 +1,50 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/profile';
+// Static fallback: the same six EMG channels the particle field draws, as plain SVG.
+const lanes = Array.from({ length: 6 }, (_, lane) => {
+  const phase = lane * .17;
+  const pts = Array.from({ length: 241 }, (_, j) => {
+    const u = j / 240;
+    const burst = Math.exp(-Math.pow(((u + phase) % .5 - .26) / .055, 2)) + .55 * Math.exp(-Math.pow(((u + phase + .19) % .5 - .26) / .04, 2));
+    const carrier = Math.sin(u * 190 + lane * 3.1) * .6 + Math.sin(u * 77 + lane) * .4;
+    const y = 70 + lane * 52 - (.05 + burst * .42) * carrier * 62;
+    return `${j ? 'L' : 'M'}${(40 + u * 460).toFixed(1)} ${y.toFixed(1)}`;
+  }).join('');
+  return pts;
+});
+---
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div>
+      <p class="availability"><span class="dot" aria-hidden="true"></span>{profile.availability}</p>
+      <h1 id="hero-title">Muttakin<br/>Rahman<span class="accent">.</span></h1>
+      <p class="hero-lede">{profile.headline}</p>
+      <dl class="spec">
+        <dt>Study</dt><dd>{profile.degree}, {profile.universityShort}</dd>
+        <dt>Based</dt><dd>{profile.location} · works remotely</dd>
+        <dt>Builds</dt><dd>Sensor hardware and firmware · web platforms · research tooling</dd>
+      </dl>
+      <div class="button-row">
+        <a class="button" href="#work">See the work <Icon name="right" size={16}/></a>
+        <a class="button button-ghost" href={`mailto:${profile.email}`}><Icon name="mail" size={16}/> Email me</a>
+        <a class="button button-ghost" href="/cv/"><Icon name="doc" size={16}/> CV</a>
+      </div>
+    </div>
+    <div class="field" data-field data-webgl="pending" aria-label="Interactive particle field. Choose EMG, PCB or Loop; move or tap to disturb it.">
+      <svg class="field-fallback" viewBox="0 0 540 430" fill="none" aria-hidden="true">
+        {lanes.map((d, i) => <path d={d} stroke={i === 1 ? 'var(--accent)' : 'currentColor'} stroke-opacity={i === 1 ? 1 : .55} stroke-width="1.2"/>)}
+      </svg>
+      <canvas aria-hidden="true"></canvas>
+      <div class="field-top"><span class="label" data-field-label>EMG · 6 ch</span><span class="label">Fig. 1</span></div>
+      <div class="field-bottom">
+        <div class="field-forms" role="group" aria-label="Field form">
+          <button type="button" data-form="0" aria-pressed="true">EMG</button>
+          <button type="button" data-form="1" aria-pressed="false">PCB</button>
+          <button type="button" data-form="2" aria-pressed="false">Loop</button>
+        </div>
+        <span class="label">Tap to pulse</span>
+      </div>
+    </div>
+  </div>
+</section>

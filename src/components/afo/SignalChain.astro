@@ -1,0 +1,26 @@
+---
+// Signal chain of the two-channel AD7606 build, from the project's architecture notes.
+const boxes = [
+  { x: 0, y: 20, w: 150, t1: '2 × surface EMG', t2: 'MyoWare RAW out' },
+  { x: 182, y: 20, w: 150, t1: 'Buffers + 2-pole', t2: 'RC anti-alias' },
+  { x: 364, y: 20, w: 140, t1: 'AD7606 ADC', t2: '16-bit · 8 kHz', key: true },
+  { x: 540, y: 20, w: 250, t1: 'ESP32-S3', t2: 'timestamps · PSRAM queue', key: true },
+  { x: 324, y: 130, w: 184, t1: 'ICM-42688-P × 2', t2: 'foot + shank · 200 Hz' },
+  { x: 540, y: 130, w: 124, t1: 'microSD', t2: 'primary record' },
+  { x: 672, y: 130, w: 118, t1: 'Wi-Fi', t2: 'live preview' },
+];
+---
+<svg class="chart" viewBox="-2 0 796 200" role="img" aria-label="Signal chain: two EMG sensors through buffers and an anti-alias filter into an AD7606 ADC at 8 kilohertz, then an ESP32-S3 that also reads two ICM-42688-P motion sensors and writes to microSD with a Wi-Fi preview.">
+  <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--ink-2)"/></marker></defs>
+  <path class="wire" marker-end="url(#arr)" d="M150 46H180"/>
+  <path class="wire" marker-end="url(#arr)" d="M332 46H362"/>
+  <path class="wire" marker-end="url(#arr)" d="M504 46H538"/>
+  <path class="wire" marker-end="url(#arr)" d="M508 156H524V100H556V74"/>
+  <path class="wire" marker-end="url(#arr)" d="M602 72V128"/>
+  <path class="wire" marker-end="url(#arr)" d="M731 72V128" stroke-dasharray="4 3"/>
+  {boxes.map(b => <g>
+    <rect class={b.key ? 'box box-key' : 'box'} x={b.x} y={b.y} width={b.w} height="52" rx="6"/>
+    <text class="lbl" x={b.x + 12} y={b.y + 22} style="font-weight:500">{b.t1}</text>
+    <text x={b.x + 12} y={b.y + 39}>{b.t2}</text>
+  </g>)}
+</svg>
