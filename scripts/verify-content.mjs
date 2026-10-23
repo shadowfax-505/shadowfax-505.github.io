@@ -31,7 +31,8 @@ for (const file of pages) {
   const text = html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ');
   ok(/<title>[^<]{10,}<\/title>/.test(html), rel, 'title missing or short');
   ok(/<meta name="description" content="[^"]{50,}"/.test(html), rel, 'description missing or short');
-  ok(/<link rel="canonical" href="https:\/\/shadowfax-505\.github\.io\//.test(html), rel, 'canonical not on shadowfax-505.github.io');
+  if (rel === '404.html') ok(!/rel="canonical"/.test(html), rel, '404 page must not declare a canonical URL');
+  else ok(/<link rel="canonical" href="https:\/\/shadowfax-505\.github\.io\//.test(html), rel, 'canonical not on shadowfax-505.github.io');
   ok(/<meta property="og:image" content="https:\/\/shadowfax-505\.github\.io\/og\.png"/.test(html), rel, 'og:image missing');
   ok((html.match(/<h1[\s>]/g) || []).length === 1, rel, 'needs exactly one h1');
   ok(/<html lang="en"/.test(html), rel, 'lang missing');
