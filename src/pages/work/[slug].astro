@@ -8,6 +8,7 @@ import DroneStudy from '../../components/DroneStudy.astro';
 import SignalChain from '../../components/afo/SignalChain.astro';
 import LogicTrace from '../../components/afo/LogicTrace.astro';
 import ResponsePlot from '../../components/afo/ResponsePlot.astro';
+import Pipeline from '../../components/zenflow/Pipeline.astro';
 import { profile, press } from '../../data/profile';
 
 export async function getStaticPaths() {
@@ -19,7 +20,10 @@ const { Content } = await render(project);
 const { data } = project;
 const all = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const next = all[(all.findIndex(p => p.id === project.id) + 1) % all.length];
-const isScreen = ['researchhub', 'civiclens'].includes(project.id);
+const isScreen = ['researchhub', 'civiclens', 'zenflow'].includes(project.id);
+// Phone screenshots sit in their own row so they are not blown up to half the page width.
+const wide = data.figures.filter(f => f.width >= f.height);
+const tall = data.figures.filter(f => f.width < f.height);
 const article = project.id === 'drone' ? press[0] : undefined;
 const schema = [{
   '@context': 'https://schema.org', '@type': 'CreativeWork', name: data.title, description: data.summary,
@@ -87,10 +91,18 @@ const schema = [{
     </figure>
   </section>}
 
-  {data.figures.length > 0 && <section class="evidence container" aria-label="More figures">
-    <div class="figure-pair">
-      {data.figures.map(f => <figure><div class="frame"><img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/></div>{f.caption && <figcaption>{f.caption}</figcaption>}</figure>)}
-    </div>
+  {(data.figures.length > 0 || project.id === 'zenflow') && <section class="evidence container" aria-label="More figures">
+    {project.id === 'zenflow' && <figure>
+      <div class="frame"><div class="scroll-x"><Pipeline/></div></div>
+      <figcaption>Every AI feature goes through the same pipeline. Without a running model, ZenFlow goes straight to its rule-based answer.</figcaption>
+    </figure>}
+    {wide.length > 0 && <div class="figure-pair">
+      {wide.map(f => <figure><div class="frame"><img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/></div>{f.caption && <figcaption>{f.caption}</figcaption>}</figure>)}
+    </div>}
+    {tall.length > 0 && <figure class="phone-row">
+      <div class="phones">{tall.map(f => <img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/>)}</div>
+      {tall[0].caption && <figcaption>{tall[0].caption}</figcaption>}
+    </figure>}
   </section>}
 
   <nav class="next container" aria-label="Next project">

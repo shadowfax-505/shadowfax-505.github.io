@@ -30,6 +30,12 @@ export const services = [
     proof: { label: 'CivicLens', href: '/work/civiclens/' },
   },
   {
+    title: 'Local AI features',
+    text: 'AI features that run on your own hardware, check every answer against your data, and come with measured reliability.',
+    items: ['Ollama and OpenAI-compatible servers', 'JSON-schema output, validation, retry', 'Rule-based fallback the user can see', 'Evaluation: usable rate, latency, accuracy'],
+    proof: { label: 'ZenFlow', href: '/work/zenflow/' },
+  },
+  {
     title: 'Research software',
     text: 'Reproducible experiments: data pipelines, evaluation harnesses and write-ups that say what was and was not measured.',
     items: ['Python data pipelines', 'Evaluation on held-out data', 'Model and toolchain benchmarking', 'LaTeX manuscripts'],
@@ -42,6 +48,7 @@ export const skills = [
   { group: 'Languages', items: ['C', 'Python', 'TypeScript', 'PHP', 'Java', 'SQL'] },
   { group: 'Web', items: ['Laravel', 'Express', 'Next.js', 'Astro', 'ASP.NET Core MVC', 'Three.js'] },
   { group: 'Data', items: ['Oracle', 'MySQL', 'SQLite / Room', 'pandas', 'PyTorch'] },
+  { group: 'AI', items: ['Ollama, local LLMs', 'Structured output + validation', 'LLM evaluation harnesses'] },
 ];
 
 export const achievements = [

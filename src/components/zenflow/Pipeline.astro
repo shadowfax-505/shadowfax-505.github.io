@@ -1,0 +1,30 @@
+---
+// How every ZenFlow AI request is handled, from com.zenflow.ai.AiPipeline in the desktop repository.
+const boxes = [
+  { x: 0, y: 20, w: 140, t1: 'Your own data', t2: 'stats, reminders' },
+  { x: 164, y: 20, w: 140, t1: 'Prompt + schema', t2: 'one per task' },
+  { x: 328, y: 20, w: 140, t1: 'Local model', t2: 'Ollama, qwen3:1.7b', key: true },
+  { x: 492, y: 20, w: 140, t1: 'Checks + repairs', t2: 'against your data' },
+  { x: 656, y: 20, w: 140, t1: 'Shown to you', t2: 'with its source', key: true },
+  { x: 328, y: 130, w: 140, t1: 'Retry once', t2: 'told what failed' },
+  { x: 656, y: 130, w: 140, t1: 'Rule-based answer', t2: 'labelled as such' },
+];
+---
+<svg class="chart" viewBox="-2 0 800 196" role="img" aria-label="ZenFlow's AI pipeline: your own data and a prompt with a JSON schema go to a local model; its answer is checked and repaired before it is shown with how it was made. If the checks fail, the model is asked once more and told why; if that fails or no model is running, a rule-based answer is shown and labelled.">
+  <defs><marker id="zf-arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--ink-2)"/></marker></defs>
+  <path class="wire" marker-end="url(#zf-arr)" d="M140 46H162"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M304 46H326"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M468 46H490"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M632 46H654"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M540 72V156H470" stroke-dasharray="4 3"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M398 130V74" stroke-dasharray="4 3"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M590 72V156H654" stroke-dasharray="4 3"/>
+  <path class="wire" marker-end="url(#zf-arr)" d="M726 130V74"/>
+  <text x="480" y="148">fails</text>
+  <text x="597" y="148">2nd fail</text>
+  {boxes.map(b => <g>
+    <rect class={b.key ? 'box box-key' : 'box'} x={b.x} y={b.y} width={b.w} height="52" rx="6"/>
+    <text class="lbl" x={b.x + 12} y={b.y + 22} style="font-weight:500">{b.t1}</text>
+    <text x={b.x + 12} y={b.y + 39}>{b.t2}</text>
+  </g>)}
+</svg>
