@@ -3,7 +3,7 @@ import { createPaperExperience } from './paper-entry';
 import { createLivingMotion } from './living-motion';
 import { createInkMotion } from './ink';
 import { createNotebookMotion } from './notebook-motion';
-type AnimationContext = { revert: () => void };
+type AnimationContext = { revert: () => void; add: (fn: () => void) => void };
 type HeroController = { setEnabled: (enabled: boolean) => void; setForm: (index: number) => void; dispose: () => void };
 
 const root = document.documentElement;
@@ -13,6 +13,9 @@ let enabled = root.dataset.motion === 'on';
 let context: AnimationContext | undefined;
 let hero: HeroController | undefined;
 let animationGeneration = 0;
+// Numbers mid-count when motion is switched off go back to their exact text.
+let counted: [HTMLElement, string][] = [];
+function restoreCounted() { counted.forEach(([element, text]) => { element.textContent = text; }); counted = []; }
 let toastTimer: ReturnType<typeof setTimeout>;
 const artwork = document.querySelector<HTMLElement>('[data-hero-art]');
 const explore3d = document.querySelector<HTMLButtonElement>('[data-explore-3d]');
@@ -47,6 +50,7 @@ function updateToggle() {
 async function animate() {
   const generation = ++animationGeneration;
   context?.revert();
+  restoreCounted();
   context = undefined;
   hero?.setEnabled(enabled && artwork?.dataset.heroMode === 'field');
   paper.setEnabled(enabled);
@@ -59,9 +63,49 @@ async function animate() {
     context = gsap.context(() => {
       if (artwork) {
         gsap.from('.hero-line', { y: 28, rotation: -.6, duration: 1.1, stagger: .1, ease: 'power3.out' });
-        gsap.from('.hero-description', { y: 18, duration: .95, delay: .35, ease: 'power3.out' });
+        gsap.from('.hero-kicker > span', { y: 10, opacity: 0, duration: .7, stagger: .08, ease: 'power2.out' });
+        gsap.from('.board-studio', { y: 26, opacity: 0, duration: 1.2, delay: .15, ease: 'power3.out', clearProps: 'transform,opacity' });
+        gsap.from('.hero-role, .hero-description, .hero-note, .hero-actions > *, .hero-availability', { y: 18, opacity: 0, duration: .9, delay: .3, stagger: .07, ease: 'power3.out', clearProps: 'transform,opacity' });
         gsap.from('.form-signal path', { strokeDasharray: 1, strokeDashoffset: 1, duration: 2.1, stagger: .013, ease: 'power2.inOut' });
       }
+    });
+    // Everything below the fold is built in idle time, so the first paint and input never wait for it.
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
+    await new Promise<void>(resolve => idle(() => resolve(), { timeout: 1800 }));
+    if (!enabled || generation !== animationGeneration || !context) return;
+    context.add(() => {
+      // The italic half of each heading arrives a beat after the roman half.
+      document.querySelectorAll<HTMLElement>('h2[data-reveal] em, .method-head h3 em, .proof-title em').forEach(element => {
+        gsap.from(element, { xPercent: -4, opacity: 0, duration: 1, delay: .18, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
+      });
+      // Numbers count up to their sourced value once, then the exact text is restored.
+      document.querySelectorAll<HTMLElement>('.proof-item strong, .case-metric strong, .service-number, .method-number').forEach(element => {
+        const text = element.textContent || '';
+        if (!/\d/.test(text)) return;
+        counted.push([element, text]);
+        element.setAttribute('aria-label', text);
+        const progress = { p: 0 };
+        const paint = () => { element.textContent = text.replace(/\d+(\.\d+)?/g, m => { const v = Number(m) * progress.p; return m.includes('.') ? v.toFixed(1) : String(Math.round(v)).padStart(m.startsWith('0') ? m.length : 1, '0'); }); };
+        paint();
+        gsap.to(progress, { p: 1, duration: 1.5, ease: 'power3.out', onUpdate: paint, onComplete: () => { element.textContent = text; }, scrollTrigger: { trigger: element, start: 'top 92%', once: true } });
+      });
+      gsap.utils.toArray<HTMLElement>('.proof-grid, .method-steps, .service-grid, .case-metrics').forEach(group => {
+        gsap.from(group.children, { y: 26, opacity: 0, duration: .8, stagger: .09, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: group, start: 'top 90%', once: true } });
+      });
+      // Rules draw across under each step and metric row.
+      gsap.utils.toArray<HTMLElement>('.proof-grid, .method-steps, .case-metrics, .service-grid').forEach(group => {
+        gsap.from(group, { '--rule-scale': 0, duration: 1.2, ease: 'power2.inOut', scrollTrigger: { trigger: group, start: 'top 92%', once: true } });
+      });
+      // Real captures and charts wipe in from the bottom, like a sheet being pulled out.
+      document.querySelectorAll<HTMLElement>('.case-supplement img, .evidence-frame, .phones, .case-notebook .notebook-stage').forEach(element => {
+        gsap.from(element, { clipPath: 'inset(0 0 100% 0)', y: 24, duration: 1.15, ease: 'power3.inOut', clearProps: 'clipPath,transform', scrollTrigger: { trigger: element, start: 'top 92%', once: true } });
+      });
+      gsap.utils.toArray<HTMLElement>('.next-project h2, .contact-main h2').forEach(element => {
+        gsap.from(element, { y: 40, opacity: 0, duration: 1.1, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: element, start: 'top 92%', once: true } });
+      });
+      gsap.utils.toArray<HTMLElement>('.contact-orb').forEach(element => {
+        gsap.from(element, { scale: .4, rotation: -90, opacity: 0, duration: 1.2, ease: 'back.out(1.6)', clearProps: 'transform,opacity', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
+      });
       document.querySelectorAll<HTMLElement>('[data-reveal]').forEach(element => {
         // Keep notebook frames out of transformed stacking contexts; their mesh can overflow.
         const target=element.matches('.work-card') ? element.querySelector('.work-card-body') : element;
@@ -75,6 +119,9 @@ async function animate() {
       }
       if (document.querySelector('.recognition-star')) {
         gsap.fromTo('.recognition-star', { rotation: 0 }, { rotation: 70, ease: 'none', scrollTrigger: { trigger: '.recognition-section', start: 'top bottom', end: 'bottom top', scrub: .7 } });
+      }
+      if (document.querySelector('.future-map')) {
+        gsap.from('.future-contours path', { strokeDasharray: 1, strokeDashoffset: 1, duration: 1.65, stagger: .025, ease: 'power2.inOut', scrollTrigger: { trigger: '.future-map', start: 'top 85%', once: true } });
       }
       document.querySelectorAll<HTMLElement>('.process-strip').forEach(element => {
         gsap.from(element.children, { y: 18, duration: .6, stagger: .1, ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 90%', once: true } });
@@ -132,6 +179,32 @@ window.addEventListener('scroll', () => {
 const tactile = createTactileMotion();
 
 
+const future = document.querySelector<HTMLElement>('[data-future]');
+const targetAnimations: Animation[] = [];
+future?.querySelectorAll<SVGAElement>('[data-target-link]').forEach(link=>{
+  link.addEventListener('click',()=>{
+    const details=future.querySelector<HTMLDetailsElement>(`[data-target="${link.dataset.targetLink}"]`);
+    if(details){
+      details.open=true;
+      // Restore the disclosure focus after the native fragment navigation.
+      requestAnimationFrame(()=>details.querySelector('summary')?.focus({preventScroll:true}));
+    }
+  });
+});
+future?.querySelectorAll<HTMLDetailsElement>('[data-target]').forEach(details=>{
+  details.addEventListener('toggle',()=>{
+    const open = future.querySelector<HTMLDetailsElement>('details[open]');
+    future.style.setProperty('--target-turn',`${Number(open?.dataset.target||0)*9}deg`);
+    future.querySelectorAll<SVGGElement>('[data-future-point]').forEach(point=>point.classList.toggle('is-active',point.dataset.futurePoint === open?.dataset.target));
+    if (details.open && enabled) {
+      targetAnimations.forEach(animation=>animation.cancel());
+      targetAnimations.length = 0;
+      const body = details.querySelector<HTMLElement>('.future-target-body');
+      if(body) targetAnimations.push(body.animate([{opacity:.4,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:350,easing:'cubic-bezier(.22,1,.36,1)'}));
+    }
+  });
+});
+
 type DroneController = { setEnabled: (enabled: boolean) => void; dispose: () => void };
 const droneControllers = new Map<HTMLElement, DroneController>();
 const visibleDrones = new Set<HTMLElement>();
@@ -163,6 +236,7 @@ toggle?.removeAttribute('hidden');
 updateToggle();
 toggle?.addEventListener('click', () => {
   enabled = !enabled;
+  if (!enabled) targetAnimations.forEach(animation=>animation.cancel());
   try { localStorage.setItem('mr-motion', enabled ? 'on' : 'off'); } catch { /* Preference still applies for this page. */ }
   updateToggle();
   void animate();
@@ -224,5 +298,5 @@ window.addEventListener('scroll', () => {
 updateProgress();
 void animate();
 window.addEventListener('pagehide', event => {
-  if (!event.persisted) { context?.revert(); hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); }
+  if (!event.persisted) { context?.revert(); hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); targetAnimations.forEach(animation=>animation.cancel()); }
 });

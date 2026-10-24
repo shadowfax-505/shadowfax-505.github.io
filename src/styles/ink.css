@@ -1,6 +1,6 @@
 @layer components {
   .ink-host{position:relative;isolation:isolate}
-  .ink-mark{position:absolute;pointer-events:none;overflow:visible;color:var(--red);transform:translate(var(--ink-x,0px),var(--ink-y,0px));z-index:-1}
+  .ink-mark{position:absolute;pointer-events:none;overflow:visible;color:var(--accent);transform:translate(var(--ink-x,0px),var(--ink-y,0px));z-index:-1}
   .ink-mark path{stroke:currentColor;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:.78;transition:stroke-dashoffset 1.15s cubic-bezier(.22,1,.36,1),opacity .3s;transition-delay:calc(var(--pen-order)*90ms)}
   .ink-mark path+path{stroke-width:.6;opacity:.48}
   .ink-entered>.ink-mark path{stroke-dashoffset:0}
@@ -9,7 +9,7 @@
   .desktop-nav .ink-host::after{display:none}
   .desktop-nav .ink-mark path{opacity:.25}
   .desktop-nav a[aria-current]>.ink-mark path,.desktop-nav a:hover>.ink-mark path,.desktop-nav a:focus-visible>.ink-mark path{opacity:1}
-  .ink-mark[data-ink-variant='compass']{width:62px;height:62px;right:-74px;top:5px;color:var(--cobalt);opacity:.8}
+  .ink-mark[data-ink-variant='compass']{width:62px;height:62px;right:-74px;top:5px;color:var(--signal);opacity:.8}
   .ink-mark[data-ink-variant='flourish']{width:min(76%,300px);height:38px;bottom:-31px;left:0}
   .ink-mark[data-ink-variant='arrow']{width:100%;max-width:180px;height:27px;bottom:-12px;left:0}
   .text-link.ink-host{border-color:transparent}

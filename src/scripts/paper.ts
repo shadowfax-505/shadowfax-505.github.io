@@ -44,7 +44,7 @@ export async function createLivingPaper(initialEnabled:boolean, commit:(id:strin
   const nativeAtRest=(s:Surface)=>!s.turnStarted&&!s.dragging&&s.target<.001&&s.fold<.001&&s.pulses.length===0;
   const paperCandidate=(s:Surface)=>s.ready&&!(s.id==='hero'&&heroMode==='field')&&!nativeAtRest(s);
   const active=(s:Surface)=>paperCandidate(s)&&(s.visible||s.renderVisible||s.dirty);
-  function retireView(view:SharedSceneView){view.element.dataset.robotPainted='false';const i=views.indexOf(view);if(i>=0)views.splice(i,1);try{view.dispose();}catch{/* A failed enhancement leaves its poster. */}}
+  function retireView(view:SharedSceneView){view.element.dataset.viewPainted='false';const i=views.indexOf(view);if(i>=0)views.splice(i,1);try{view.dispose();}catch{/* A failed enhancement leaves its poster. */}}
   function applyViews(action:(view:SharedSceneView)=>void){for(const view of [...views])try{action(view);}catch{retireView(view);}}
   function viewAnimating(view:SharedSceneView){try{return view.isAnimating()&&Boolean(view.measure({width,height}));}catch{retireView(view);return false;}}
   const canRun=()=>enabled&&!document.hidden&&!disposed&&!lost&&([...surfaces.values()].some(active)||[...views].some(viewAnimating));
@@ -122,7 +122,7 @@ export async function createLivingPaper(initialEnabled:boolean, commit:(id:strin
       s.pending=index;s.underIndex=index;s.direction=direction;s.corner=-.55;s.dragging=false;
       showUnder(s,index,p);
       if(!enabled||(!s.visible&&!s.renderVisible)||document.hidden){finish(s);drawOnce();return;}
-      s.turnFrom=s.fold;s.turnDuration=580*(1-Math.min(.65,s.fold));s.turnStarted=performance.now();s.root.dataset.paperTurning='true';wake();
+      s.turnFrom=s.fold;s.turnDuration=780*(1-Math.min(.65,s.fold));s.turnStarted=performance.now();s.root.dataset.paperTurning='true';wake();
     }catch{if(!disposed&&ticket===s.request){s.ready=false;s.root.dataset.paperReady='unavailable';s.root.dataset.paperPainted='false';commit(id,index);}}
   }
   function point(s:Surface,u:number,v:number){return bendPaper((u-.5)*s.width,(v-.5)*s.height,s.width,s.height,s.fold,s.direction,s.corner,s.localTime,enabled? .65:0);}
@@ -180,7 +180,7 @@ export async function createLivingPaper(initialEnabled:boolean, commit:(id:strin
     renderer.setScissorTest(false);renderer.clear();renderer.setScissorTest(true);
     for(const view of [...views]){
       try{
-        const rect=view.measure({width,height});view.element.dataset.robotPainted='false';if(!rect||rect.width<=0||rect.height<=0)continue;
+        const rect=view.measure({width,height});view.element.dataset.viewPainted='false';if(!rect||rect.width<=0||rect.height<=0)continue;
         if(advance)view.update(now,dt);
         const left=Math.max(0,rect.left),top=Math.max(0,rect.top),right=Math.min(width,rect.left+rect.width),bottom=Math.min(height,rect.top+rect.height);if(right<=left||bottom<=top)continue;
         renderer.toneMapping=view.toneMapping??THREE.NoToneMapping;renderer.toneMappingExposure=view.toneMappingExposure??1;
@@ -249,13 +249,12 @@ export async function createLivingPaper(initialEnabled:boolean, commit:(id:strin
       s.ready=true;const rect=element.getBoundingClientRect();s.visible=rect.bottom>0&&rect.top<height&&rect.width>0;owner.dataset.paperReady='true';visibility.observe(element);trim();
       const formOwner=owner.closest<HTMLElement>('[data-hero-art]');
       if(formOwner){
-        formOwner.addEventListener('portfolio:hero-pulse',()=>{if(!enabled||s.index!==0)return;const line=new THREE.LineLoop(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(new Float32Array(60*3),3)),new THREE.LineBasicMaterial({color:0xb83a26,transparent:true,opacity:.5}));line.frustumCulled=false;scene.add(line);s.pulses.push({line,age:0});s.velocity+=.4;if(s.pulses.length>3){const old=s.pulses.shift()!;scene.remove(old.line);old.line.geometry.dispose();(old.line.material as THREE.Material).dispose();}wake();},{signal});
+        formOwner.addEventListener('portfolio:hero-pulse',()=>{if(!enabled||s.index!==0)return;const line=new THREE.LineLoop(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(new Float32Array(60*3),3)),new THREE.LineBasicMaterial({color:0x176b4d,transparent:true,opacity:.5}));line.frustumCulled=false;scene.add(line);s.pulses.push({line,age:0});s.velocity+=.4;if(s.pulses.length>3){const old=s.pulses.shift()!;scene.remove(old.line);old.line.geometry.dispose();(old.line.material as THREE.Material).dispose();}wake();},{signal});
         const forms=new MutationObserver(()=>invalidate(id));forms.observe(formOwner,{attributes:true,attributeFilter:['data-form-state']});cleanups.push(()=>forms.disconnect());}
-      const link=owner.closest('.work-card')?.querySelector<HTMLAnchorElement>('[data-case-link]');
-      link?.addEventListener('click',event=>{
+      owner.closest('.work-card')?.querySelectorAll<HTMLAnchorElement>('[data-case-link],.project-title-link').forEach(link=>link.addEventListener('click',event=>{
         if(!enabled||!s.ready||!s.visible||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||link.target==='_blank')return;
         event.preventDefault();if(navigationTimer)return;s.peeling=true;s.dirty=true;s.priority=++interactionSerial;s.direction=1;s.corner=-1;s.turnFrom=s.fold;s.turnStarted=performance.now();s.turnDuration=420;s.root.dataset.paperTurning='true';wake();navigationTimer=setTimeout(()=>location.assign(link.href),430);
-      },{signal});
+      },{signal}));
       wake();
     }catch{if(!disposed)owner.dataset.paperReady='unavailable';}
   }
@@ -283,12 +282,16 @@ export async function createLivingPaper(initialEnabled:boolean, commit:(id:strin
     },120);
   },{signal,passive:true});
   window.addEventListener('scroll',()=>{for(const s of surfaces.values())if(paperCandidate(s))s.dirty=true;if(!frame)drawOnce();wake();},{signal,passive:true});
-  document.addEventListener('visibilitychange',()=>{applyViews(v=>{v.setEnabled(enabled&&!document.hidden);if(document.hidden)v.element.dataset.robotPainted='false';});if(document.hidden){cancelAnimationFrame(frame);frame=0;for(const s of surfaces.values()){cancel(s);if(s.pending!==null)finish(s);s.root.dataset.paperPainted='false';}}else{drawOnce();wake();}},{signal});
-  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;applyViews(v=>{v.setEnabled(false);v.element.dataset.robotPainted='false';});viewLifetime.abort();cancelAnimationFrame(frame);frame=0;root.dataset.paperEngine='unavailable';for(const s of surfaces.values()){s.root.dataset.paperPainted='false';if(s.pending!==null)finish(s);}canvas.hidden=true;},{signal});
+  document.addEventListener('visibilitychange',()=>{applyViews(v=>{v.setEnabled(enabled&&!document.hidden);if(document.hidden)v.element.dataset.viewPainted='false';});if(document.hidden){cancelAnimationFrame(frame);frame=0;for(const s of surfaces.values()){cancel(s);if(s.pending!==null)finish(s);s.root.dataset.paperPainted='false';}}else{drawOnce();wake();}},{signal});
+  canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;applyViews(v=>{v.setEnabled(false);v.element.dataset.viewPainted='false';});viewLifetime.abort();cancelAnimationFrame(frame);frame=0;root.dataset.paperEngine='unavailable';for(const s of surfaces.values()){s.root.dataset.paperPainted='false';if(s.pending!==null)finish(s);}canvas.hidden=true;},{signal});
   root.dataset.paperEngine='ready';
-  if(document.querySelector('[data-robot-studio]'))void(async()=>{
-    try{const {createRoboticStudio}=await import('./robot-studio');if(disposed||lost||viewLifetime.signal.aborted)return;const view=await createRoboticStudio(renderer,wake,viewLifetime.signal);if(!view)return;if(disposed||lost||viewLifetime.signal.aborted){view.dispose();return;}views.push(view);try{view.setEnabled(enabled&&!document.hidden);view.setHeroMode(heroMode);view.setQuality?.(detail);}catch{retireView(view);return;}drawOnce();wake();}
-    catch{if(disposed||lost||viewLifetime.signal.aborted)return;const studio=document.querySelector<HTMLElement>('[data-robot-studio]');if(studio){studio.dataset.robotReady='unavailable';studio.dataset.robotPainted='false';}}
+  // The 3D board waits for the visitor's first move, scroll, touch or key (its poster shows until then),
+  // so decoding the model never competes with the page's first paint and input.
+  const boardIntent=new Promise<void>(resolve=>{const go=()=>resolve();for(const type of ['pointermove','pointerdown','wheel','touchstart','keydown','scroll'])addEventListener(type,go,{once:true,passive:true,signal});});
+  if(document.querySelector('[data-board-studio]'))void(async()=>{
+    await boardIntent;if(disposed||lost||viewLifetime.signal.aborted)return;
+    try{const {createBoardStudio}=await import('./board-studio');if(disposed||lost||viewLifetime.signal.aborted)return;const view=await createBoardStudio(renderer,wake,viewLifetime.signal);if(!view)return;if(disposed||lost||viewLifetime.signal.aborted){view.dispose();return;}views.push(view);try{view.setEnabled(enabled&&!document.hidden);view.setHeroMode(heroMode);view.setQuality?.(detail);}catch{retireView(view);return;}drawOnce();wake();}
+    catch{if(disposed||lost||viewLifetime.signal.aborted)return;const studio=document.querySelector<HTMLElement>('[data-board-studio]');if(studio){studio.dataset.boardReady='unavailable';studio.dataset.viewPainted='false';}}
   })();
   return {
     hasSurface:id=>!lost&&Boolean(surfaces.get(id)?.ready),selectPage,
@@ -296,8 +299,8 @@ export async function createLivingPaper(initialEnabled:boolean, commit:(id:strin
     cancel(id){const s=surfaces.get(id);if(s){s.request++;s.turnStarted=0;s.pending=null;s.underIndex=null;s.previewRequest++;s.root.dataset.paperTurning='false';cancel(s);}},
     preview(id,direction,amount,corner){const s=surfaces.get(id);if(!s||s.dragging||s.turnStarted||!enabled)return;const next=clamp(s.index+direction,0,Number(s.root.dataset.pageCount)-1);s.dirty=true;s.priority=++interactionSerial;s.direction=direction;if(corner!==undefined)s.corner=clamp(corner,-1,1);s.target=next===s.index?0:amount;prepareUnder(s,amount>0&&next!==s.index?next:null);wake();},
     invalidate,
-    setEnabled(value){enabled=value;canvas.hidden=!value;applyViews(v=>{v.setEnabled(value&&!document.hidden);if(!value)v.element.dataset.robotPainted='false';});for(const s of surfaces.values()){cancel(s);if(!value&&s.pending!==null)finish(s);if(!value)s.root.dataset.paperPainted='false';if(value&&Number(s.root.dataset.page)!==s.index)void reconcile(s);}if(value){drawOnce();wake();}else{cancelAnimationFrame(frame);frame=0;}},
-    setHeroMode(mode){heroMode=mode;applyViews(v=>{v.setHeroMode(mode);if(mode==='field')v.element.dataset.robotPainted='false';});const s=surfaces.get('hero');if(s)s.root.dataset.paperPainted='false';drawOnce();wake();},
-    dispose(){disposed=true;viewLifetime.abort();views.splice(0).forEach(v=>{v.element.dataset.robotPainted='false';try{v.dispose();}catch{/* Release the remaining scenes too. */}});aborter.abort();lazy.disconnect();visibility.disconnect();cleanups.forEach(fn=>fn());cancelAnimationFrame(frame);clearTimeout(navigationTimer);clearTimeout(resizeTimer);for(const s of surfaces.values()){s.root.dataset.paperPainted='false';s.root.removeAttribute('data-paper-turning');s.root.removeAttribute('data-paper-dragging');const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>();s.scene.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line){geometries.add(o.geometry);const m=o.material;(Array.isArray(m)?m:[m]).forEach(x=>materials.add(x));}if(o instanceof THREE.DirectionalLight)o.shadow.dispose();});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());s.prints.forEach(p=>{p.front.dispose();p.reverse.dispose();});}blank.dispose();renderer.dispose();canvas.remove();surfaces.clear();}
+    setEnabled(value){enabled=value;canvas.hidden=!value;applyViews(v=>{v.setEnabled(value&&!document.hidden);if(!value)v.element.dataset.viewPainted='false';});for(const s of surfaces.values()){cancel(s);if(!value&&s.pending!==null)finish(s);if(!value)s.root.dataset.paperPainted='false';if(value&&Number(s.root.dataset.page)!==s.index)void reconcile(s);}if(value){drawOnce();wake();}else{cancelAnimationFrame(frame);frame=0;}},
+    setHeroMode(mode){heroMode=mode;applyViews(v=>{v.setHeroMode(mode);if(mode==='field')v.element.dataset.viewPainted='false';});const s=surfaces.get('hero');if(s)s.root.dataset.paperPainted='false';drawOnce();wake();},
+    dispose(){disposed=true;viewLifetime.abort();views.splice(0).forEach(v=>{v.element.dataset.viewPainted='false';try{v.dispose();}catch{/* Release the remaining scenes too. */}});aborter.abort();lazy.disconnect();visibility.disconnect();cleanups.forEach(fn=>fn());cancelAnimationFrame(frame);clearTimeout(navigationTimer);clearTimeout(resizeTimer);for(const s of surfaces.values()){s.root.dataset.paperPainted='false';s.root.removeAttribute('data-paper-turning');s.root.removeAttribute('data-paper-dragging');const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>();s.scene.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line){geometries.add(o.geometry);const m=o.material;(Array.isArray(m)?m:[m]).forEach(x=>materials.add(x));}if(o instanceof THREE.DirectionalLight)o.shadow.dispose();});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());s.prints.forEach(p=>{p.front.dispose();p.reverse.dispose();});}blank.dispose();renderer.dispose();canvas.remove();surfaces.clear();}
   };
 }

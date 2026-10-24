@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
 import Contact from '../../components/Contact.astro';
 import Notebook from '../../components/Notebook.astro';
+import CompilerStudy from '../../components/CompilerStudy.astro';
 import { researchNotebooks } from '../../data/notebooks';
 import { statuses } from '../../data/status';
 import { profile } from '../../data/profile';
@@ -14,6 +15,7 @@ const rendered = await Promise.all(entries.map(async entry => ({ entry, ...(awai
   <main id="main" tabindex="-1">
     <section class="page-intro container"><a class="back-link eyebrow" href="/">← BACK TO HOME</a><div class="page-intro-top"><span class="eyebrow">RESEARCH / OPEN QUESTIONS</span><span class="eyebrow accent">UNPUBLISHED · QUESTIONS AND STATUS ONLY</span></div><h1 data-reveal>Questions<br/><em>worth following.</em></h1><p class="page-intro-description">None of these studies is published yet, so this page says what each one asks and how, not what it found. Results will appear here with the paper or preprint.</p><nav class="research-anchor-nav" aria-label="Research areas">{entries.map(e => <a href={`#${e.id}`}>{e.data.title} <Icon name="down" size={14}/></a>)}</nav></section>
     <div class="container research-briefs">{rendered.map(({ entry, Content }, i) => <article class="research-brief" id={entry.id}><aside><span class="section-label eyebrow">0{i + 1} / {entry.data.area}</span><h2>{entry.data.title}</h2><span class="status-pill dark-pill">{statuses[entry.data.status]}</span><Notebook book={researchNotebooks[entry.id]} compact/></aside><div class="prose"><dl class="qm"><div><dt class="eyebrow">Question</dt><dd>{entry.data.question}</dd></div><div><dt class="eyebrow">Method</dt><dd>{entry.data.method}</dd></div></dl><Content/></div></article>)}</div>
+    <CompilerStudy/>
     <Contact/>
   </main>
 </Layout>

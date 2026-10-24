@@ -5,7 +5,7 @@ import monoURL from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-nor
 
 /** Print artwork from the site's existing vectors, type and authentic images. No DOM screenshots. */
 export type PaperPrint = { front: HTMLCanvasElement; reverse: HTMLCanvasElement };
-const ink = '#24251f', red = '#b83a26', cobalt = '#2349a0', paper = '#f4f0e7';
+const ink = '#1b2126', accent = '#176b4d', signal = '#a35a22', paper = '#eef0e8';
 const serif = '"Instrument Serif", Georgia, serif';
 const mono = '"IBM Plex Mono", monospace';
 const sans = '"Manrope Variable", sans-serif';
@@ -71,7 +71,7 @@ async function vectorImage(source: SVGSVGElement, form?: number, pixels=1800): P
   clone.removeAttribute('class'); clone.removeAttribute('style');
   const view = source.viewBox.baseVal;
   clone.setAttribute('width', String(pixels)); clone.setAttribute('height', String(Math.ceil(pixels*(view.height||500)/(view.width||800))));
-  const svg = new XMLSerializer().serializeToString(clone).replace(/var\(--red\)/g, red).replace(/var\(--cobalt\)/g, cobalt).replace(/var\(--paper\)/g, paper).replace(/currentColor/g, ink);
+  const svg = new XMLSerializer().serializeToString(clone).replace(/var\(--accent\)/g, accent).replace(/var\(--signal\)/g, signal).replace(/var\(--paper\)/g, paper).replace(/currentColor/g, ink);
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   try {
     const img = new Image(); img.src = url; await img.decode(); return img;
@@ -88,7 +88,7 @@ export async function printHero(element: HTMLElement): Promise<PaperPrint[]> {
     ctx.strokeStyle = '#9b8d7019'; ctx.lineWidth = 1;
     for (let x = 70; x < 1080; x += 42) { ctx.beginPath(); ctx.moveTo(x, 50); ctx.lineTo(x, 750); ctx.stroke(); }
     for (let y = 50; y < 800; y += 42) { ctx.beginPath(); ctx.moveTo(70, y); ctx.lineTo(1010, y); ctx.stroke(); }
-    label(ctx, `FIG. 001 / ${['SIGNAL', 'CIRCUIT', 'CONSTELLATION'][i]}`, 70, 68, 15, red);
+    label(ctx, `FIG. 001 / ${['SIGNAL', 'CIRCUIT', 'CONSTELLATION'][i]}`, 70, 68, 15, accent);
     ctx.drawImage(image, 85, 75, 910, 650);
     label(ctx, 'AN IDEA, GIVEN A LITTLE ROOM TO MOVE.', 70, 744, 12);
     results.push({ front: canvas, reverse: reverseOf(canvas) });
@@ -104,18 +104,18 @@ export async function printAtlas(element: HTMLElement): Promise<PaperPrint[]> {
   for (let i = 0; i < 3; i++) {
     const { canvas, ctx } = sheet(820, 1040, i === 1 ? '#eef0e7' : paper);
     for (let y = 86; y < 985; y += 64) { ctx.strokeStyle = '#b3a89135'; ctx.beginPath(); ctx.moveTo(45, y); ctx.lineTo(775, y); ctx.stroke(); }
-    ctx.strokeStyle = '#b83a2640'; ctx.beginPath(); ctx.moveTo(83, 35); ctx.lineTo(83, 1005); ctx.stroke();
+    ctx.strokeStyle = '#176b4d40'; ctx.beginPath(); ctx.moveTo(83, 35); ctx.lineTo(83, 1005); ctx.stroke();
     label(ctx, `RESEARCH / 0${i + 1}`, 110, 65, 14);
     if (i === 0) {
-      ctx.fillStyle = red; ctx.font = '345px "Noto Sans Syloti Nagri", sans-serif'; ctx.fillText('ꠇ', 220, 430);
-      ctx.save(); ctx.translate(540, 210); ctx.rotate(.12); ctx.fillStyle = cobalt; ctx.font = `italic 48px ${serif}`; ctx.fillText('a script,', 0, 0); ctx.fillText('remembered.', -30, 49); ctx.restore();
+      ctx.fillStyle = accent; ctx.font = '345px "Noto Sans Syloti Nagri", sans-serif'; ctx.fillText('ꠇ', 220, 430);
+      ctx.save(); ctx.translate(540, 210); ctx.rotate(.12); ctx.fillStyle = signal; ctx.font = `italic 48px ${serif}`; ctx.fillText('a script,', 0, 0); ctx.fillText('remembered.', -30, 49); ctx.restore();
       const glyphs = [...element.querySelectorAll<HTMLElement>('[data-atlas-glyph]')];
-      glyphs.forEach((glyph, n) => { ctx.fillStyle = n % 4 === 0 ? red : ink; ctx.font = '60px "Noto Sans Syloti Nagri", sans-serif'; ctx.fillText(glyph.textContent || '', 140 + (n % 6) * 96, 625 + Math.floor(n / 6) * 110); });
+      glyphs.forEach((glyph, n) => { ctx.fillStyle = n % 4 === 0 ? accent : ink; ctx.font = '60px "Noto Sans Syloti Nagri", sans-serif'; ctx.fillText(glyph.textContent || '', 140 + (n % 6) * 96, 625 + Math.floor(n / 6) * 110); });
       label(ctx, 'SYLHETI NAGRI / MODERN TYPE SPECIMEN', 110, 955, 13);
       label(ctx, 'HISTORICAL QUESTIONS. NEW WAYS TO READ.', 110, 985, 11);
     } else {
       const title = i === 1 ? ['enough,', 'at the right time.'] : ['a line becomes', 'a language.'];
-      ctx.fillStyle = i === 1 ? cobalt : red; ctx.font = `66px ${sans}`; ctx.fillText(title[0], 95, 183); ctx.font = `italic 90px ${serif}`; ctx.fillText(title[1], 95, 272);
+      ctx.fillStyle = i === 1 ? signal : accent; ctx.font = `66px ${sans}`; ctx.fillText(title[0], 95, 183); ctx.font = `italic 90px ${serif}`; ctx.fillText(title[1], 95, 272);
       const svg = element.querySelector<SVGSVGElement>(i === 1 ? '.atlas-inventory svg' : '.atlas-compiler svg');
       if (svg) ctx.drawImage(await vectorImage(svg), 10, 330, 800, 560);
       label(ctx, i === 1 ? 'INVENTORY / ILLUSTRATIVE POLICY SKETCH' : 'SOURCE → STRUCTURE → MEANING', 110, 955, 12);
@@ -163,7 +163,7 @@ export async function printProject(visual: HTMLElement): Promise<PaperPrint[]> {
       const c=getComputedStyle(face);ctx.strokeStyle=c.borderTopColor;ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(w/2,h/2,w/2-.5,h/2-.5,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([1,4]);ctx.globalAlpha=.35;ctx.beginPath();ctx.ellipse(w/2,h/2,w/2-9,h/2-9,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.ellipse(w/2,h/2,w*.42,h*.42,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
       const timer=face.querySelector<HTMLElement>('strong')!;font(timer);ctx.textBaseline='middle';ctx.textAlign='center';ctx.fillText('25:00',w/2,timer.offsetTop+timer.offsetHeight/2);
       const notes=[...face.querySelectorAll<HTMLElement>(':scope>.eyebrow')];notes.forEach(note=>{font(note);ctx.fillText(note.textContent||'',w/2,note.offsetTop+note.offsetHeight/2);});
-      const track=face.querySelector<HTMLElement>('.focus-track');if(track){ctx.fillStyle='#24251f30';ctx.fillRect((w-track.offsetWidth)/2,track.offsetTop,track.offsetWidth,2);ctx.fillStyle=ink;ctx.fillRect((w-track.offsetWidth)/2,track.offsetTop,track.offsetWidth*.43,2);}ctx.textAlign='left';
+      const track=face.querySelector<HTMLElement>('.focus-track');if(track){ctx.fillStyle='#1b212630';ctx.fillRect((w-track.offsetWidth)/2,track.offsetTop,track.offsetWidth,2);ctx.fillStyle=ink;ctx.fillRect((w-track.offsetWidth)/2,track.offsetTop,track.offsetWidth*.43,2);}ctx.textAlign='left';
     });
     const annotation=copy.querySelector<HTMLElement>('.artifact-annotation');
     if(annotation)box(annotation,()=>{

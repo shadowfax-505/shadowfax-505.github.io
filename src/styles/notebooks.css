@@ -1,7 +1,7 @@
 @layer components {
   .hero-static-notes{margin-top:30px;font:13px/1.7 var(--sans)}.hero-static-notes summary{min-height:44px}.hero-static-notes p{margin-top:12px}
-  .notebook{position:relative;--book-accent:var(--red);width:100%;min-width:0}
-  .notebook-cobalt{--book-accent:var(--cobalt)}
+  .notebook{position:relative;--book-accent:var(--accent);width:100%;min-width:0}
+  .notebook-signal{--book-accent:var(--signal)}
   .notebook-stage{position:relative;aspect-ratio:1.45;touch-action:pan-y;cursor:grab;isolation:isolate;outline-offset:5px}
   .notebook-stage:focus-visible{outline:2px solid var(--book-accent)}
   .notebook-page{position:absolute;inset:0;overflow:hidden}
@@ -41,7 +41,7 @@
   .section-notebook{margin-top:55px;max-width:840px}.background-notebook{margin-top:60px;max-width:840px}
   .notebook-topic-controls{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px;position:relative;z-index:9}
   .notebook-topic-controls button{font:10px var(--mono);padding:10px 13px;min-height:44px;border:1px solid var(--rule);border-radius:50%}
-  .notebook-topic-controls button[aria-pressed='true']{color:var(--red);border-color:currentColor}
+  .notebook-topic-controls button[aria-pressed='true']{color:var(--accent);border-color:currentColor}
   .research-atlas{margin:0;max-width:none}.research-atlas .notebook-stage{aspect-ratio:1.35}
   .research-brief aside .notebook{margin-top:26px}.research-brief aside .notebook-reading{display:none}
   .research-brief aside .notebook-current{font-size:17px}.research-brief aside .notebook-count{font-size:8px}

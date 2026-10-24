@@ -40,7 +40,7 @@ const graph = [person, ...schema];
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="theme-color" content="#f4f0e7"/>
+    <meta name="theme-color" content="#eef0e8"/>
     <title>{title}</title>
     <meta name="description" content={description}/>
     <meta name="author" content={profile.fullName}/>
@@ -64,6 +64,13 @@ const graph = [person, ...schema];
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
         document.documentElement.dataset.motion = saved === 'off' || reduced ? 'off' : 'on';
       } catch { document.documentElement.dataset.motion = 'off'; }
+      // Page-turn transitions between pages: skipped when motion is off; turned the other way on Back.
+      addEventListener('pageswap', e => { if (e.viewTransition && document.documentElement.dataset.motion === 'off') e.viewTransition.skipTransition(); });
+      addEventListener('pagereveal', e => {
+        if (!e.viewTransition) return;
+        if (document.documentElement.dataset.motion === 'off') { e.viewTransition.skipTransition(); return; }
+        try { const a = navigation.activation; if (a && a.navigationType === 'traverse' && a.from && a.entry && a.entry.index < a.from.index) e.viewTransition.types.add('back'); } catch {}
+      });
     </script>
   </head>
   <body class={bodyClass}>

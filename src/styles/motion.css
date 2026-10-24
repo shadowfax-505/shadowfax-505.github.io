@@ -1,22 +1,22 @@
 @layer components {
   .hero-line{position:relative}
   .hero-ink{display:block;position:relative;translate:var(--type-x,0px) var(--type-y,0px)}
-  .hero-echo{position:absolute;inset:0;white-space:nowrap;color:transparent;-webkit-text-stroke:.65px var(--red);opacity:var(--echo-opacity,0);translate:var(--echo-x,0px) var(--echo-y,0px);pointer-events:none}
+  .hero-echo{position:absolute;inset:0;white-space:nowrap;color:transparent;-webkit-text-stroke:.65px var(--accent);opacity:var(--echo-opacity,0);translate:var(--echo-x,0px) var(--echo-y,0px);pointer-events:none}
   .art-actions{display:flex;align-items:center;gap:14px}
-  .art-pulse{font:8px/1.5 var(--mono);padding:7px 0;border-bottom:1px solid var(--rule);color:var(--red)}
+  .art-pulse{font:8px/1.5 var(--mono);padding:7px 0;border-bottom:1px solid var(--rule);color:var(--accent)}
   .art-pulse:disabled{opacity:.4;cursor:default}
   .hero-interaction-marks{pointer-events:none}
   [data-tactile-ready] .hero-fallback{transform:perspective(850px) rotateX(var(--field-rx,0deg)) rotateY(var(--field-ry,0deg)) rotate(var(--field-rz,0deg));transition:opacity .7s}
   .work-card[data-tactile-ready] .project-visual{transform:perspective(1000px) rotateX(var(--card-rx,0deg)) rotateY(var(--card-ry,0deg));transition:clip-path .6s}
   .work-card[data-tactile-ready] .project-visual::before{content:'';position:absolute;inset:0;z-index:7;pointer-events:none;opacity:var(--card-light,0);background:radial-gradient(circle at var(--card-x,50%) var(--card-y,50%),#fff8,transparent 60%);mix-blend-mode:soft-light}
   .work-card[data-tactile-ready] :is(.browser-frame,.research-paper,.civic-network,.focus-face,.afo-signal,.gas-system){translate:var(--card-layer-x,0px) var(--card-layer-y,0px)}
-  .work-card:focus-visible .project-visual{outline:2px solid var(--red);outline-offset:5px}
+  .work-card:focus-visible .project-visual{outline:2px solid var(--accent);outline-offset:5px}
   .contact-orb{translate:var(--orb-x,0px) var(--orb-y,0px)}
   .contact-orb svg{rotate:var(--orb-angle,0deg)}
   .future-contours{transform-box:fill-box;transform-origin:center;rotate:var(--target-turn,0deg);transition:rotate .8s cubic-bezier(.22,1,.36,1)}
   [data-target-link]{cursor:pointer;outline:none}
-  [data-target-link]:is(:hover,:focus-visible) .future-direction{color:var(--red);opacity:1}
-  [data-target-link]:focus-visible circle{stroke:var(--red);stroke-width:3;fill:#f8e9d8}
+  [data-target-link]:is(:hover,:focus-visible) .future-direction{color:var(--accent);opacity:1}
+  [data-target-link]:focus-visible circle{stroke:var(--accent);stroke-width:3;fill:#dcebe2}
   [data-motion='off'] .future-contours{rotate:none;transition:none}
   [data-motion='off'] :is(.hero-ink,.hero-echo,.contact-orb,.work-card[data-tactile-ready] .project-visual,.work-card[data-tactile-ready] :is(.browser-frame,.research-paper,.civic-network,.focus-face,.afo-signal,.gas-system)){translate:none;transform:none}
   [data-motion='off'] .hero-echo,[data-motion='off'] .hero-interaction-marks{opacity:0}

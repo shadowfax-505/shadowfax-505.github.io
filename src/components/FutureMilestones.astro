@@ -1,0 +1,43 @@
+---
+import { milestones } from '../data/milestones';
+import Icon from './Icon.astro';
+const points = Array.from({length:6},(_,i)=>{
+  const angle = i * Math.PI / 3 - Math.PI / 2;
+  return { x: 270 + Math.cos(angle) * 172, y: 265 + Math.sin(angle) * 172 };
+});
+const contours = Array.from({length:22},(_,i)=>{
+  return Array.from({length:181},(_,j)=>{
+    const a = j / 180 * Math.PI * 2;
+    const r = 32 + i * 6.3 + Math.cos(a * 6 + i * .07) * (8 + i * 1.15);
+    return `${j?'L':'M'}${(270 + Math.cos(a) * r).toFixed(1)},${(265 + Math.sin(a) * r).toFixed(1)}`;
+  }).join(' ')+'Z';
+});
+---
+<section class="future-section section" id="next-chapter" aria-labelledby="future-title" data-future>
+  <div class="container">
+    <div class="section-heading">
+      <div><p class="section-label eyebrow">06 / WORK TO GROW INTO</p><h2 id="future-title" data-reveal>The next <em>chapter.</em></h2></div>
+      <div class="future-intro"><p>Six milestones I want to earn.</p><span class="eyebrow">TARGETS · NOT YET ACHIEVED</span></div>
+    </div>
+    <div class="future-spread">
+      <figure class="future-map" aria-label="Original contour study illustrating six future directions">
+        <div class="future-map-top eyebrow"><span>A STUDY IN POSSIBILITY</span><span>FIG. 004</span></div>
+        <svg viewBox="0 0 540 540" fill="none" role="group" aria-label="Choose one of six future targets">
+          <g class="future-contours" stroke="currentColor" stroke-width=".7">{contours.map(d=><path d={d} pathLength="1"/>)}</g>
+          <g stroke="currentColor" opacity=".25" stroke-width=".8"><path d="M270 32v466M37 265h466" stroke-dasharray="2 7"/><circle cx="270" cy="265" r="218" stroke-dasharray="1 8"/></g>
+          {points.map((p,i)=><a href={`#${milestones[i].id}`} data-target-link={i} aria-label={`Target ${String(i+1).padStart(2,'0')}: ${milestones[i].title}`}><g class:list={['future-direction',{'is-active':i===0}]} data-future-point={i}><path d={`M270 265L${p.x} ${p.y}`} stroke="currentColor" stroke-width="1"/><circle cx={p.x} cy={p.y} r="23" fill="var(--paper)" stroke="currentColor"/><text x={p.x} y={p.y+3.5} text-anchor="middle" fill="currentColor" font-size="10" font-family="monospace">0{i+1}</text></g></a>)}
+          <g class="living-target-orbit" aria-hidden="true"><ellipse cx="270" cy="265" rx="198" ry="154" stroke="var(--accent)" stroke-width=".65" stroke-dasharray="2 11" opacity=".35"/><circle cx="468" cy="265" r="3"/><circle cx="72" cy="265" r="2"/></g><circle cx="270" cy="265" r="6" fill="var(--accent)"/>
+        </svg>
+        <p class="future-map-word" aria-hidden="true">in <em>pursuit.</em></p>
+        <figcaption>Choose a target. Start with one small, verifiable step.</figcaption>
+      </figure>
+      <div class="future-list">
+        {milestones.map((item,i)=><details class="future-target" name="future-targets" open={i===0} data-target={i} id={item.id}>
+          <summary><span class="future-number">{item.number}</span><span class="future-summary"><span class="eyebrow">{item.area}</span><span class="future-target-title">{item.title}</span></span><span class="target-label">{item.status}</span><span class="future-plus" aria-hidden="true">+</span></summary>
+          <div class="future-target-body"><dl><dt>First step</dt><dd>{item.first}</dd><dt>What will count as earned</dt><dd>{item.proof}</dd></dl><a class="text-link" href={item.link} target={item.link.startsWith('http')?'_blank':undefined} rel={item.link.startsWith('http')?'noopener noreferrer':undefined}>{item.linkLabel}<Icon size={14}/></a></div>
+        </details>)}
+      </div>
+    </div>
+    <p class="future-footnote">These are ambitions, each with a path and a definition of done. Completed work and its evidence will be added as it happens.</p>
+  </div>
+</section>

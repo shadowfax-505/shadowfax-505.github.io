@@ -28,7 +28,7 @@ export function createDrone(container: HTMLElement) {
   const flightButtons = [...container.querySelectorAll<HTMLButtonElement>('[data-drone-flight]')];
   const viewButtons = [...container.querySelectorAll<HTMLButtonElement>('[data-drone-view]')];
   let flightMode: 'hover' | 'orbit' = 'hover';
-  scene.add(new THREE.HemisphereLight(0xf4efe6, 0x2a2d31, 2.0));
+  scene.add(new THREE.HemisphereLight(0xeef0e8, 0x2a2d31, 2.0));
   const key = new THREE.DirectionalLight(0xfff1dc, 3.4);
   key.position.set(-3, 6, 4); scene.add(key);
   const rim = new THREE.DirectionalLight(0xbcd0e6, 1.6);
