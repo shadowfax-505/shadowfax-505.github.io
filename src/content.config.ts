@@ -15,6 +15,8 @@ const work = defineCollection({
     title: z.string(),
     summary: z.string(),
     kind: z.enum(['selected', 'early']),
+    visual: z.enum(['civic', 'researchhub', 'zenflow', 'afo', 'gas', 'drone']),
+    category: z.string(),
     order: z.number(),
     year: z.coerce.string(),
     role: z.string(),

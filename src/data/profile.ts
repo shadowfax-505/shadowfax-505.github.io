@@ -52,16 +52,16 @@ export const skills = [
 ];
 
 export const achievements = [
-  { title: 'National Physics Olympiad', detail: 'Fourth place nationally, Category C', date: '2022', url: undefined },
-  { title: 'Regional Physics Olympiad', detail: 'Second place, regional round', date: '', url: undefined },
-  { title: 'Jashore Board Talent Scholarship', detail: 'Higher Secondary Certificate, Science', date: 'HSC 2022', url: 'https://www.jessoreboard.gov.bd/uploads/notice/07_20230316182503_799.pdf' },
-  { title: 'Astronomy & Astrophysics Olympiad', detail: 'National-round qualifier from the Khulna regional round', date: 'Apr 2022', url: undefined },
+  { marker: '04', title: 'National Physics Olympiad', detail: 'Fourth place nationally, Category C', date: '2022', url: undefined, source: undefined },
+  { marker: '02', title: 'Regional Physics Olympiad', detail: 'Second place, regional round', date: '', url: undefined, source: undefined },
+  { marker: '★', title: 'Jashore Board Talent Scholarship', detail: 'Higher Secondary Certificate, Science', date: 'HSC 2022', url: 'https://www.jessoreboard.gov.bd/uploads/notice/07_20230316182503_799.pdf', source: 'Official board stipend list' },
+  { marker: '↗', title: 'Astronomy & Astrophysics Olympiad', detail: 'National-round qualifier from the Khulna regional round', date: 'Apr 2022', url: undefined, source: undefined },
 ];
 
 export const community = [
-  { title: 'Hardware Acceleration Club of KUET (HACK)', role: 'Senior Executive', since: 'Since Nov 2025' },
-  { title: 'Embedded Innovators', role: 'Member', since: 'Since Mar 2025' },
-  { title: 'SGIPC, KUET programming community', role: 'Member', since: 'Since Mar 2024' },
+  { short: 'HACK', title: 'Hardware Acceleration Club of KUET (HACK)', role: 'Senior Executive', since: 'Since Nov 2025' },
+  { short: 'Embedded Innovators', title: 'Embedded Innovators', role: 'Member', since: 'Since Mar 2025' },
+  { short: 'SGIPC', title: 'SGIPC, KUET programming community', role: 'Member', since: 'Since Mar 2024' },
 ];
 
 /** Smaller work, one line each. */

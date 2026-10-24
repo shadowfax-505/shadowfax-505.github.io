@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+import Notebook from './Notebook.astro';
+import { researchNotebooks } from '../data/notebooks';
+const short: Record<string, string> = { 'dialect-erasure': 'Dialects', 'lookalike-identifiers': 'Identifiers', 'compiler-constrained-decoding': 'Compilers', 'inventory-censoring': 'Inventory' };
+const subjects = (await getCollection('research')).sort((a, b) => a.data.order - b.data.order).map(r => [r.id, short[r.id] || r.data.title]);
+---
+<div class="research-atlas" data-notebook-topics>
+  <div class="notebook-topic-controls" role="group" aria-label="Choose a research subject">{subjects.map(([id,title],i)=><button type="button" data-notebook-topic={id} aria-pressed={i===0}>{title}</button>)}</div>
+  {subjects.map(([id],i)=><div data-topic-panel={id} hidden={i!==0}><Notebook book={researchNotebooks[id]}/></div>)}
+  <noscript><p class="eyebrow">Every research subject and its full note are on the research page.</p></noscript>
+</div>

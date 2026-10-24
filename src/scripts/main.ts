@@ -1,132 +1,228 @@
-import type { FieldController } from './hero';
-type DroneController = { setEnabled(on: boolean): void; dispose(): void };
+import { createTactileMotion } from './tactile';
+import { createPaperExperience } from './paper-entry';
+import { createLivingMotion } from './living-motion';
+import { createInkMotion } from './ink';
+import { createNotebookMotion } from './notebook-motion';
+type AnimationContext = { revert: () => void };
+type HeroController = { setEnabled: (enabled: boolean) => void; setForm: (index: number) => void; dispose: () => void };
 
 const root = document.documentElement;
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-const darkQuery = matchMedia('(prefers-color-scheme: dark)');
-let motion = root.dataset.motion !== 'off';
+const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const toggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+let enabled = root.dataset.motion === 'on';
+let context: AnimationContext | undefined;
+let hero: HeroController | undefined;
+let animationGeneration = 0;
+let toastTimer: ReturnType<typeof setTimeout>;
+const artwork = document.querySelector<HTMLElement>('[data-hero-art]');
+const explore3d = document.querySelector<HTMLButtonElement>('[data-explore-3d]');
+const formButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-form]'));
+let activeForm = 0;
+let loadingHero = false;
+let selectedByHand = false;
+const paper = createPaperExperience();
+const living = createLivingMotion();
+const ink = createInkMotion();
+const notebookMotion = createNotebookMotion();
+const returnPaper = artwork?.querySelector<HTMLButtonElement>('[data-return-paper]');
 
-function store(key: string, value: string) { try { localStorage.setItem(key, value); } catch { /* private mode */ } }
-const toast = document.querySelector<HTMLElement>('[data-toast]');
-let toastTimer: ReturnType<typeof setTimeout> | undefined;
 function notify(message: string) {
+  const toast = document.querySelector<HTMLElement>('[data-toast]');
   if (!toast) return;
   clearTimeout(toastTimer);
-  toast.textContent = message; toast.dataset.visible = 'true';
-  toastTimer = setTimeout(() => { toast.dataset.visible = 'false'; }, 3200);
+  toast.textContent = message;
+  toast.dataset.visible = 'true';
+  toastTimer = setTimeout(() => { toast.dataset.visible = 'false'; }, 3500);
 }
 
-/* ---------- theme ---------- */
-const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : darkQuery.matches;
-function themeChanged() {
-  themeToggle?.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
-  field?.refreshColors();
+function updateToggle() {
+  root.dataset.motion = enabled ? 'on' : 'off';
+  toggle?.setAttribute('aria-pressed', String(!enabled));
+  toggle?.setAttribute('aria-label', enabled ? 'Motion on — pause motion' : 'Motion off — enable motion');
+  if (explore3d) explore3d.disabled = !enabled || loadingHero || artwork?.dataset.webgl === 'unavailable';
+  const label = toggle?.querySelector('[data-motion-label]');
+  if (label) label.textContent = enabled ? 'Motion on' : 'Motion off';
 }
-themeToggle?.addEventListener('click', () => {
-  const next = isDark() ? 'light' : 'dark';
-  root.dataset.theme = next; store('mr-theme', next); themeChanged();
-});
-darkQuery.addEventListener('change', () => { if (!root.dataset.theme) themeChanged(); });
 
-/* ---------- motion ---------- */
-const motionToggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
-function applyMotion() {
-  root.dataset.motion = motion ? 'on' : 'off';
-  motionToggle?.setAttribute('aria-pressed', String(!motion));
-  motionToggle?.setAttribute('aria-label', motion ? 'Pause animation' : 'Resume animation');
-  motionToggle?.setAttribute('title', motion ? 'Pause animation' : 'Resume animation');
-  field?.setEnabled(motion);
-  if (motion) void loadField();
+async function animate() {
+  const generation = ++animationGeneration;
+  context?.revert();
+  context = undefined;
+  hero?.setEnabled(enabled && artwork?.dataset.heroMode === 'field');
+  paper.setEnabled(enabled);
   syncDrones();
-}
-motionToggle?.addEventListener('click', () => { motion = !motion; store('mr-motion', motion ? 'on' : 'off'); applyMotion(); });
-reduced.addEventListener('change', () => { if (reduced.matches) { motion = false; applyMotion(); } });
-
-/* ---------- particle field ---------- */
-const fieldEl = document.querySelector<HTMLElement>('[data-field]');
-let field: FieldController | undefined;
-let fieldLoading = false;
-let form = 0;
-const formLabels = ['EMG · 6 ch', 'PCB · traces', 'Loop · ribbon'];
-async function loadField() {
-  if (!fieldEl || field || fieldLoading || !motion || !engaged) return;
-  fieldLoading = true;
+  if (!enabled) return;
   try {
-    const { createField } = await import('./hero');
-    field = createField(fieldEl, motion);
-    field.setForm(form);
-  } catch { fieldEl.dataset.webgl = 'unavailable'; }
-  finally { fieldLoading = false; }
+    const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
+    if (!enabled || generation !== animationGeneration) return;
+    gsap.registerPlugin(ScrollTrigger);
+    context = gsap.context(() => {
+      if (artwork) {
+        gsap.from('.hero-line', { y: 28, rotation: -.6, duration: 1.1, stagger: .1, ease: 'power3.out' });
+        gsap.from('.hero-description', { y: 18, duration: .95, delay: .35, ease: 'power3.out' });
+        gsap.from('.form-signal path', { strokeDasharray: 1, strokeDashoffset: 1, duration: 2.1, stagger: .013, ease: 'power2.inOut' });
+      }
+      document.querySelectorAll<HTMLElement>('[data-reveal]').forEach(element => {
+        // Keep notebook frames out of transformed stacking contexts; their mesh can overflow.
+        const target=element.matches('.work-card') ? element.querySelector('.work-card-body') : element;
+        gsap.from(target, { y: 30, duration: .85, clearProps:'transform', ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
+      });
+      document.querySelectorAll<HTMLElement>('.work-card .project-visual').forEach(element => {
+        gsap.from(element, { clipPath: 'inset(0 0 8% 0)', duration: 1.1, ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
+      });
+      if (document.querySelector('.atlas-sheets')) {
+        gsap.fromTo('.atlas-sheets', { y: 14, rotation: -1 }, { y: -14, rotation: 1.2, ease: 'none', scrollTrigger: { trigger: '.research-spread', start: 'top bottom', end: 'bottom top', scrub: .8 } });
+      }
+      if (document.querySelector('.recognition-star')) {
+        gsap.fromTo('.recognition-star', { rotation: 0 }, { rotation: 70, ease: 'none', scrollTrigger: { trigger: '.recognition-section', start: 'top bottom', end: 'bottom top', scrub: .7 } });
+      }
+      document.querySelectorAll<HTMLElement>('.process-strip').forEach(element => {
+        gsap.from(element.children, { y: 18, duration: .6, stagger: .1, ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 90%', once: true } });
+      });
+    });
+  } catch {
+    // All content stays visible if an optional animation module cannot load.
+    context?.revert();
+  }
 }
-fieldEl?.querySelectorAll<HTMLButtonElement>('[data-form]').forEach(button => button.addEventListener('click', () => {
-  form = Number(button.dataset.form);
-  fieldEl.querySelectorAll('[data-form]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
-  const label = fieldEl.querySelector('[data-field-label]'); if (label) label.textContent = formLabels[form];
-  if (field) field.setForm(form); else { engage(); void loadField(); }
-}));
-// WebGL starts on the visitor's first interaction. Until then the server-rendered drawings show,
-// so first paint never waits for three.js and passive page loads stay light.
-let engaged = false;
-const engageEvents = ['pointermove', 'pointerdown', 'touchstart', 'wheel', 'scroll', 'keydown'] as const;
-function engage() {
-  if (engaged) return;
-  engaged = true;
-  engageEvents.forEach(e => window.removeEventListener(e, engage));
-  if (motion) void loadField();
-  syncDrones();
-}
-engageEvents.forEach(e => window.addEventListener(e, engage, { passive: true }));
 
-/* ---------- drone ---------- */
-const drones = new Map<HTMLElement, DroneController>();
+async function prepareHero() {
+  const element = document.querySelector<HTMLElement>('[data-hero-art]');
+  if (!element || hero || !enabled || loadingHero) return;
+  loadingHero = true;
+  if (explore3d) { explore3d.disabled = true; explore3d.textContent = 'Opening 3D…'; }
+  try {
+    const { createHero } = await import('./hero');
+    if (!hero && enabled) { hero = createHero(element, enabled); hero.setForm(activeForm); }
+  } catch { element.dataset.webgl = 'unavailable'; }
+  finally {
+    loadingHero = false;
+    if (element.dataset.webgl === 'unavailable') {
+      notify('3D is unavailable here. You can still explore all three forms below.');
+      if (explore3d) { explore3d.textContent = '3D unavailable'; explore3d.disabled = true; }
+    } else if (hero) {
+      paper.setHeroMode('field');
+      explore3d?.setAttribute('hidden', '');
+      returnPaper?.removeAttribute('hidden');
+    }
+    else if (explore3d) { explore3d.textContent = 'Particle study ↗'; explore3d.disabled = !enabled; }
+  }
+}
+
+function selectForm(index: number) {
+  activeForm = index;
+  if (artwork) artwork.dataset.formState = String(index);
+  formButtons.forEach((button,i) => button.setAttribute('aria-pressed', String(i === index)));
+  const label = artwork?.querySelector('[data-form-label]');
+  if (label) label.textContent = ['FOLDED SIGNAL', 'CIRCUIT TOPOLOGY', 'CONSTELLATION'][index];
+  hero?.setForm(index);
+}
+formButtons.forEach(button => button.addEventListener('click', () => { selectedByHand = true; paper.selectPage('hero',0); selectForm(Number(button.dataset.form)); }));
+artwork?.querySelector('[data-form-controls]')?.removeAttribute('hidden');
+explore3d?.removeAttribute('hidden');
+explore3d?.addEventListener('click', () => { if(hero) { paper.setHeroMode('field'); hero.setEnabled(enabled); explore3d.hidden=true; returnPaper?.removeAttribute('hidden'); } else void prepareHero(); });
+returnPaper?.addEventListener('click', () => { hero?.setEnabled(false); paper.setHeroMode('paper'); returnPaper.hidden=true; if(explore3d) explore3d.hidden=false; });
+window.addEventListener('scroll', () => {
+  if (!artwork || !enabled || selectedByHand || artwork.dataset.heroPage !== '0') return;
+  const height = artwork.closest<HTMLElement>('.hero')?.offsetHeight || 700;
+  const next = Math.min(2, Math.floor(Math.min(1, window.scrollY / (height * .65)) * 3));
+  if (activeForm !== next) selectForm(next);
+}, { passive: true });
+
+const tactile = createTactileMotion();
+
+
+type DroneController = { setEnabled: (enabled: boolean) => void; dispose: () => void };
+const droneControllers = new Map<HTMLElement, DroneController>();
 const visibleDrones = new Set<HTMLElement>();
 const loadingDrones = new Set<HTMLElement>();
 function syncDrones() {
-  if (!engaged) return;
-  drones.forEach((c, el) => c.setEnabled(motion && visibleDrones.has(el) && !document.hidden));
-  visibleDrones.forEach(el => {
-    if (drones.has(el) || loadingDrones.has(el) || el.dataset.webgl === 'unavailable') return;
-    loadingDrones.add(el);
-    import('./drone').then(({ createDrone }) => {
-      const c = createDrone(el); drones.set(el, c);
-      c.setEnabled(motion && visibleDrones.has(el) && !document.hidden);
-    }).catch(() => { el.dataset.webgl = 'unavailable'; }).finally(() => loadingDrones.delete(el));
+  droneControllers.forEach((controller,element)=>controller.setEnabled(enabled && visibleDrones.has(element) && !document.hidden));
+  if(!enabled || document.hidden) return;
+  visibleDrones.forEach(element=>{
+    if(droneControllers.has(element)||loadingDrones.has(element)||element.dataset.webgl==='unavailable') return;
+    loadingDrones.add(element);
+    import('./drone').then(({createDrone})=>{
+      if(!enabled) return;
+      const controller=createDrone(element);droneControllers.set(element,controller);
+      controller.setEnabled(enabled && visibleDrones.has(element) && !document.hidden);
+    }).catch(()=>{element.dataset.webgl='unavailable';}).finally(()=>loadingDrones.delete(element));
   });
 }
-const droneObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => { const el = e.target as HTMLElement; el.dataset.visible = String(e.isIntersecting); if (e.isIntersecting) visibleDrones.add(el); else visibleDrones.delete(el); });
-  syncDrones();
-}, { rootMargin: '200px 0px', threshold: .01 });
-document.querySelectorAll<HTMLElement>('[data-drone]').forEach(el => droneObserver.observe(el));
-document.addEventListener('visibilitychange', syncDrones);
+const droneObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    const element=entry.target as HTMLElement;
+    element.dataset.visible=String(entry.isIntersecting);
+    if(entry.isIntersecting) visibleDrones.add(element);else visibleDrones.delete(element);
+  });syncDrones();
+},{threshold:.05});
+document.querySelectorAll<HTMLElement>('[data-drone-study]').forEach(element=>droneObserver.observe(element));
+document.addEventListener('visibilitychange',syncDrones);
 
-/* ---------- reveal on scroll ---------- */
-const reveals = document.querySelectorAll<HTMLElement>('.reveal');
-if ('IntersectionObserver' in window) {
-  const io = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
-  reveals.forEach(el => io.observe(el));
-} else reveals.forEach(el => el.classList.add('is-in'));
+toggle?.removeAttribute('hidden');
+updateToggle();
+toggle?.addEventListener('click', () => {
+  enabled = !enabled;
+  try { localStorage.setItem('mr-motion', enabled ? 'on' : 'off'); } catch { /* Preference still applies for this page. */ }
+  updateToggle();
+  void animate();
+});
+preference.addEventListener('change', () => {
+  // A newly enabled OS reduction takes priority without requiring another click.
+  enabled = !preference.matches;
+  try { if (localStorage.getItem('mr-motion') === 'off') enabled = false; } catch { /* Use the OS preference. */ }
+  updateToggle();
+  void animate();
+});
 
-/* ---------- copy email ---------- */
-document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(button => {
-  button.hidden = false;
+document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach(button => {
+  button.removeAttribute('hidden');
   button.addEventListener('click', async () => {
-    const text = button.dataset.copy || '';
-    try { await navigator.clipboard.writeText(text); notify('Email address copied'); }
-    catch { notify(text); }
+    const email = button.dataset.copyEmail || '';
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(email);
+      else {
+        const field = document.createElement('textarea');
+        field.value = email;
+        field.style.cssText = 'position:fixed;left:-9999px;top:0';
+        document.body.append(field);
+        field.select();
+        const copied = document.execCommand('copy');
+        field.remove();
+        button.focus();
+        if (!copied) throw new Error('Copy unavailable');
+      }
+      notify('Email address copied. Let’s talk.');
+    } catch { notify(`Copy this address: ${email}`); }
   });
 });
 
-/* ---------- print ---------- */
-document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach(b => { b.hidden = false; b.addEventListener('click', () => window.print()); });
+document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach(button => {
+  button.removeAttribute('hidden');
+  button.addEventListener('click', () => window.print());
+});
 
-/* ---------- mobile menu ---------- */
-const menu = document.querySelector<HTMLDetailsElement>('.menu');
-menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { menu.open = false; }));
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); } });
-document.addEventListener('click', e => { if (menu?.open && e.target instanceof Node && !menu.contains(e.target)) menu.open = false; });
+const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { menu.open = false; }));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); }
+});
+document.addEventListener('click', event => {
+  if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+});
 
-applyMotion();
-themeChanged();
-window.addEventListener('pagehide', e => { if (!e.persisted) { field?.dispose(); drones.forEach(d => d.dispose()); droneObserver.disconnect(); } });
+const progress = document.querySelector<HTMLElement>('.reading-progress');
+let progressPending = false;
+function updateProgress() {
+  progressPending = false;
+  const travel = document.documentElement.scrollHeight - window.innerHeight;
+  if (progress) progress.style.transform = `scaleX(${travel > 0 ? Math.min(1, window.scrollY / travel) : 0})`;
+}
+window.addEventListener('scroll', () => {
+  if (!progressPending) { progressPending = true; requestAnimationFrame(updateProgress); }
+}, { passive: true });
+updateProgress();
+void animate();
+window.addEventListener('pagehide', event => {
+  if (!event.persisted) { context?.revert(); hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); }
+});

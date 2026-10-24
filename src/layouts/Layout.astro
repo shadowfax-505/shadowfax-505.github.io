@@ -1,12 +1,17 @@
 ---
-import '@fontsource/ibm-plex-sans/latin-400.css';
-import '@fontsource/ibm-plex-sans/latin-500.css';
-import '@fontsource/ibm-plex-sans/latin-600.css';
-import '@fontsource/ibm-plex-sans/latin-400-italic.css';
-import '@fontsource/ibm-plex-serif/latin-400.css';
-import '@fontsource/ibm-plex-mono/latin-400.css';
-import '@fontsource/ibm-plex-mono/latin-500.css';
 import '../styles/global.css';
+import '../styles/studies.css';
+import '../styles/motion.css';
+import '../styles/paper.css';
+import '../styles/living-motion.css';
+import '../styles/notebooks.css';
+import '../styles/ink.css';
+import '../styles/studio.css';
+import '../styles/structure.css';
+import '@fontsource-variable/manrope';
+import '@fontsource/instrument-serif/latin-400.css';
+import '@fontsource/instrument-serif/latin-400-italic.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { profile } from '../data/profile';
@@ -26,21 +31,20 @@ const person = {
   address: { '@type': 'PostalAddress', addressLocality: 'Khulna', addressCountry: 'BD' },
   alumniOf: { '@type': 'CollegeOrUniversity', name: profile.university },
   sameAs: [profile.github, profile.linkedin],
-  knowsAbout: ['Embedded systems', 'PCB design', 'ESP32 firmware', 'Data acquisition', 'Full-stack web development', 'Bangla language technology', 'Compilers'],
+  knowsAbout: ['Embedded systems', 'PCB design', 'ESP32 firmware', 'Data acquisition', 'Full-stack web development', 'Local language models', 'Bangla language technology', 'Compilers'],
 };
 const graph = [person, ...schema];
 ---
 <!doctype html>
-<html lang="en" data-motion="on">
+<html lang="en" id="top" data-motion="off">
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#f4f0e7"/>
     <title>{title}</title>
     <meta name="description" content={description}/>
     <meta name="author" content={profile.fullName}/>
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'}/>
-    <meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)"/>
-    <meta name="theme-color" content="#0f1113" media="(prefers-color-scheme: dark)"/>
     {!is404 && <link rel="canonical" href={canonical}/>}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
     <link rel="sitemap" href="/sitemap-index.xml"/>
@@ -55,12 +59,11 @@ const graph = [person, ...schema];
     <meta name="twitter:card" content="summary_large_image"/>
     <script type="application/ld+json" set:html={JSON.stringify(graph.length === 1 ? graph[0] : { '@context': 'https://schema.org', '@graph': graph.map(({ ['@context']: _, ...rest }) => rest) }).replace(/</g, '\\u003c')}/>
     <script is:inline>
-      document.documentElement.classList.add('js');
       try {
-        var t = localStorage.getItem('mr-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
-        var m = localStorage.getItem('mr-motion');
-        if (m === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.dataset.motion = 'off';
-      } catch (e) {}
+        const saved = localStorage.getItem('mr-motion');
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.documentElement.dataset.motion = saved === 'off' || reduced ? 'off' : 'on';
+      } catch { document.documentElement.dataset.motion = 'off'; }
     </script>
   </head>
   <body class={bodyClass}>

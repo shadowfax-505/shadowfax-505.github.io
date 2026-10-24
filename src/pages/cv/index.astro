@@ -11,8 +11,8 @@ const site = Astro.site?.host;
 <Layout title={`CV — ${profile.fullName}`} description={`Curriculum vitae of ${profile.fullName}: ${profile.degree} at ${profile.university}; embedded systems, full-stack web and research software.`}>
 <main id="main" tabindex="-1" class="cv">
   <div class="cv-actions no-print">
-    <button class="button" type="button" data-print hidden><Icon name="print" size={16}/> Print or save as PDF</button>
-    <a class="button button-ghost" href={`mailto:${profile.email}`}><Icon name="mail" size={16}/> Email me</a>
+    <button class="button button-lime" type="button" data-print hidden><Icon name="print" size={16}/> Print or save as PDF</button>
+    <a class="button" href={`mailto:${profile.email}`}><Icon name="mail" size={16}/> Email me</a>
   </div>
   <header class="cv-head">
     <div><h1>{profile.fullName}</h1><p class="muted" style="margin:6px 0 0">Embedded systems and software · {profile.availability}</p></div>

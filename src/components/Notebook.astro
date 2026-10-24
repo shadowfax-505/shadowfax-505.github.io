@@ -1,0 +1,25 @@
+---
+import NotebookArt from './NotebookArt.astro';
+import ProjectVisual from './ProjectVisual.astro';
+import type { NotebookDefinition } from '../data/notebooks';
+interface Props { book: NotebookDefinition; cover?: 'civic'|'researchhub'|'zenflow'|'afo'|'gas'|'drone'; compact?: boolean; detail?: boolean }
+const { book, cover, compact = false, detail = false } = Astro.props;
+const hasCover = Astro.slots.has('default');
+---
+<div class:list={['notebook', `notebook-${book.accent}`, {'notebook-compact':compact,'notebook-with-cover':cover||hasCover}]} data-notebook data-notebook-id={book.id} data-page="0" data-page-count={book.pages.length} data-notebook-title={book.title}>
+  <div class="notebook-stage" data-notebook-surface role="group" tabindex="0" aria-label={`${book.title} notebook. Click to turn the page; arrow keys browse.`}>
+    {book.pages.map((page,i)=><div class="notebook-page" data-notebook-page={i} data-page-id={page.id} data-print-kind={i===0&&cover?cover:i===0&&hasCover?'hero':'vector'} hidden={i!==0}>
+      {i===0&&cover?<ProjectVisual kind={cover} detail={detail}/>:i===0&&hasCover?<slot/>:<NotebookArt page={page} number={i+1} accent={book.accent} bookId={book.id} detail={detail}/>}
+    </div>)}
+    <span class="notebook-corner" aria-hidden="true">↗</span>
+  </div>
+  <div class="notebook-controls" data-notebook-controls hidden role="group" aria-label={`${book.title} page controls`}>
+    <button type="button" data-notebook-prev aria-label={`Previous page in ${book.title}`} disabled>←</button>
+    <div><span class="notebook-current" data-notebook-current>{book.pages[0].title}</span><span class="notebook-count eyebrow" data-notebook-count>01 / {String(book.pages.length).padStart(2,'0')}</span></div>
+    <button type="button" data-notebook-play hidden aria-label={`Replay ${book.title} illustration`} title="Replay this study">↻</button>
+    <button type="button" data-notebook-next aria-label={`Next page in ${book.title}`}>→</button>
+  </div>
+  <div class="notebook-reading">{book.pages.map((page,i)=><div data-notebook-note={i} hidden={i!==0}><p>{page.text}</p><small>{page.caption}</small></div>)}</div>
+  <details class="notebook-index"><summary>All notebook notes <span aria-hidden="true">↗</span></summary><ol>{book.pages.map(page=><li><strong>{page.title}</strong><p>{page.text}</p><small>{page.caption}</small></li>)}</ol></details>
+  <span class="visually-hidden" data-notebook-announcement aria-live="polite" aria-atomic="true"></span>
+</div>

@@ -1,0 +1,33 @@
+@layer components {
+  .ink-host{position:relative;isolation:isolate}
+  .ink-mark{position:absolute;pointer-events:none;overflow:visible;color:var(--red);transform:translate(var(--ink-x,0px),var(--ink-y,0px));z-index:-1}
+  .ink-mark path{stroke:currentColor;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:.78;transition:stroke-dashoffset 1.15s cubic-bezier(.22,1,.36,1),opacity .3s;transition-delay:calc(var(--pen-order)*90ms)}
+  .ink-mark path+path{stroke-width:.6;opacity:.48}
+  .ink-entered>.ink-mark path{stroke-dashoffset:0}
+  .ink-host:hover>.ink-mark path,.ink-host:focus-within>.ink-mark path{opacity:1}
+  .ink-mark[data-ink-variant='rule']{width:100%;height:15px;bottom:1px;left:0}
+  .desktop-nav .ink-host::after{display:none}
+  .desktop-nav .ink-mark path{opacity:.25}
+  .desktop-nav a[aria-current]>.ink-mark path,.desktop-nav a:hover>.ink-mark path,.desktop-nav a:focus-visible>.ink-mark path{opacity:1}
+  .ink-mark[data-ink-variant='compass']{width:62px;height:62px;right:-74px;top:5px;color:var(--cobalt);opacity:.8}
+  .ink-mark[data-ink-variant='flourish']{width:min(76%,300px);height:38px;bottom:-31px;left:0}
+  .ink-mark[data-ink-variant='arrow']{width:100%;max-width:180px;height:27px;bottom:-12px;left:0}
+  .text-link.ink-host{border-color:transparent}
+  .about-section .ink-mark{color:var(--paper)}
+  .contact-main .ink-mark{width:min(70%,400px);max-width:none;bottom:-38px}
+  .research-brief h2>.ink-mark{right:0;top:-54px;width:44px;height:44px}
+  .page-intro h1>.ink-mark{right:5%;top:-45px}
+  .not-found h1>.ink-mark{bottom:-38px}
+  .ink-visible>.ink-mark[data-ink-variant='compass'] path:last-child{animation:pen-pressure 8s ease-in-out infinite}
+  @keyframes pen-pressure{0%,100%{opacity:.35}50%{opacity:.8}}
+}
+@layer responsive {
+  @media(max-width:800px){.ink-host>.ink-mark[data-ink-variant='compass']{width:44px;height:44px;right:0;top:-45px}.contact-main .ink-mark{bottom:-28px}}
+  @media(max-width:600px){.section-heading h2>.ink-mark,.recognition-intro h2>.ink-mark,.about-grid h2>.ink-mark{right:0;top:-38px;width:37px;height:37px}.ink-mark[data-ink-variant='flourish']{height:28px;bottom:-23px}.contact-main .ink-mark{bottom:-25px}}
+}
+@layer preferences {
+  [data-motion='off'] .ink-mark,[data-ink-hidden='true'] .ink-mark{transform:none!important}
+  [data-motion='off'] .ink-mark path,[data-ink-hidden='true'] .ink-mark path{animation:none!important;stroke-dashoffset:0!important;transition:none!important}
+  @media(prefers-reduced-motion:reduce){.ink-mark{transform:none!important}.ink-mark path{animation:none!important;stroke-dashoffset:0;transition:none}}
+  @media print{.ink-mark{display:none}}
+}

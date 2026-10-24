@@ -1,0 +1,47 @@
+@layer components {
+  .living-evidence{fill:#f16a50;offset-anchor:center;animation:ink-travel 6s linear infinite}
+  .living-evidence:nth-child(2){animation-delay:-2s}.living-evidence:nth-child(3){animation-delay:-4s}
+  .living-focus-orbit{position:absolute;inset:8%;border:1px dashed #626c4c60;border-radius:50%;pointer-events:none;animation:focus-orbit 24s linear infinite}
+  .living-focus-orbit::before,.living-focus-orbit::after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:var(--ink);top:14%;left:14%}
+  .living-focus-orbit::after{top:86%;left:85%;width:4px;height:4px;background:var(--red)}
+  .living-sweep{stroke:currentColor;stroke-width:1;opacity:.65;animation:signal-sweep 8s linear infinite}
+  .living-sweep-glow{opacity:.1;fill:currentColor;animation:signal-sweep 8s linear infinite}
+  .living-gas-packet{offset-anchor:center;fill:var(--red);animation:ink-travel 4s linear infinite}
+  .living-gas-packet.packet-1{animation-delay:-1s}.living-gas-packet.packet-2{animation-delay:-2s}.living-gas-packet.packet-3{animation-delay:-3s}
+  .living-alarm{animation:alarm-ring 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .living-fan{animation:focus-orbit 2.5s linear infinite;transform-box:fill-box;transform-origin:center}
+  .living-web{animation:web-beacon 4s ease-in-out infinite}
+  .living-flight-path{stroke:#c9c4a0;stroke-width:1;stroke-dasharray:3 7;fill:none;opacity:.36;animation:flight-dash 16s linear infinite}
+  .living-flight-dot{fill:#ed956e;offset-anchor:center;animation:ink-travel 16s linear infinite}
+  .living-target-orbit{transform-box:fill-box;transform-origin:center;animation:target-drift 27s ease-in-out infinite alternate;pointer-events:none}
+  .living-target-orbit circle{fill:var(--red)}
+  .living-project-note{position:absolute;right:6%;top:13%;color:var(--red);font:italic 15px var(--serif);rotate:-7deg;pointer-events:none;animation:margin-breathe 8s ease-in-out infinite alternate;z-index:4}
+  .living-project-note::after{content:'';display:block;height:1px;width:75%;background:currentColor;transform-origin:left;animation:ink-underline 8s ease-in-out infinite}
+  .section-heading{position:relative}
+  .section-heading::after{content:'';position:absolute;left:0;bottom:-14px;width:calc(35px + var(--paper-reveal,0)*80px);height:3px;background:linear-gradient(90deg,var(--red),#b83a2620);transform:skewY(calc(-4deg + var(--paper-reveal,0)*4deg));transform-origin:left;opacity:.5}
+  .hero .paper-margin{animation:margin-breathe 10s ease-in-out infinite alternate}
+  .research-atlas:not([data-paper-ready='true']) .atlas-scan{opacity:.7;animation:paper-scan 6s linear infinite}
+  .research-atlas:not([data-paper-ready='true']) .atlas-tactile-plane::before{animation:paper-float 9s ease-in-out infinite alternate}
+  .research-atlas:not([data-paper-ready='true']) .atlas-tactile-plane::after{animation:paper-float 11s ease-in-out infinite alternate-reverse}
+  .visual-researchhub .paper-back{animation:paper-float 9s ease-in-out infinite alternate}
+  .visual-researchhub .artifact-annotation{animation:margin-breathe 8s ease-in-out infinite alternate}
+  @keyframes ink-travel{from{offset-distance:0%}to{offset-distance:100%}}
+  @keyframes focus-orbit{to{rotate:360deg}}
+  @keyframes signal-sweep{from{translate:0 0}to{translate:740px 0}}
+  @keyframes flight-dash{to{stroke-dashoffset:-160}}
+  @keyframes target-drift{from{rotate:-6deg;scale:.98}to{rotate:9deg;scale:1.025}}
+  @keyframes margin-breathe{from{translate:0 0;rotate:-6deg}to{translate:3px -6px;rotate:-9deg}}
+  @keyframes ink-underline{0%,15%{scale:.2 1;opacity:.25}40%,75%{scale:1 1;opacity:.7}100%{scale:.2 1;opacity:.25}}
+  @keyframes paper-float{from{translate:0 0;rotate:-2deg}to{translate:4px -4px;rotate:2deg}}
+  @keyframes alarm-ring{0%,40%,70%,100%{scale:1;opacity:.25}50%,60%{scale:1.4;opacity:.85}}
+  @keyframes web-beacon{0%,45%,80%,100%{opacity:.2}60%,70%{opacity:1}}
+  @keyframes paper-scan{from{translate:0 0}to{translate:0 110px}}
+}
+@layer preferences {
+  [data-living-visible='false'] *,[data-living-visible='false'] *::before,[data-living-visible='false'] *::after,
+  [data-living-awake='false'] *,[data-living-awake='false'] *::before,[data-living-awake='false'] *::after{animation-play-state:paused!important}
+  [data-motion='off'] :is(.living-evidence,.living-focus-orbit,.living-sweep,.living-sweep-glow,.living-gas-packet,.living-alarm,.living-fan,.living-web,.living-flight-path,.living-flight-dot,.living-target-orbit,.living-project-note,.paper-margin,.atlas-scan,.paper-back,.artifact-annotation){animation:none!important}
+  [data-motion='off'] :is(.living-evidence,.living-gas-packet,.living-flight-dot,.living-sweep,.living-sweep-glow){opacity:0}
+  [data-motion='off'] .section-heading::after{width:70px;transform:none}
+  @media(prefers-reduced-motion:reduce){.living-evidence,.living-gas-packet,.living-flight-dot,.living-sweep,.living-sweep-glow{display:none!important}}
+}
