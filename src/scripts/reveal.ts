@@ -2,7 +2,7 @@
 // nothing is measured at startup, and an element only changes when it comes into view.
 type Reveal = { start: () => void; stop: () => void };
 
-const kinds = ['rv', 'rv-in', 'rv-rise', 'rv-em', 'rv-wipe', 'rv-clip', 'rv-clip-small', 'rv-rule', 'rv-pop'];
+const kinds = ['rv', 'rv-in', 'rv-rise', 'rv-em', 'rv-wipe', 'rv-clip', 'rv-clip-small', 'rv-rule', 'rv-pop', 'rv-draw'];
 
 export function createReveals(): Reveal {
   const marked: HTMLElement[] = [];
@@ -79,6 +79,7 @@ export function createReveals(): Reveal {
       document.querySelectorAll('.work-card .project-visual').forEach(element => mark(element, 'rv-clip-small'));
       document.querySelectorAll('.next-project h2, .contact-main h2').forEach(element => mark(element, 'rv-rise'));
       document.querySelectorAll('.contact-orb').forEach(element => mark(element, 'rv-pop'));
+      document.querySelectorAll('.future-map').forEach(element => mark(element, 'rv-draw'));
       document.querySelectorAll<HTMLElement>('.proof-item strong, .case-metric strong, .service-number, .method-number').forEach(element => {
         const text = element.textContent || '';
         if (!/\d/.test(text) || !io) return;

@@ -244,6 +244,36 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   .proof-item:hover{background-color:color-mix(in srgb,var(--accent) 4%,transparent)}
   .header-cta{transition:background-color .25s ease}
 }
+/* Hero entrance in CSS: it starts with the first paint and needs no script on the main thread. */
+@keyframes hero-rise{from{opacity:0;transform:translateY(28px) rotate(-.6deg)}to{opacity:1;transform:none}}
+@keyframes fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes draw-line{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes star-turn{from{transform:rotate(0)}to{transform:rotate(70deg)}}
+@layer components {
+  [data-motion='on'] .hero-line{animation:hero-rise 1.1s cubic-bezier(.22,1,.36,1) both}
+  [data-motion='on'] .hero-last{animation-delay:.1s}
+  [data-motion='on'] .hero-kicker>span{animation:fade-up .7s ease-out both}
+  [data-motion='on'] .hero-kicker>span:nth-child(2){animation-delay:.08s}
+  [data-motion='on'] .board-studio{animation:fade-up 1.2s cubic-bezier(.22,1,.36,1) .15s both}
+  [data-motion='on'] :is(.hero-role,.hero-description,.hero-note,.hero-actions>*,.hero-availability){animation:fade-up .9s cubic-bezier(.22,1,.36,1) both}
+  [data-motion='on'] .hero-role{animation-delay:.3s}
+  [data-motion='on'] .hero-description{animation-delay:.37s}
+  [data-motion='on'] .hero-note{animation-delay:.44s}
+  [data-motion='on'] .hero-actions>:first-child{animation-delay:.51s}
+  [data-motion='on'] .hero-actions>:nth-child(2){animation-delay:.58s}
+  [data-motion='on'] .hero-availability{animation-delay:.65s}
+  [data-motion='on'] .form-signal path{stroke-dasharray:1;animation:draw-line 2.1s cubic-bezier(.45,0,.55,1) both;animation-delay:calc(var(--n,0)*13ms)}
+  /* The target contours draw in when the map scrolls into view. */
+  [data-motion='on'] .rv-draw .future-contours path{stroke-dasharray:1;transition:stroke-dashoffset 1.65s cubic-bezier(.45,0,.55,1) calc(var(--n,0)*25ms)}
+  [data-motion='on'] .rv-draw:not(.rv-in) .future-contours path{stroke-dashoffset:1}
+  /* The recognition star turns as the section scrolls past, where the browser supports scroll-driven animation. */
+  @supports (animation-timeline: view()) {
+    [data-motion='on'] .recognition-star{animation:star-turn linear both}
+    /* Separate rule: a minifier would otherwise fold the timeline into the shorthand, which cannot hold one. */
+    html[data-motion='on'] .recognition-star{animation-timeline:view();animation-range:entry 0% exit 100%}
+  }
+}
+
 /* Notebook drawings off screen are not rendered. The frames take their size from aspect-ratio,
    so skipping their contents never moves anything (anchors land where they should). */
 @layer components {

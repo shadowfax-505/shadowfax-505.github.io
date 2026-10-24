@@ -4,14 +4,12 @@ import { createLivingMotion } from './living-motion';
 import { createInkMotion } from './ink';
 import { createNotebookMotion } from './notebook-motion';
 import { createReveals } from './reveal';
-type AnimationContext = { revert: () => void; add: (fn: () => void) => void };
 type HeroController = { setEnabled: (enabled: boolean) => void; setForm: (index: number) => void; dispose: () => void };
 
 const root = document.documentElement;
 const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const toggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
 let enabled = root.dataset.motion === 'on';
-let context: AnimationContext | undefined;
 let hero: HeroController | undefined;
 let animationGeneration = 0;
 let toastTimer: ReturnType<typeof setTimeout>;
@@ -48,46 +46,17 @@ function updateToggle() {
 
 async function animate() {
   const generation = ++animationGeneration;
-  context?.revert();
   reveals.stop();
-  context = undefined;
   hero?.setEnabled(enabled && artwork?.dataset.heroMode === 'field');
   paper.setEnabled(enabled);
   syncDrones();
   if (!enabled) return;
-  try {
-    const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
-    if (!enabled || generation !== animationGeneration) return;
-    gsap.registerPlugin(ScrollTrigger);
-    context = gsap.context(() => {
-      if (artwork) {
-        gsap.from('.hero-line', { y: 28, rotation: -.6, duration: 1.1, stagger: .1, ease: 'power3.out' });
-        gsap.from('.hero-kicker > span', { y: 10, opacity: 0, duration: .7, stagger: .08, ease: 'power2.out' });
-        gsap.from('.board-studio', { y: 26, opacity: 0, duration: 1.2, delay: .15, ease: 'power3.out', clearProps: 'transform,opacity' });
-        gsap.from('.hero-role, .hero-description, .hero-note, .hero-actions > *, .hero-availability', { y: 18, opacity: 0, duration: .9, delay: .3, stagger: .07, ease: 'power3.out', clearProps: 'transform,opacity' });
-        gsap.from('.form-signal path', { strokeDasharray: 1, strokeDashoffset: 1, duration: 2.1, stagger: .013, ease: 'power2.inOut' });
-      }
-    });
-    // Everything below the fold is built in idle time, so the first paint and input never wait for it.
-    const idle = (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
-    await new Promise<void>(resolve => idle(() => resolve(), { timeout: 1800 }));
-    if (!enabled || generation !== animationGeneration || !context) return;
-    reveals.start();
-    context.add(() => {
-      if (document.querySelector('.atlas-sheets')) {
-        gsap.fromTo('.atlas-sheets', { y: 14, rotation: -1 }, { y: -14, rotation: 1.2, ease: 'none', scrollTrigger: { trigger: '.research-spread', start: 'top bottom', end: 'bottom top', scrub: .8 } });
-      }
-      if (document.querySelector('.recognition-star')) {
-        gsap.fromTo('.recognition-star', { rotation: 0 }, { rotation: 70, ease: 'none', scrollTrigger: { trigger: '.recognition-section', start: 'top bottom', end: 'bottom top', scrub: .7 } });
-      }
-      if (document.querySelector('.future-map')) {
-        gsap.from('.future-contours path', { strokeDasharray: 1, strokeDashoffset: 1, duration: 1.65, stagger: .025, ease: 'power2.inOut', scrollTrigger: { trigger: '.future-map', start: 'top 85%', once: true } });
-      }
-    });
-  } catch {
-    // All content stays visible if an optional animation module cannot load.
-    context?.revert();
-  }
+  // Scroll reveals start in idle time, so the first paint and input never wait for them.
+  // The hero entrance, the contour drawing and the star are CSS (src/styles/structure.css).
+  const idle = (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
+  await new Promise<void>(resolve => idle(() => resolve(), { timeout: 1800 }));
+  if (!enabled || generation !== animationGeneration) return;
+  reveals.start();
 }
 
 async function prepareHero() {
@@ -255,5 +224,5 @@ window.addEventListener('scroll', () => {
 updateProgress();
 void animate();
 window.addEventListener('pagehide', event => {
-  if (!event.persisted) { context?.revert(); hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); reveals.stop(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); targetAnimations.forEach(animation=>animation.cancel()); }
+  if (!event.persisted) { hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); reveals.stop(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); targetAnimations.forEach(animation=>animation.cancel()); }
 });

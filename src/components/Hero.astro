@@ -33,7 +33,7 @@ const stars = Array.from({ length: 45 }, (_, i) => {
       <Notebook book={heroNotebook}>
       <svg class="hero-fallback" viewBox="0 0 540 430" fill="none" aria-hidden="true">
         <g class="plot-marks" stroke="currentColor" stroke-width=".7" opacity=".25"><path d="M30 215h28m424 0h28M270 18v28m0 338v28"/><circle cx="270" cy="215" r="190" stroke-dasharray="1 9"/></g>
-        <g class="hero-form form-signal" stroke="currentColor" stroke-width="1.1">{folds.map((d,i)=><path d={d} pathLength="1" class={i>14&&i<20 ? 'ribbon-accent' : undefined}/>)}</g>
+        <g class="hero-form form-signal" stroke="currentColor" stroke-width="1.1">{folds.map((d,i)=><path d={d} pathLength="1" style={`--n:${i}`} class={i>14&&i<20 ? 'ribbon-accent' : undefined}/>)}</g>
         <g class="hero-form form-circuit" stroke="currentColor" stroke-width="1.1">{circuits.map((d,i)=><path d={d} class={i>7&&i<11?'ribbon-accent':undefined}/>)}<g class="ribbon-accent">{[100,172,244,316].map(y=><circle cx="88" cy={y} r="4"/>)}</g></g>
         <g class="hero-form form-stars" stroke="currentColor">{stars.map((s,i)=><><circle cx={s.x} cy={s.y} r={i%7===0?3.5:1.7} fill="currentColor"/>{i>0&&i%3===0&&<path d={`M${stars[i-1].x} ${stars[i-1].y}L${s.x} ${s.y}`} opacity=".4"/>}</>)}<ellipse class="ribbon-accent" cx="270" cy="215" rx="185" ry="94" transform="rotate(-28 270 215)" stroke-width="1.2"/></g>
         <g class="hero-interaction-marks" stroke="var(--accent)" aria-hidden="true"><g data-art-cursor opacity="0"><circle r="13" stroke-width=".8"/><path d="M-20 0h7m26 0h7M0-20v7m0 26v7" stroke-width=".7"/></g>{[0,1,2].map(i=><circle data-art-ripple={i} opacity="0" stroke-width="1"/>)}</g>
