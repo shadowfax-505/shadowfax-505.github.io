@@ -22,7 +22,19 @@ export function createPaperExperience(){
     if(page) b.root.dataset.currentPageId=page.dataset.pageId;
     if(announce){const live=b.root.querySelector('[data-notebook-announcement]');if(live)live.textContent=`${title}. Page ${b.index+1} of ${b.count}.`;persist();}
   }
-  function selectPage(id:string,index:number){const b=books.get(id);if(!b)return;const target=Math.max(0,Math.min(b.count-1,index));b.desired=target;if(controller?.hasSurface(id)&&enabled)controller.selectPage(id,target,target>=b.index?1:-1);else sync(id,target);}
+  // Without the WebGL sheet (no WebGL, or still loading) the outgoing leaf still turns, as a CSS 3D flip.
+  function flip(b:Notebook,from:number,to:number){
+    if(!enabled||from===to||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    const page=b.root.querySelector<HTMLElement>(`[data-notebook-page="${from}"]`);if(!page)return;
+    b.surface.querySelectorAll('.leaf-flip').forEach(el=>el.remove());
+    const leaf=page.cloneNode(true) as HTMLElement;
+    leaf.removeAttribute('data-notebook-page');leaf.hidden=false;leaf.setAttribute('aria-hidden','true');
+    leaf.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    leaf.classList.add('leaf-flip',to>from?'leaf-forward':'leaf-back');
+    b.surface.append(leaf);
+    const done=()=>leaf.remove();leaf.addEventListener('animationend',done,{once:true});setTimeout(done,1400);
+  }
+  function selectPage(id:string,index:number){const b=books.get(id);if(!b)return;const target=Math.max(0,Math.min(b.count-1,index));b.desired=target;if(controller?.hasSurface(id)&&enabled)controller.selectPage(id,target,target>=b.index?1:-1);else{const from=b.index;sync(id,target);flip(b,from,b.index);}}
   const excluded=(target:EventTarget|null)=>target instanceof Element&&Boolean(target.closest('a,button,input,textarea,select,summary,[data-drone-study]'));
   document.querySelectorAll<HTMLElement>('[data-notebook]').forEach(element=>{
     const surface=element.querySelector<HTMLElement>('[data-notebook-surface]');if(!surface)return;
@@ -91,7 +103,7 @@ export function createPaperExperience(){
   window.addEventListener('pageshow',event=>{if(event.persisted){for(const b of books.values()){sync(b.id,Number(saved()[b.id])||0,false);b.desired=b.index;}schedule();}},{signal});
   return {
     selectPage,
-    selectStudy(value:number){const buttons=document.querySelectorAll<HTMLButtonElement>('[data-notebook-topic]');buttons[Math.max(0,Math.min(2,value))]?.click();},
+    selectStudy(value:number){const buttons=document.querySelectorAll<HTMLButtonElement>('[data-notebook-topic]');buttons[Math.max(0,Math.min(buttons.length-1,value))]?.click();},
     setEnabled(value:boolean){enabled=value;controller?.setEnabled(value);if(value)schedule();},
     setHeroMode(mode:'paper'|'field'){const hero=document.querySelector<HTMLElement>('[data-hero-art]');if(hero)hero.dataset.heroMode=mode;controller?.setHeroMode(mode);},
     dispose(){disposed=true;generation++;clearTimeout(timer);controller?.dispose();aborter.abort();}

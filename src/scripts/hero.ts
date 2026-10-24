@@ -108,12 +108,12 @@ export function createHero(container: HTMLElement, initialEnabled: boolean) {
     return new THREE.Vector3(Math.cos(t) * 2.95, Math.sin(t) * 1.68, Math.sin(t) * .6);
   });
   const ringGeometry = new THREE.BufferGeometry().setFromPoints(ringPoints);
-  const ringMaterial = new THREE.LineBasicMaterial({ color: 0xb83a26, transparent: true, opacity: .23 });
+  const ringMaterial = new THREE.LineBasicMaterial({ color: 0x176b4d, transparent: true, opacity: .23 });
   const ring = new THREE.LineLoop(ringGeometry, ringMaterial);
   ring.rotation.z = -.55;
   group.add(ring);
 
-  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x2349a0, transparent: true, opacity: .12 });
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xa35a22, transparent: true, opacity: .12 });
   const orbit = new THREE.LineLoop(ringGeometry, orbitMaterial);
   orbit.rotation.set(.72, -.35, .28);
   group.add(orbit);

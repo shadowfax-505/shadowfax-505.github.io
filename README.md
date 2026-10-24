@@ -5,7 +5,7 @@ Live at **https://shadowfax-505.github.io**.
 
 Built with [Astro](https://astro.build), plain CSS, GSAP and three.js. No trackers, no cookies, no backend.
 
-The design is the "field journal" I first built with Codex: ivory paper, Manrope and Instrument Serif, ink marks, page-turning notebooks rendered in WebGL, and a small robot studio in the hero. Every effect has a static fallback, and the Motion switch in the header (or the system's reduced-motion setting) turns all of it off.
+The design is the "field journal" I first built with Codex: Manrope and Instrument Serif, ink marks, page-turning notebooks rendered in WebGL (with a CSS page flip where WebGL is missing), pages that turn when you move between them, and my real AFO recorder board in 3D in the hero. The palette comes from the hardware: drafting paper, blue-black ink, solder-mask green and copper. Every effect has a static fallback, and the Motion switch in the header (or the system's reduced-motion setting) turns all of it off.
 
 ## Run it
 
@@ -29,10 +29,12 @@ Pushing to `main` deploys through GitHub Actions (`.github/workflows/deploy.yml`
 | A project case study | `src/content/work/<slug>.md` |
 | A research entry | `src/content/research/<slug>.md` |
 | Status words (Shipped, Simulated, Hardware pending …) | `src/data/status.ts` |
-| Colours, type, spacing | `src/styles/global.css` (tokens at the top); newer sections in `src/styles/structure.css` |
+| Type, spacing | `src/styles/global.css`; newer sections in `src/styles/structure.css` |
 | Notebook pages on the cards, hero, research and about sections | `src/data/notebooks.ts` (text) and `src/components/NotebookArt.astro` (drawings) |
 | Case-study overline, short line, idea and steps | `src/data/editorial.ts` |
-| Home page sections | `src/pages/index.astro` |
+| Home page sections, the proof strip and "How I work" | `src/pages/index.astro` |
+| Targets ("The next chapter") | `src/data/milestones.ts` |
+| Colours | the tokens at the top of `src/styles/global.css` (`--paper`, `--ink`, `--accent` green, `--signal` copper) |
 | CV layout (print with Ctrl/Cmd+P) | `src/pages/cv/index.astro` |
 
 ### Add a project

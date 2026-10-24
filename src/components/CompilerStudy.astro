@@ -1,0 +1,35 @@
+---
+import { analyzeExpression, layoutTree, formatExpression } from '../lib/expression';
+import Icon from './Icon.astro';
+const example = '2 + 3 * 4';
+const initial = analyzeExpression(example);
+const drawing = layoutTree(initial.tree,440);
+---
+<section class="compiler-study section" id="compiler-study" aria-labelledby="compiler-study-title" data-compiler-study data-step="2">
+  <div class="container">
+    <div class="section-heading"><div><p class="section-label eyebrow">A SMALL INTERACTIVE SPECIMEN</p><h2 id="compiler-study-title">A thought,<br/><em>in four forms.</em></h2></div><p class="section-description">What happens between a line of code<br/>and the structure a machine can work with?</p></div>
+    <div class="compiler-workbench">
+      <div class="compiler-controls">
+        <p class="compiler-study-kicker eyebrow">LANGUAGE STUDY / 001</p>
+        <p class="compiler-study-lead">The same idea.<br/><em>A different way of seeing it.</em></p>
+        <div class="compiler-steps" data-compiler-controls hidden role="group" aria-label="Expression views">{['Source','Tokens','Tree','Fold'].map((step,i)=><button type="button" data-compiler-step={i} aria-pressed={i===2?'true':'false'} aria-controls="compiler-stage"><span>0{i+1}</span>{step}<Icon size={15}/></button>)}</div>
+        <form class="compiler-form" data-compiler-form hidden><label for="study-expression">Try an expression</label><div class="compiler-input-row"><input id="study-expression" name="expression" value={example} maxlength="80" autocomplete="off" spellcheck="false" aria-describedby="compiler-input-help compiler-error"/><button type="submit" aria-label="Inspect expression"><Icon name="right" size={20}/></button></div><p id="compiler-input-help">Numbers, variables, + − * / and parentheses.</p><div class="compiler-examples"><span>OR TRY</span><button type="button" data-expression="x * (2 + 3)">x * (2 + 3)</button><button type="button" data-expression="(8 - 2) / 3">(8 - 2) / 3</button></div></form>
+        <p class="compiler-error" id="compiler-error" data-compiler-error role="status" aria-live="polite"></p>
+        <p class="visually-hidden" data-compiler-live role="status" aria-live="polite"></p>
+      </div>
+      <figure class="compiler-stage" id="compiler-stage" aria-label="Arithmetic expression visualizer">
+        <div class="compiler-stage-top eyebrow"><span data-compiler-view-label>03 / SYNTAX TREE</span><span>ARITHMETIC ONLY</span></div>
+        <div class="compiler-canvas" data-compiler-canvas>
+          <div class="compiler-view compiler-source" data-compiler-view="0" hidden><code data-compiler-source>{example}</code><span class="eyebrow">A LINE OF SOURCE TEXT</span></div>
+          <div class="compiler-view compiler-tokens" data-compiler-view="1" hidden tabindex="0" aria-label="Tokens; scroll to inspect longer expressions"><div class="token-strip" data-compiler-tokens>{initial.tokens.map(t=><span class={`token token-${t.kind}`}><b>{t.text}</b><small>{t.kind==='symbol'?'operator':t.kind}</small></span>)}</div></div>
+          <div class="compiler-view compiler-tree" data-compiler-view="2"><svg viewBox="0 0 440 370" role="img" aria-label={`Syntax tree for ${example}`} data-compiler-tree><g class="tree-edges">{drawing.edges.map(e=><path d={`M${e.x1} ${e.y1}L${e.x2} ${e.y2}`} pathLength="1"/>)}</g><g>{drawing.nodes.map(n=><g class:list={['tree-node',{'tree-operator':n.operator}]}><circle cx={n.x} cy={n.y} r="23"/><text x={n.x} y={n.y+7} text-anchor="middle">{n.label}</text></g>)}</g></svg></div>
+          <div class="compiler-view compiler-fold" data-compiler-view="3" hidden><div class="fold-before"><span class="eyebrow">CONSTANT SUBEXPRESSIONS</span><code data-fold-before>{formatExpression(initial.tree)}</code></div><span class="fold-arrow" aria-hidden="true">↓</span><code class="fold-result" data-fold-after>{formatExpression(initial.folded)}</code><p class="eyebrow" data-fold-count>{initial.before} nodes → {initial.after} node</p></div>
+        </div>
+        <div class="compiler-stage-bottom"><span class="compiler-view-description" data-compiler-description>Precedence becomes structure. Multiplication sits below addition.</span><span class="eyebrow" data-compiler-count>{initial.before} NODES</span></div>
+        <figcaption>Interactive arithmetic illustration built for this site; only finite constant subexpressions are folded. My course compiler, BanglaCode, goes further: an LALR parser, semantic analysis, three-address IR and a C back end.</figcaption>
+      </figure>
+    </div>
+    <div class="compiler-study-footer"><p>Small enough to understand.<br/><em>Interesting enough to keep going.</em></p><a href="/research/#compiler-constrained-decoding" class="text-link">Where compilers meet language models<Icon size={16}/></a></div>
+  </div>
+</section>
+<script>import '../scripts/compiler-study';</script>

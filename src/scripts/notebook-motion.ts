@@ -15,12 +15,12 @@ export function createNotebookMotion() {
     const traces:Trace[]=[];
     svg.querySelectorAll<SVGPathElement>('[data-nm-trace]').forEach((path,i)=>{
       const length=path.getTotalLength();if(!length)return;
-      const color=path.getAttribute('stroke')||svg.dataset.motionColor||'#b83a26';
+      const color=path.getAttribute('stroke')||svg.dataset.motionColor||'#176b4d';
       const ink=element('path',{d:path.getAttribute('d')||'',stroke:color,'stroke-width':'2.4',fill:'none','stroke-linecap':'round','stroke-dasharray':`${Math.min(36,length*.2)} ${length}`,opacity:'.72'});
       const dot=element('circle',{r:i? '2.8':'4',fill:color,opacity:'.8'});
       path.parentElement!.append(ink,dot);traces.push({path,ink,dot,length});
     });
-    const reaction=element('circle',{cx:'642',cy:'354',r:'12',stroke:svg.dataset.motionColor||'#b83a26','stroke-width':'1.1',fill:'none',opacity:'0'});svg.append(reaction);
+    const reaction=element('circle',{cx:'642',cy:'354',r:'12',stroke:svg.dataset.motionColor||'#176b4d','stroke-width':'1.1',fill:'none',opacity:'0'});svg.append(reaction);
     const score:Score={book,stage,page,svg,items,traces,time:0,visible:false,x:0,y:0,tx:0,ty:0,vx:0,vy:0,energy:0,reaction,px:642,py:354,age:10};scores.push(score);
   });
   const books=[...document.querySelectorAll<HTMLElement>('[data-notebook]')];

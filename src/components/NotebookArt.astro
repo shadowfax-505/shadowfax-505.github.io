@@ -1,17 +1,17 @@
 ---
 import type { NotebookPage } from '../data/notebooks';
-interface Props { page: NotebookPage; number: number; accent: 'red'|'cobalt'; bookId: string; detail?: boolean }
+interface Props { page: NotebookPage; number: number; accent: 'accent'|'signal'; bookId: string; detail?: boolean }
 const { page, number, accent, bookId, detail=false } = Astro.props;
 const palettes:Record<string,[string,string,string]> = {
-  'work-civiclens':['#242b27','#f4f0e7','#f16a50'],
-  'work-researchhub':['#dce3da','#24392d','#b83a26'],
-  'work-zenflow':['#e8a957','#24251f','#823622'],
-  'work-afo-recorder':['#24499b','#f4f0e7','#e5ba6a'],
-  'work-gas-safety':['#e3e3d3','#2349a0','#b83a26'],
-  'work-drone':['#171f20','#f4f0e7','#99baff'],
-  'background':['#f4f0e7','#24251f','#b83a26'],
+  'work-civiclens':['#242b27','#eef0e8','#f16a50'],
+  'work-researchhub':['#dce3da','#24392d','#176b4d'],
+  'work-zenflow':['#e8a957','#1b2126','#823622'],
+  'work-afo-recorder':['#24499b','#eef0e8','#e5ba6a'],
+  'work-gas-safety':['#e3e3d3','#a35a22','#176b4d'],
+  'work-drone':['#171f20','#eef0e8','#99baff'],
+  'background':['#eef0e8','#1b2126','#176b4d'],
 };
-const [stock,ink,color]=palettes[bookId]||['#f4f0e7','#24251f',accent==='cobalt'?'#2349a0':'#b83a26'];
+const [stock,ink,color]=palettes[bookId]||['#eef0e8','#1b2126',accent==='signal'?'#a35a22':'#176b4d'];
 const titles:Record<string,[string,string]> = {
   'evidence-workflow':['Follow the','evidence.'], 'governed-access':['Trust has','boundaries.'],
   'release-record':['A system.','A record.'], 'library-workflow':['Keep the','good ideas.'],
