@@ -34,10 +34,10 @@ const schema = [{
   '@context': 'https://schema.org', '@type': 'CreativeWork', name: data.title, description: data.summary,
   url: new URL(Astro.url.pathname, Astro.site).href, dateCreated: /^\d{4}$/.test(data.year) ? data.year : undefined,
   creator: { '@id': new URL('/#person', Astro.site).href }, keywords: data.stack.join(', '),
-  image: data.cover ? new URL(data.cover.src, Astro.site).href : undefined,
+  image: new URL(`/og/${project.id}.png`, Astro.site).href,
 }];
 ---
-<Layout title={`${data.title} — ${profile.name}`} description={data.summary} schema={schema}><main id="main" tabindex="-1" class={`case-page case-${data.visual}`}>
+<Layout title={`${data.title} — ${profile.name}`} description={data.summary} schema={schema} image={`/og/${project.id}.png`}><main id="main" tabindex="-1" class={`case-page case-${data.visual}`}>
   <section class="case-intro container"><div class="case-topline eyebrow"><a href="/#work">← ALL WORK</a><span>FIELD NOTES / 0{data.order}</span><span>{data.year}</span></div><div class="case-title-block"><p class="case-overline eyebrow">{story.label}</p><h1 data-reveal>{data.title}<span class="accent">.</span></h1><div class="case-heading-bottom"><p class="case-short"><em>{story.short}</em></p><p class="case-subtitle">{data.summary}</p></div><div class="case-statuses">{data.statuses.map(s => <span class="status-pill">{statuses[s]}</span>)}</div></div><div class="case-notebook"><Notebook book={projectNotebooks[data.visual]} cover={data.visual} detail/></div><div class="case-facts"><div><span class="eyebrow">DISCIPLINE</span><p>{data.category}</p></div><div><span class="eyebrow">MY CONTRIBUTION</span><p>{data.role}</p></div><div><span class="eyebrow">STACK / FOCUS</span><p>{data.stack.join(' · ')}</p></div></div></section>
 
   {data.metrics.length > 0 && <section class="case-metrics container" aria-label="Key numbers">{data.metrics.map(m => <div class="case-metric"><strong>{m.value}</strong><span>{m.label}</span>{m.status && <span class="status-pill">{statuses[m.status]}</span>}</div>)}</section>}

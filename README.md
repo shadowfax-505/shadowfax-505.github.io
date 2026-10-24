@@ -44,6 +44,7 @@ Pushing to `main` deploys through GitHub Actions (`.github/workflows/deploy.yml`
    Add its notebook in `src/data/notebooks.ts` and its framing in `src/data/editorial.ts`.
 3. Put screenshots in `public/assets/` as `.webp` (plus a `-640.webp` copy for the home card) and reference them in `cover` / `figures`.
 4. `npm run build && npm test`.
+5. Make its share card: with `npx astro preview` running, `node scripts/create-cards.mjs` writes `public/og/<slug>.png` from the project's notebook cover. Rebuild.
 
 ### Publish a note
 

@@ -12,6 +12,9 @@ import '@fontsource-variable/manrope';
 import '@fontsource/instrument-serif/latin-400.css';
 import '@fontsource/instrument-serif/latin-400-italic.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
+import manropeUrl from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import serifUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
+import serifItalicUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { profile } from '../data/profile';
@@ -47,6 +50,10 @@ const graph = [person, ...schema];
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'}/>
     {!is404 && <link rel="canonical" href={canonical}/>}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    {/* The three faces every page opens with; loading them early stops headings re-wrapping when they arrive. */}
+    <link rel="preload" href={manropeUrl} as="font" type="font/woff2" crossorigin/>
+    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin/>
+    <link rel="preload" href={serifItalicUrl} as="font" type="font/woff2" crossorigin/>
     <link rel="sitemap" href="/sitemap-index.xml"/>
     <link rel="alternate" type="application/rss+xml" title={`${profile.name} — notes`} href="/rss.xml"/>
     <meta property="og:type" content="website"/>

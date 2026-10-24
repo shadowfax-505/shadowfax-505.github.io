@@ -34,7 +34,11 @@ for (const file of pages) {
   ok(/<meta name="description" content="[^"]{50,}"/.test(html), rel, 'description missing or short');
   if (rel === '404.html') ok(!/rel="canonical"/.test(html), rel, '404 page must not declare a canonical URL');
   else ok(/<link rel="canonical" href="https:\/\/shadowfax-505\.github\.io\//.test(html), rel, 'canonical not on shadowfax-505.github.io');
-  ok(/<meta property="og:image" content="https:\/\/shadowfax-505\.github\.io\/og\.png"/.test(html), rel, 'og:image missing');
+  // Case studies have their own share card (scripts/create-cards.mjs); every other page uses the site card.
+  const card = rel.match(/^work\/([^/]+)\/index\.html$/)?.[1];
+  const ogPath = card ? `og/${card}.png` : 'og.png';
+  ok(html.includes(`<meta property="og:image" content="https://shadowfax-505.github.io/${ogPath}"`), rel, `og:image should be /${ogPath}`);
+  ok(existsSync(join(dist, ogPath)), rel, `missing share card ${ogPath}`);
   ok((html.match(/<h1[\s>]/g) || []).length === 1, rel, 'needs exactly one h1');
   ok(/<html lang="en"/.test(html), rel, 'lang missing');
   for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {

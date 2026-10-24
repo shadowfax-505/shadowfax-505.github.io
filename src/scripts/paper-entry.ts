@@ -40,7 +40,7 @@ export function createPaperExperience(){
     const surface=element.querySelector<HTMLElement>('[data-notebook-surface]');if(!surface)return;
     const id=element.dataset.notebookId!,count=Number(element.dataset.pageCount),index=Math.max(0,Math.min(count-1,Number(saved()[id])||0));
     const b:Notebook={root:element,surface,id,count,index,desired:index};books.set(id,b);sync(id,index,false);
-    element.querySelector('[data-notebook-controls]')?.removeAttribute('hidden');
+    {const controls=element.querySelector<HTMLElement>('[data-notebook-controls]');controls?.removeAttribute('data-pending');controls?.removeAttribute('inert');}
     element.querySelector('[data-notebook-prev]')?.addEventListener('click',()=>selectPage(id,b.desired-1),{signal});
     element.querySelector('[data-notebook-next]')?.addEventListener('click',()=>selectPage(id,b.desired+1),{signal});
     let pointer:{id:number;x:number;y:number;width:number;dx:number;direction:number;dragging:boolean;touch:boolean;corner:number}|undefined,ignoreUntil=0;

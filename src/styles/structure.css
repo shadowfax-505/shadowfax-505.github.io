@@ -211,6 +211,15 @@
     .qm dd{font-size:20px}
     .cv-contact{text-align:left}
   }
+  /* On phones the pitch and its buttons come straight after the board; the line-art notebook follows. */
+  @media(max-width:700px){
+    .hero{display:flex;flex-direction:column}
+    .hero-composition{display:contents}
+    .hero-kicker{order:0}.hero h1{order:1}.board-studio{order:2}
+    .hero-bottom{order:3;margin-top:26px}
+    .hero-art{order:4;margin-top:44px}
+    .paper-margin{order:5}
+  }
   @media(max-width:600px){
     .proof-grid{grid-template-columns:1fr}
     .proof-item,.proof-item+.proof-item,.proof-item:nth-child(3){padding:20px 0;border-left:0;border-top:1px solid var(--rule)}
@@ -278,6 +287,8 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
    so skipping their contents never moves anything (anchors land where they should). */
 @layer components {
   .notebook-stage{content-visibility:auto}
+  /* The page controls keep their space before the script arrives, so nothing shifts when they appear. */
+  .notebook-controls[data-pending]{visibility:hidden}
 }
 
 /* Scroll reveals (src/scripts/reveal.ts): an element gets .rv and a kind only when it starts off screen,
@@ -309,9 +320,19 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   @page{margin:14mm}
   html,body{background:#fff!important;color:#000}
   .site-header,.site-footer,.skip-link,.cv-actions,.toast,.no-print,.reading-progress{display:none!important}
-  .cv{padding:0;max-width:none}
-  .cv-head h1{font-size:26pt}
-  .cv section{break-inside:auto;padding:10pt 0 2pt}
-  .cv-item{break-inside:avoid;margin-bottom:8pt}
+  .cv{padding:0;max-width:none;font-size:9.5pt}
+  .cv-head{flex-wrap:nowrap;align-items:flex-start;padding-bottom:10pt}
+  .cv-head h1{font-size:22pt}
+  .cv-head .muted{font-size:9pt}
+  .cv-contact{font-size:7.5pt;line-height:1.55;text-align:right}
+  .cv-contact a{min-height:0;line-height:1.55}
+  .cv section{break-inside:auto;padding:8pt 0 1pt}
+  .cv h2{font-size:7.5pt;margin-bottom:6pt;break-after:avoid}
+  .cv-item{break-inside:avoid;margin-bottom:6pt;gap:0 12pt}
+  .cv-item h3{font-size:10pt}
+  .cv-item .when{font-size:7.5pt}
+  .cv-item p{font-size:8.6pt;line-height:1.45;margin-top:1pt}
+  .cv-item .stack{font-size:7.2pt;line-height:1.4}
+  .cv-skills{font-size:8.6pt;gap:2pt}
   a{color:inherit;text-decoration:none}
 }

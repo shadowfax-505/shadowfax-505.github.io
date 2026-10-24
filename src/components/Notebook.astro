@@ -13,7 +13,7 @@ const hasCover = Astro.slots.has('default');
     </div>)}
     <span class="notebook-corner" aria-hidden="true">↗</span>
   </div>
-  <div class="notebook-controls" data-notebook-controls hidden role="group" aria-label={`${book.title} page controls`}>
+  <div class="notebook-controls" data-notebook-controls data-pending inert role="group" aria-label={`${book.title} page controls`}>
     <button type="button" data-notebook-prev aria-label={`Previous page in ${book.title}`} disabled>←</button>
     <div><span class="notebook-current" data-notebook-current>{book.pages[0].title}</span><span class="notebook-count eyebrow" data-notebook-count>01 / {String(book.pages.length).padStart(2,'0')}</span></div>
     <button type="button" data-notebook-play hidden aria-label={`Replay ${book.title} illustration`} title="Replay this study">↻</button>

@@ -20,6 +20,7 @@ Nothing on the site is a stock image or a generated picture of a project. Each a
 | `public/assets/afo/board-poster-*.webp` | Rendered from the hero scene in headless Chrome | Shown before the 3D view loads and when motion is off. |
 | `public/assets/studio-room.cubeuv.bin.gz` | Baked RoomEnvironment reflections from the first version of the site | Lighting for the board. |
 | Notebook drawings (`src/components/NotebookArt.astro`, `ProjectVisual.astro`) | Code | Explanatory illustrations. Signal traces on them are drawn, not recorded, and are labelled illustrative. |
+| `public/og/<slug>.png` | `scripts/create-cards.mjs` | Share card per case study: title, short line and the project's notebook cover captured from the built page. |
 | `public/og.png` | HTML card rendered in headless Chrome with the site fonts and the board poster | Social card. |
 
 To regenerate the AFO logic data after a new Wokwi run:
