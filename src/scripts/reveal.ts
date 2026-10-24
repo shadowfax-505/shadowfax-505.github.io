@@ -74,7 +74,8 @@ export function createReveals(): Reveal {
         [...group.children].forEach((child, i) => mark(child, 'rv-rise', i));
         if (!group.matches('.process-strip, .note-grid')) mark(group, 'rv-rule');
       });
-      document.querySelectorAll('.case-supplement img, .evidence-frame, .phones').forEach(element => mark(element, 'rv-wipe'));
+      // A clipped frame cannot be clicked while it wipes in, so frames with controls rise instead.
+      document.querySelectorAll('.case-supplement img, .evidence-frame, .phones').forEach(element => mark(element, element.querySelector('.chart-interactive, [data-resolver]') ? 'rv-rise' : 'rv-wipe'));
       document.querySelectorAll('.case-notebook .notebook-stage').forEach(element => mark(element, 'rv-clip'));
       document.querySelectorAll('.work-card .project-visual').forEach(element => mark(element, 'rv-clip-small'));
       document.querySelectorAll('.next-project h2, .contact-main h2').forEach(element => mark(element, 'rv-rise'));

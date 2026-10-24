@@ -38,8 +38,10 @@ function path(name: string, y0: number) {
 const ticks = (() => { const span = to - from; const step = span > 100 ? 50 : span > 20 ? 5 : span > 4 ? 1 : .5; const out: number[] = []; for (let t = Math.ceil(from / step) * step; t <= to + 1e-9; t += step) out.push(+t.toFixed(3)); return out; })();
 const conv = series.CONVST.edges.filter(([t, v]) => v === 1 && t >= from && t <= to).map(([t]) => t);
 const cs = series.CS.edges.filter(([t]) => t >= from && t <= to);
+// The same edges, for the cursor readout in the browser.
+const readout = { from, to, left, plotW, top, rowH, rows: rows.map(name => ({ label: names[name], initial: series[name].initial, edges: series[name].edges })) };
 ---
-<svg class="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={title}>
+<svg class="chart chart-interactive" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title}. Move the pointer or use the arrow keys to read the time and each signal; click or press Enter to set a marker and measure from it.`} tabindex="0" data-logic>
   <title>{title}</title>
   {ticks.map(t => <g><path class="grid" d={`M${x(t)} ${top - 6}V${top + rows.length * rowH}`}/><text x={x(t)} y={top + rows.length * rowH + 16} text-anchor="middle">{t} µs</text></g>)}
   {annotate && conv.length > 1 && <g>
@@ -52,4 +54,55 @@ const cs = series.CS.edges.filter(([t]) => t >= from && t <= to);
     <path class={name === 'SCLK' || name === 'DOUTA' ? 'trace-accent' : 'trace'} d={p.line} stroke-width="1.4"/>
   </g>; })}
   {annotate && cs.length >= 2 && rows.includes('CS') && <text class="lbl" x={x(cs[1][0]) + 6} y={top + rows.indexOf('CS') * rowH + 22}>{(cs[1][0] - cs[0][0]).toFixed(0)} µs read</text>}
+  <g class="chart-marker" data-marker visibility="hidden"><path d={`M0 ${top - 6}V${top + rows.length * rowH}`}/><text y={top + rows.length * rowH + 28} text-anchor="middle">A</text></g>
+  <g class="chart-cursor" data-cursor visibility="hidden">
+    <path d={`M0 ${top - 6}V${top + rows.length * rowH}`}/>
+    {rows.map((_, r) => <text class="chart-level" data-level={r} x="6" y={top + r * rowH + 14}></text>)}
+    <rect class="chart-readout-bg" data-readout-bg x="0" y={top + rows.length * rowH + 4} height="17" rx="2"/>
+    <text class="chart-readout" data-readout y={top + rows.length * rowH + 16}></text>
+  </g>
+  <rect class="chart-hit" x={left} y={top - 6} width={plotW} height={rows.length * rowH + 6}/>
+  <script type="application/json" data-series set:html={JSON.stringify(readout)}/>
 </svg>
+<script>
+  // Logic-analyzer cursor: time and every signal's level under the pointer, plus a marker for Δt.
+  type Row = { label: string; initial: number; edges: [number, number][] };
+  type Readout = { from: number; to: number; left: number; plotW: number; top: number; rowH: number; rows: Row[] };
+  const levelAt = (row: Row, t: number) => { let level = row.initial; for (const [time, value] of row.edges) { if (time > t) break; level = value; } return level; };
+  document.querySelectorAll<SVGSVGElement>('svg[data-logic]').forEach(svg => {
+    const data: Readout = JSON.parse(svg.querySelector('[data-series]')!.textContent!);
+    const cursor = svg.querySelector<SVGGElement>('[data-cursor]')!, marker = svg.querySelector<SVGGElement>('[data-marker]')!;
+    const readout = svg.querySelector<SVGTextElement>('[data-readout]')!, bg = svg.querySelector<SVGRectElement>('[data-readout-bg]')!;
+    const levels = [...svg.querySelectorAll<SVGTextElement>('[data-level]')];
+    const xOf = (t: number) => data.left + (t - data.from) / (data.to - data.from) * data.plotW;
+    let t = (data.from + data.to) / 2, mark: number | undefined;
+    function show() {
+      const x = xOf(t);
+      cursor.setAttribute('transform', `translate(${x.toFixed(1)} 0)`);
+      cursor.setAttribute('visibility', 'visible');
+      levels.forEach((el, i) => { el.textContent = levelAt(data.rows[i], t) ? '1' : '0'; });
+      const span = data.to - data.from, digits = span < 10 ? 2 : 1;
+      readout.textContent = mark === undefined ? `${t.toFixed(digits)} µs` : `${t.toFixed(digits)} µs · Δ ${(t - mark >= 0 ? '+' : '')}${(t - mark).toFixed(digits)} µs`;
+      const width = readout.getComputedTextLength() + 12;
+      const anchor = Math.min(Math.max(x, data.left + width / 2), data.left + data.plotW - width / 2) - x;
+      readout.setAttribute('x', String(anchor)); readout.setAttribute('text-anchor', 'middle');
+      bg.setAttribute('x', String(anchor - width / 2)); bg.setAttribute('width', String(width));
+    }
+    function fromPointer(event: PointerEvent) {
+      const p = new DOMPoint(event.clientX, event.clientY).matrixTransform(svg.getScreenCTM()!.inverse());
+      t = Math.min(data.to, Math.max(data.from, data.from + (p.x - data.left) / data.plotW * (data.to - data.from)));
+    }
+    function setMark() { mark = t; marker.setAttribute('transform', `translate(${xOf(t).toFixed(1)} 0)`); marker.setAttribute('visibility', 'visible'); show(); }
+    svg.addEventListener('pointermove', event => { fromPointer(event); show(); });
+    svg.addEventListener('pointerleave', () => { if (document.activeElement !== svg) cursor.setAttribute('visibility', 'hidden'); });
+    svg.addEventListener('click', event => { fromPointer(event as PointerEvent); setMark(); });
+    svg.addEventListener('focus', show);
+    svg.addEventListener('blur', () => cursor.setAttribute('visibility', 'hidden'));
+    svg.addEventListener('keydown', event => {
+      const step = (data.to - data.from) / (event.shiftKey ? 20 : 200);
+      if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); t = Math.min(data.to, Math.max(data.from, t + (event.key === 'ArrowRight' ? step : -step))); show(); }
+      else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setMark(); }
+      else if (event.key === 'Escape') { mark = undefined; marker.setAttribute('visibility', 'hidden'); show(); }
+    });
+  });
+</script>

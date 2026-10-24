@@ -1,0 +1,42 @@
+---
+// ZenFlow's DateResolver, ported to the browser (src/lib/date-resolver.ts), so a visitor can try the part that fixed the dates.
+const examples = ['tomorrow', 'next Monday', 'in three days', 'this weekend', '15 November', '3rd of March', 'Jan 5, 2027', 'someday'];
+---
+<div class="resolver" data-resolver>
+  <p class="eyebrow resolver-kicker">Try it: ZenFlow’s date resolver, running in your browser</p>
+  <label class="resolver-label" for="resolver-input">A day phrase, the way you would say it</label>
+  <input class="resolver-input" id="resolver-input" value="next Monday" maxlength="40" autocomplete="off" spellcheck="false" aria-describedby="resolver-help"/>
+  <div class="resolver-examples" role="group" aria-label="Examples">{examples.map(e => <button type="button" data-example={e}>{e}</button>)}</div>
+  <output class="resolver-out" for="resolver-input" aria-live="polite">
+    <span class="eyebrow" data-resolver-today>Needs JavaScript</span>
+    <strong data-resolver-result>—</strong>
+    <span class="resolver-note" data-resolver-note></span>
+  </output>
+  <p class="resolver-help" id="resolver-help">In the app the model only copies these words out of your sentence; this code decides the date.</p>
+</div>
+<script>
+  import { resolve, type Day } from '../../lib/date-resolver';
+  const root = document.querySelector<HTMLElement>('[data-resolver]');
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>('input')!;
+    const todayEl = root.querySelector<HTMLElement>('[data-resolver-today]')!, result = root.querySelector<HTMLElement>('[data-resolver-result]')!, note = root.querySelector<HTMLElement>('[data-resolver-note]')!;
+    const now = new Date();
+    const today: Day = { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
+    const format = (d: Day) => new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(d.year, d.month - 1, d.day)));
+    const days = (d: Day) => Math.round((Date.UTC(d.year, d.month - 1, d.day) - Date.UTC(today.year, today.month - 1, today.day)) / 86_400_000);
+    todayEl.textContent = `Today is ${format(today)}`;
+    function update() {
+      const phrase = input.value.trim();
+      const d = resolve(phrase, today);
+      root!.dataset.state = !phrase ? 'empty' : d ? 'ok' : 'unknown';
+      if (!phrase) { result.textContent = format(today); note.textContent = 'No day words: the reminder goes on today.'; return; }
+      if (!d) { result.textContent = 'Not understood'; note.textContent = 'ZenFlow then falls back to the model’s own date, or today if it gave none, and counts it as a repair.'; return; }
+      const n = days(d);
+      result.textContent = format(d);
+      note.textContent = n === 0 ? 'Today.' : n === 1 ? 'Tomorrow.' : n > 0 ? `In ${n} days.` : `${-n} days ago.`;
+    }
+    input.addEventListener('input', update);
+    root.querySelectorAll<HTMLButtonElement>('[data-example]').forEach(button => button.addEventListener('click', () => { input.value = button.dataset.example!; update(); input.focus(); }));
+    update();
+  }
+</script>

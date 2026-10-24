@@ -9,6 +9,7 @@ import SignalChain from '../../components/afo/SignalChain.astro';
 import LogicTrace from '../../components/afo/LogicTrace.astro';
 import ResponsePlot from '../../components/afo/ResponsePlot.astro';
 import Pipeline from '../../components/zenflow/Pipeline.astro';
+import ResolverDemo from '../../components/zenflow/ResolverDemo.astro';
 import { projectNotebooks } from '../../data/notebooks';
 import { editorial } from '../../data/editorial';
 import { statuses } from '../../data/status';
@@ -49,11 +50,12 @@ const schema = [{
   {(project.id === 'afo-recorder' || project.id === 'zenflow' || figures.length > 0) && <section class="case-evidence container" aria-label="Figures">
     {project.id === 'afo-recorder' && <>
       <figure class="case-supplement"><div class="evidence-frame"><SignalChain/></div><figcaption>Fig. 0{n++} / Signal chain of the two-channel AD7606 build.</figcaption></figure>
-      <figure class="case-supplement"><div class="evidence-frame"><LogicTrace title="Logic-analyzer capture from the Wokwi simulation of firmware 1.12: three ADC conversion cycles"/></div><figcaption>Fig. 0{n++} / Three conversion cycles from the Wokwi logic analyzer, running the production firmware (simulated). Each CONVST starts a conversion; after BUSY falls, the ESP32 reads the results in one 16 µs, 128-clock SPI transfer. The IMU’s own SPI transaction shows on the last row.</figcaption></figure>
+      <figure class="case-supplement"><div class="evidence-frame"><LogicTrace title="Logic-analyzer capture from the Wokwi simulation of firmware 1.12: three ADC conversion cycles"/></div><figcaption>Fig. 0{n++} / Three conversion cycles from the Wokwi logic analyzer, running the production firmware (simulated). Each CONVST starts a conversion; after BUSY falls, the ESP32 reads the results in one 16 µs, 128-clock SPI transfer. The IMU’s own SPI transaction shows on the last row. Point at the trace (or focus it and use the arrow keys) to read every signal; click to set a marker and measure from it.</figcaption></figure>
       <figure class="case-supplement"><div class="evidence-frame"><LogicTrace from={22} to={24.2} rows={['CS', 'SCLK', 'DOUTA']} annotate={false} title="Zoom: the first two microseconds of one ADC read, SCLK at 8 MHz"/></div><figcaption>Fig. 0{n++} / The start of one read: 8 MHz SCLK with data on DOUT A.</figcaption></figure>
-      <figure class="case-supplement"><div class="evidence-frame"><ResponsePlot/></div><figcaption>Fig. 0{n++} / Anti-alias filter response from ngspice (simulated). Flat through the main EMG band, −3 dB at about 660 Hz, and falling steeply before the 4 kHz Nyquist limit.</figcaption></figure>
+      <figure class="case-supplement"><div class="evidence-frame"><ResponsePlot/></div><figcaption>Fig. 0{n++} / Anti-alias filter response from ngspice (simulated). Flat through the main EMG band, −3 dB at about 660 Hz, and falling steeply before the 4 kHz Nyquist limit. Point at the curve to read the gain at any frequency.</figcaption></figure>
     </>}
-    {project.id === 'zenflow' && <figure class="case-supplement"><div class="evidence-frame scroll-x"><Pipeline/></div><figcaption>Fig. 0{n++} / Every AI feature goes through the same pipeline. Without a running model, ZenFlow goes straight to its rule-based answer.</figcaption></figure>}
+    {project.id === 'zenflow' && <figure class="case-supplement"><div class="evidence-frame scroll-x" tabindex="0" role="region" aria-label="AI pipeline diagram (scrolls sideways on small screens)"><Pipeline/></div><figcaption>Fig. 0{n++} / Every AI feature goes through the same pipeline. Without a running model, ZenFlow goes straight to its rule-based answer.</figcaption></figure>}
+    {project.id === 'zenflow' && <figure class="case-supplement"><div class="evidence-frame"><ResolverDemo/></div><figcaption>Fig. 0{n++} / The date resolver from the desktop app, ported line for line to the browser and checked against the app’s own unit tests. It is what took exact quick-capture dates from 20% to 80%.</figcaption></figure>}
     {wide.length > 0 && <div class="figure-pair">{wide.map(f => <figure class="case-supplement"><img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/>{f.caption && <figcaption>Fig. 0{n++} / {f.caption}</figcaption>}</figure>)}</div>}
     {tall.length > 0 && <figure class="case-supplement phone-row"><div class="phones">{tall.map(f => <img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/>)}</div>{tall[0].caption && <figcaption>Fig. 0{n++} / {tall[0].caption}</figcaption>}</figure>}
   </section>}

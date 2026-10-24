@@ -118,7 +118,9 @@
   .case-supplement .phones img{border-radius:14px;border:0}
   .scroll-x{overflow-x:auto}
   .scroll-x>svg{min-width:680px}
-  .prose table{display:block;overflow-x:auto;border-collapse:collapse;font-size:13px;margin:24px 0 30px}
+  .table-scroll{overflow-x:auto;margin:24px 0 30px}
+  .table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .prose table{border-collapse:collapse;font-size:13px}
   .prose th,.prose td{text-align:left;padding:10px 20px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
   .prose th{font:400 9px/1.4 var(--mono);letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
   .prose td{font-variant-numeric:tabular-nums}
@@ -126,6 +128,21 @@
   .prose td:last-child{min-width:15em}
   .prose code{font:12px var(--mono);background:var(--sunken);padding:1px 5px}
   .prose em{font-family:inherit;font-style:italic;letter-spacing:inherit}
+
+  /* ZenFlow date-resolver demo */
+  .resolver{display:grid;gap:14px;max-width:760px}
+  .resolver-kicker{color:var(--accent)}
+  .resolver-label{font-size:13px;color:var(--muted)}
+  .resolver-input{font:400 clamp(26px,3vw,38px)/1.2 var(--serif);font-style:italic;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--ink);padding:4px 0 8px;width:100%;outline:none}
+  .resolver-input:focus-visible{border-bottom-color:var(--accent);box-shadow:0 2px 0 var(--accent)}
+  .resolver-examples{display:flex;flex-wrap:wrap;gap:8px}
+  .resolver-examples button{font:11px var(--mono);border:1px solid var(--rule-strong);border-radius:999px;padding:7px 12px;min-height:32px;transition:border-color .2s,color .2s}
+  .resolver-examples button:hover{border-color:var(--accent);color:var(--accent)}
+  .resolver-out{display:grid;gap:6px;padding:20px 0 4px;border-top:1px solid var(--rule)}
+  .resolver-out strong{font:400 clamp(30px,3.6vw,48px)/1.1 var(--serif);color:var(--accent);letter-spacing:-.02em}
+  [data-resolver][data-state='unknown'] .resolver-out strong{color:var(--signal)}
+  .resolver-note{font-size:13px;color:var(--muted);max-width:56ch}
+  .resolver-help{font-size:12px;color:var(--muted)}
 
   /* Research page */
   .qm{display:grid;gap:22px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--rule)}
@@ -146,6 +163,18 @@
   .chart .box{fill:var(--paper);stroke:var(--rule-strong)}
   .chart .box-key{fill:var(--accent-soft);stroke:var(--accent)}
   .chart .wire{fill:none;stroke:var(--ink-2);stroke-width:1.2}
+  /* Interactive charts: a cursor that reads values, and a marker for differences. */
+  .chart-interactive{cursor:crosshair;touch-action:pan-y}
+  .chart-interactive:focus-visible{outline:2px solid var(--accent);outline-offset:6px}
+  .chart .chart-hit{fill:transparent}
+  .chart .chart-cursor,.chart .chart-marker{pointer-events:none}
+  .chart .chart-cursor path{stroke:var(--signal);stroke-width:1.2}
+  .chart .chart-cursor circle{fill:var(--signal);stroke:var(--paper);stroke-width:1.5}
+  .chart .chart-marker path{stroke:var(--ink);stroke-width:1;stroke-dasharray:4 3}
+  .chart .chart-marker text{fill:var(--ink);font-size:10px}
+  .chart .chart-level{fill:var(--signal);font-size:10.5px;font-weight:600}
+  .chart .chart-readout{fill:var(--paper);font-size:10.5px}
+  .chart .chart-readout-bg{fill:var(--ink)}
 
   /* Notes, CV, 404 */
   .page-head{padding-block:32px 60px}

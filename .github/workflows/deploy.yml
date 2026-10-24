@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+      - run: npm run test:unit
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist

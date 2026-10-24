@@ -197,6 +197,18 @@ document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach(button
   });
 });
 
+// Wide Markdown tables scroll sideways on phones: wrap each in a labelled region keyboard users can focus and scroll.
+document.querySelectorAll<HTMLTableElement>('.prose table').forEach(table => {
+  if (table.parentElement?.classList.contains('table-scroll')) return;
+  const region = document.createElement('div');
+  region.className = 'table-scroll';
+  region.tabIndex = 0;
+  region.setAttribute('role', 'region');
+  region.setAttribute('aria-label', `Table: ${table.querySelector('th')?.textContent?.trim() || 'data'} and more columns (scrolls sideways)`);
+  table.replaceWith(region);
+  region.append(table);
+});
+
 document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach(button => {
   button.removeAttribute('hidden');
   button.addEventListener('click', () => window.print());
