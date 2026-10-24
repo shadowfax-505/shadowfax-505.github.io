@@ -3,6 +3,7 @@ import { createPaperExperience } from './paper-entry';
 import { createLivingMotion } from './living-motion';
 import { createInkMotion } from './ink';
 import { createNotebookMotion } from './notebook-motion';
+import { createReveals } from './reveal';
 type AnimationContext = { revert: () => void; add: (fn: () => void) => void };
 type HeroController = { setEnabled: (enabled: boolean) => void; setForm: (index: number) => void; dispose: () => void };
 
@@ -13,9 +14,6 @@ let enabled = root.dataset.motion === 'on';
 let context: AnimationContext | undefined;
 let hero: HeroController | undefined;
 let animationGeneration = 0;
-// Numbers mid-count when motion is switched off go back to their exact text.
-let counted: [HTMLElement, string][] = [];
-function restoreCounted() { counted.forEach(([element, text]) => { element.textContent = text; }); counted = []; }
 let toastTimer: ReturnType<typeof setTimeout>;
 const artwork = document.querySelector<HTMLElement>('[data-hero-art]');
 const explore3d = document.querySelector<HTMLButtonElement>('[data-explore-3d]');
@@ -27,6 +25,7 @@ const paper = createPaperExperience();
 const living = createLivingMotion();
 const ink = createInkMotion();
 const notebookMotion = createNotebookMotion();
+const reveals = createReveals();
 const returnPaper = artwork?.querySelector<HTMLButtonElement>('[data-return-paper]');
 
 function notify(message: string) {
@@ -50,7 +49,7 @@ function updateToggle() {
 async function animate() {
   const generation = ++animationGeneration;
   context?.revert();
-  restoreCounted();
+  reveals.stop();
   context = undefined;
   hero?.setEnabled(enabled && artwork?.dataset.heroMode === 'field');
   paper.setEnabled(enabled);
@@ -73,47 +72,8 @@ async function animate() {
     const idle = (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
     await new Promise<void>(resolve => idle(() => resolve(), { timeout: 1800 }));
     if (!enabled || generation !== animationGeneration || !context) return;
+    reveals.start();
     context.add(() => {
-      // The italic half of each heading arrives a beat after the roman half.
-      document.querySelectorAll<HTMLElement>('h2[data-reveal] em, .method-head h3 em, .proof-title em').forEach(element => {
-        gsap.from(element, { xPercent: -4, opacity: 0, duration: 1, delay: .18, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
-      });
-      // Numbers count up to their sourced value once, then the exact text is restored.
-      document.querySelectorAll<HTMLElement>('.proof-item strong, .case-metric strong, .service-number, .method-number').forEach(element => {
-        const text = element.textContent || '';
-        if (!/\d/.test(text)) return;
-        counted.push([element, text]);
-        element.setAttribute('aria-label', text);
-        const progress = { p: 0 };
-        const paint = () => { element.textContent = text.replace(/\d+(\.\d+)?/g, m => { const v = Number(m) * progress.p; return m.includes('.') ? v.toFixed(1) : String(Math.round(v)).padStart(m.startsWith('0') ? m.length : 1, '0'); }); };
-        paint();
-        gsap.to(progress, { p: 1, duration: 1.5, ease: 'power3.out', onUpdate: paint, onComplete: () => { element.textContent = text; }, scrollTrigger: { trigger: element, start: 'top 92%', once: true } });
-      });
-      gsap.utils.toArray<HTMLElement>('.proof-grid, .method-steps, .service-grid, .case-metrics').forEach(group => {
-        gsap.from(group.children, { y: 26, opacity: 0, duration: .8, stagger: .09, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: group, start: 'top 90%', once: true } });
-      });
-      // Rules draw across under each step and metric row.
-      gsap.utils.toArray<HTMLElement>('.proof-grid, .method-steps, .case-metrics, .service-grid').forEach(group => {
-        gsap.from(group, { '--rule-scale': 0, duration: 1.2, ease: 'power2.inOut', scrollTrigger: { trigger: group, start: 'top 92%', once: true } });
-      });
-      // Real captures and charts wipe in from the bottom, like a sheet being pulled out.
-      document.querySelectorAll<HTMLElement>('.case-supplement img, .evidence-frame, .phones, .case-notebook .notebook-stage').forEach(element => {
-        gsap.from(element, { clipPath: 'inset(0 0 100% 0)', y: 24, duration: 1.15, ease: 'power3.inOut', clearProps: 'clipPath,transform', scrollTrigger: { trigger: element, start: 'top 92%', once: true } });
-      });
-      gsap.utils.toArray<HTMLElement>('.next-project h2, .contact-main h2').forEach(element => {
-        gsap.from(element, { y: 40, opacity: 0, duration: 1.1, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: element, start: 'top 92%', once: true } });
-      });
-      gsap.utils.toArray<HTMLElement>('.contact-orb').forEach(element => {
-        gsap.from(element, { scale: .4, rotation: -90, opacity: 0, duration: 1.2, ease: 'back.out(1.6)', clearProps: 'transform,opacity', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
-      });
-      document.querySelectorAll<HTMLElement>('[data-reveal]').forEach(element => {
-        // Keep notebook frames out of transformed stacking contexts; their mesh can overflow.
-        const target=element.matches('.work-card') ? element.querySelector('.work-card-body') : element;
-        gsap.from(target, { y: 30, duration: .85, clearProps:'transform', ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
-      });
-      document.querySelectorAll<HTMLElement>('.work-card .project-visual').forEach(element => {
-        gsap.from(element, { clipPath: 'inset(0 0 8% 0)', duration: 1.1, ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 95%', once: true } });
-      });
       if (document.querySelector('.atlas-sheets')) {
         gsap.fromTo('.atlas-sheets', { y: 14, rotation: -1 }, { y: -14, rotation: 1.2, ease: 'none', scrollTrigger: { trigger: '.research-spread', start: 'top bottom', end: 'bottom top', scrub: .8 } });
       }
@@ -123,9 +83,6 @@ async function animate() {
       if (document.querySelector('.future-map')) {
         gsap.from('.future-contours path', { strokeDasharray: 1, strokeDashoffset: 1, duration: 1.65, stagger: .025, ease: 'power2.inOut', scrollTrigger: { trigger: '.future-map', start: 'top 85%', once: true } });
       }
-      document.querySelectorAll<HTMLElement>('.process-strip').forEach(element => {
-        gsap.from(element.children, { y: 18, duration: .6, stagger: .1, ease: 'power2.out', scrollTrigger: { trigger: element, start: 'top 90%', once: true } });
-      });
     });
   } catch {
     // All content stays visible if an optional animation module cannot load.
@@ -298,5 +255,5 @@ window.addEventListener('scroll', () => {
 updateProgress();
 void animate();
 window.addEventListener('pagehide', event => {
-  if (!event.persisted) { context?.revert(); hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); targetAnimations.forEach(animation=>animation.cancel()); }
+  if (!event.persisted) { context?.revert(); hero?.dispose(); tactile.dispose(); paper.dispose(); living.dispose(); ink.dispose(); notebookMotion.dispose(); reveals.stop(); droneObserver.disconnect(); droneControllers.forEach(controller=>controller.dispose()); targetAnimations.forEach(animation=>animation.cancel()); }
 });

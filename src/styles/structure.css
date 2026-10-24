@@ -244,6 +244,31 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   .proof-item:hover{background-color:color-mix(in srgb,var(--accent) 4%,transparent)}
   .header-cta{transition:background-color .25s ease}
 }
+/* Notebook drawings off screen are not rendered. The frames take their size from aspect-ratio,
+   so skipping their contents never moves anything (anchors land where they should). */
+@layer components {
+  .notebook-stage{content-visibility:auto}
+}
+
+/* Scroll reveals (src/scripts/reveal.ts): an element gets .rv and a kind only when it starts off screen,
+   and .rv-in when it arrives. Transitions only; nothing is measured on scroll. */
+@layer components {
+  .rv-em{display:inline-block}
+  [data-motion='on'] .rv-rise{transition:opacity .8s cubic-bezier(.22,1,.36,1) calc(var(--i,0)*90ms),transform .9s cubic-bezier(.22,1,.36,1) calc(var(--i,0)*90ms),background-color .35s ease}
+  [data-motion='on'] .rv-rise:not(.rv-in){opacity:0;transform:translateY(28px)}
+  [data-motion='on'] .rv-em{transition:opacity 1s ease .18s,transform 1s cubic-bezier(.22,1,.36,1) .18s}
+  [data-motion='on'] .rv-em:not(.rv-in){opacity:0;transform:translateX(-4%)}
+  [data-motion='on'] .rv-wipe{transition:clip-path 1.15s cubic-bezier(.65,0,.35,1),transform 1.15s cubic-bezier(.65,0,.35,1)}
+  [data-motion='on'] .rv-wipe:not(.rv-in){clip-path:inset(0 0 100% 0);transform:translateY(24px)}
+  [data-motion='on'] .rv-clip{transition:clip-path 1.15s cubic-bezier(.65,0,.35,1)}
+  [data-motion='on'] .rv-clip:not(.rv-in){clip-path:inset(0 0 100% 0)}
+  [data-motion='on'] .rv-clip-small{transition:clip-path 1.1s cubic-bezier(.22,1,.36,1)}
+  [data-motion='on'] .rv-clip-small:not(.rv-in){clip-path:inset(0 0 8% 0)}
+  [data-motion='on'] .rv-rule::before{transition:transform 1.2s cubic-bezier(.65,0,.35,1)}
+  [data-motion='on'] .rv-rule:not(.rv-in){--rule-scale:0}
+  [data-motion='on'] .rv-pop{transition:opacity .9s ease,transform 1.2s cubic-bezier(.34,1.56,.64,1)}
+  [data-motion='on'] .rv-pop:not(.rv-in){opacity:0;transform:scale(.4) rotate(-90deg)}
+}
 @layer preferences {
   [data-motion='off'] .leaf-flip{display:none}
   [data-motion='off'] .service-number,[data-motion='off'] .method-number{transition:none;transform:none!important}
