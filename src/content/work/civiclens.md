@@ -16,6 +16,8 @@ metrics:
   - { value: 'v1.0.0', label: 'tagged release, validated on a local Docker production stack' }
 cover: { src: /assets/civiclens-public.webp, alt: 'CivicLens public transparency portal showing counts of public projects, tenders and documents and links to browse them', width: 1200, height: 593, caption: 'The public transparency portal, captured from the app running locally with seeded records.' }
 figures:
+  - { src: /assets/civiclens-integrity.webp, alt: 'CivicLens integrity dashboard titled Evidence Review and Risk Indicators, with counts of pending reviews, high-risk signals, active rules and engine runs, and the last completed engine run', width: 1200, height: 613, caption: 'The Civic Integrity Engine dashboard from the v1.0.0 release, running locally on seeded demo records. Rule-based signals for human review; no model decisions or legal conclusions.' }
+  - { src: /assets/civiclens-indicators.webp, alt: 'CivicLens review queue listing five demo intelligence indicators with severity, confidence, pending status and detection date', width: 1200, height: 629, caption: 'The review queue. Every indicator waits for a person; the records marked Demo are seeded.' }
   - { src: /assets/civiclens-analytics.webp, alt: 'CivicLens executive decision dashboard with filters for fiscal year, agency and date range', width: 1200, height: 593, caption: 'The analytics dashboard, with snapshot and CSV report jobs.' }
 links:
   - { label: Repository, url: 'https://github.com/shadowfax-505/CiviLens' }
