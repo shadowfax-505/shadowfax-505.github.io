@@ -48,6 +48,7 @@ const graph = [person, ...schema];
     {!is404 && <link rel="canonical" href={canonical}/>}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
     <link rel="sitemap" href="/sitemap-index.xml"/>
+    <link rel="alternate" type="application/rss+xml" title={`${profile.name} — notes`} href="/rss.xml"/>
     <meta property="og:type" content="website"/>
     <meta property="og:site_name" content={profile.name}/>
     <meta property="og:title" content={title}/>

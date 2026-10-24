@@ -6,8 +6,8 @@ const points = Array.from({length:6},(_,i)=>{
   return { x: 270 + Math.cos(angle) * 172, y: 265 + Math.sin(angle) * 172 };
 });
 const contours = Array.from({length:22},(_,i)=>{
-  return Array.from({length:181},(_,j)=>{
-    const a = j / 180 * Math.PI * 2;
+  return Array.from({length:121},(_,j)=>{
+    const a = j / 120 * Math.PI * 2;
     const r = 32 + i * 6.3 + Math.cos(a * 6 + i * .07) * (8 + i * 1.15);
     return `${j?'L':'M'}${(270 + Math.cos(a) * r).toFixed(1)},${(265 + Math.sin(a) * r).toFixed(1)}`;
   }).join(' ')+'Z';
