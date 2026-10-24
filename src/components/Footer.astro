@@ -1,16 +1,5 @@
 ---
 import { profile } from '../data/profile';
-const year = new Date().getFullYear();
+import Icon from './Icon.astro';
 ---
-<footer class="site-footer">
-  <div class="footer-inner container">
-    <span>© {year} {profile.fullName} · {profile.location}</span>
-    <nav aria-label="Footer">
-      <a href={`mailto:${profile.email}`}>Email</a>
-      <a href={profile.github} rel="me noopener" target="_blank">GitHub</a>
-      <a href={profile.linkedin} rel="me noopener" target="_blank">LinkedIn</a>
-      <a href="/cv/">CV</a>
-      <a href="https://github.com/shadowfax-505/shadowfax-505.github.io" rel="noopener" target="_blank">Site source</a>
-    </nav>
-  </div>
-</footer>
+<footer class="site-footer container"><a class="wordmark" href="/" aria-label="m/r — Muttakin Rahman home">m/r<span aria-hidden="true">✳</span></a><p>A field journal of software,<br/>hardware, and open questions.</p><div class="footer-links"><a href={`mailto:${profile.email}`}>Email</a><a href="/cv/">CV</a><a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub <Icon size={13}/></a><a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <Icon size={13}/></a><a href="https://github.com/shadowfax-505/shadowfax-505.github.io" target="_blank" rel="noopener noreferrer">Site source <Icon size={13}/></a><a href="#top">Back to top ↑</a></div><span class="footer-note eyebrow">© {new Date().getUTCFullYear()}<br/>{profile.name}</span></footer>

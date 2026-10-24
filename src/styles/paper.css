@@ -1,0 +1,53 @@
+@layer components {
+  .paper-layer-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:8;pointer-events:none;contain:strict}
+  .paper-layer-canvas[hidden]{display:none}
+  .hero-paper-surface{position:absolute;inset:9% 0 22%;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+  .hero-paper-surface:focus-visible{outline:2px solid var(--cobalt);outline-offset:5px;border-radius:2px}
+  .hero-art[data-paper-dragging] .hero-paper-surface{cursor:grabbing}
+  .hero-art[data-paper-ready='true'][data-hero-mode='paper'] .hero-fallback{opacity:0}
+  .hero-art[data-hero-mode='paper'] .hero-canvas{opacity:0!important}
+  .hero-art[data-hero-mode='field'] .hero-paper-surface{visibility:hidden}
+  .art-footer{z-index:9;display:block;bottom:0;left:3%;right:3%}
+  .art-actions{display:flex;justify-content:space-between;gap:8px;margin-top:3px}
+  .art-actions button{min-height:44px;min-width:44px;font:9px/1.3 var(--mono);padding:6px 2px;border-bottom:1px solid var(--rule);white-space:nowrap;color:var(--red)}
+  .art-actions button:focus-visible{outline:2px solid var(--cobalt);outline-offset:3px}
+  .art-actions button[hidden]{display:none}
+  .art-coordinate,.form-controls{z-index:9}
+  .paper-fold-hint{position:absolute;left:5%;top:15%;z-index:9;color:var(--cobalt);font:italic 14px var(--serif);rotate:-8deg;pointer-events:none}
+  .paper-fold-hint::after{content:'↘';font:24px var(--serif);display:inline-block;vertical-align:-4px;margin-left:8px}
+  [data-paper-ready='true'] .paper-fold-hint{opacity:1}
+  [data-paper-ready='unavailable'] .paper-fold-hint{display:none}
+  .form-controls{bottom:-30px}
+  .hero-art{aspect-ratio:1.08;z-index:auto}
+  .research-atlas[data-paper-ready='true'] .atlas-sheet,
+  .research-atlas[data-paper-ready='true'] .atlas-tactile-plane::before,
+  .research-atlas[data-paper-ready='true'] .atlas-tactile-plane::after{opacity:0!important}
+  .atlas-sheets{width:90%;height:auto;aspect-ratio:.79;max-width:430px;margin-inline:auto}
+  .atlas-tactile-plane{touch-action:pan-y;cursor:grab;transform:none!important;user-select:none;-webkit-user-select:none}
+  [data-paper-dragging='true'] .atlas-tactile-plane{cursor:grabbing}
+  .atlas-hint{font-size:16px}
+  .paper-project-window{position:absolute;inset:8% 0 9%;pointer-events:none;z-index:6}
+  .project-visual[data-paper-peeling='true']>:not(figcaption):not(.visual-corner):not(.paper-project-window){opacity:0!important}
+  .work-card[data-paper-peeling='true'] .project-visual{transform:none}
+  .project-visual[data-paper-ready='true']{clip-path:none!important}
+  .paper-margin{position:absolute;right:3%;top:44%;font:italic 14px var(--serif);color:var(--red);rotate:90deg;transform-origin:right center;pointer-events:none}
+  .paper-margin::after{content:'';display:inline-block;width:32px;height:1px;background:currentColor;margin-left:10px;vertical-align:middle}
+}
+@layer responsive {
+  @media(min-width:801px){.hero-last{font-size:.86em;margin-left:2%}}
+  @media(min-width:601px) and (max-width:800px){.hero-composition{min-height:540px}.hero-last{font-size:.92em;margin-left:2%}.hero-art{top:200px;width:48%}.hero-bottom{margin-top:50px}}
+  @media(max-width:800px){.hero-art{aspect-ratio:1.06}.art-actions button{font-size:8px}.art-actions{gap:6px}.paper-fold-hint{font-size:12px}}
+  @media(max-width:600px){.hero-composition{padding-bottom:375px}.hero-art{bottom:28px;width:94%;right:0;aspect-ratio:1.07}.hero-paper-surface{inset:8% 0 23%}.art-coordinate{top:2%;font-size:7px}.art-footer>.eyebrow{font-size:7px}.art-actions button{font-size:9px}.paper-fold-hint{font-size:14px;top:12%}.form-controls{bottom:-25px}.paper-margin{display:none}}
+  @media(max-width:375px){.hero-composition{padding-bottom:350px}.hero-art{width:100%}}
+}
+@layer preferences {
+  [data-motion='off'] .paper-layer-canvas{display:none}
+  [data-motion='off'] .hero-art[data-paper-ready='true'] .hero-fallback{opacity:1}
+  [data-motion='off'] .research-atlas[data-paper-ready='true'] .atlas-sheet{opacity:0!important}
+  [data-motion='off'] [data-study='0'][data-paper-ready='true'] .atlas-nagri,
+  [data-motion='off'] [data-study='1'][data-paper-ready='true'] .atlas-inventory,
+  [data-motion='off'] [data-study='2'][data-paper-ready='true'] .atlas-compiler{opacity:1!important}
+  [data-motion='off'] .paper-fold-hint{display:none}
+  @media(prefers-reduced-motion:reduce){.paper-layer-canvas,.paper-fold-hint{display:none!important}}
+  @media print{.paper-layer-canvas,.paper-margin{display:none!important}}
+}

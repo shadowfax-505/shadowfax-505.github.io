@@ -20,7 +20,8 @@ for (const e of expected) ok(existsSync(join(dist, e)), e, 'page missing');
 
 // Words that make a portfolio read as generated filler, and leftovers from the previous site.
 const banned = [/\bjourney\b/i, /\bpassion(ate)?\b/i, /\bcrafting\b/i, /\bseamless/i, /cutting-edge/i, /\bleverag/i, /\binnovative\b/i, /\bdelve/i, /\btapestry\b/i,
-  /complex ideas into working systems/i, /field journal/i, /\bimagined\b/i, /concept reconstruction/i, /\bTARGET\b/, /robotic paper studio/i];
+  // The field-journal vocabulary (field journal, imagined robot study) is the owner's own design and stays allowed.
+  /complex ideas into working systems/i, /concept reconstruction/i, /\bTARGET\b/];
 // Unpublished research must not leak results or private locations.
 const privateStrings = ['caco-inventory', 'gist.github', 'givingvole8', '0.901', '0.683', '34%→58%', '34% to 58%', '97.9%', '98.0%', '713,624', '1,255/1,255', '73,129', '62,618', '42–121', 'FreshRetailNet', 'RegSpeech'];
 

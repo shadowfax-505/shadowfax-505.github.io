@@ -1,36 +1,64 @@
 ---
-// Static fallback: an F450-class quad seen from above, drawn to the same proportions as the 3D model.
-const arms = [45, 135, 225, 315];
-const R = 150; // motor radius in px for a 450 mm diagonal
+import '../styles/drone-interactions.css';
+// Drawing of the frame class we used (F450, X-frame); the 3D model in drone.ts replaces it when motion is on.
+const motors = [[260,175],[548,190],[230,316],[520,332]];
 ---
-<div class="drone" data-drone data-visible="false" data-webgl="pending">
-  <svg class="drone-fallback" viewBox="0 0 640 400" fill="none" role="img" aria-label="Top-down drawing of an F450-class quadcopter with red front arms, four propellers and a GPS puck">
-    <g transform="translate(320 200) scale(1 .62)">
-      {arms.map((a, i) => {
-        const r = (a * Math.PI) / 180, x = Math.sin(r) * R, y = -Math.cos(r) * R, front = i === 0 || i === 3;
-        return <g>
-          <path d={`M${Math.sin(r) * 30} ${-Math.cos(r) * 30}L${x} ${y}`} stroke={front ? '#c7372b' : '#cfcac0'} stroke-width="16" stroke-linecap="round"/>
-          <circle cx={x} cy={y} r="85" stroke="currentColor" stroke-opacity=".12"/>
-          <circle cx={x} cy={y} r="14" fill="#9fa3a8" stroke="currentColor" stroke-opacity=".5"/>
-          <path d={`M${x - 82} ${y + 8}C${x - 40} ${y - 10} ${x + 40} ${y + 10} ${x + 82} ${y - 8}`} stroke={front ? '#d04a2a' : 'currentColor'} stroke-opacity=".7" stroke-width="5" stroke-linecap="round"/>
-        </g>;
-      })}
-      <rect x="-52" y="-52" width="104" height="104" rx="18" transform="rotate(45)" fill="#23272c"/>
-      <rect x="-24" y="-20" width="48" height="40" rx="4" fill="#141619" stroke="#3a3f45"/>
-      <circle cx="0" cy="48" r="26" fill="#1a1c20" stroke="#3a3f45"/>
+<div class="drone-study" data-drone-study data-visible="false" data-webgl="pending">
+  <div class="drone-horizon" aria-hidden="true"></div>
+  <svg class="drone-fallback" viewBox="0 0 800 500" fill="none" role="img" aria-label="Drawing of an F450-class quadcopter with an X-frame, exposed electronics and four propellers">
+    <g class="drone-blueprint" stroke="currentColor" opacity=".12" stroke-width=".8">
+      <ellipse cx="400" cy="287" rx="295" ry="124"/><ellipse cx="400" cy="287" rx="210" ry="87"/>
+      <path d="M85 287h630M400 133v307M160 186l480 202M160 388l480-202"/>
     </g>
+    <path class="living-flight-path" d="M140 330C150 150 560 100 690 240S280 450 140 330Z"/>
+    <circle class="living-flight-dot" style="offset-path:path('M140 330C150 150 560 100 690 240S280 450 140 330Z')" r="3"/>
+    <ellipse class="drone-shadow" cx="398" cy="375" rx="160" ry="32" fill="#050806" opacity=".45"/>
+    <g class="drone-float">
+      <g stroke="#56645b" stroke-width="16" stroke-linecap="round"><path d="m260 175 260 157M548 190 230 316"/></g>
+      <g stroke="#839082" stroke-width="1.4"><path d="m260 170 263 157M548 185 231 311"/></g>
+      <g stroke="#d87d4f" stroke-width="1.5"><path d="M270 183c80 0 77 53 122 65m145-50c-47 1-94 11-140 48M237 312c63-25 80-58 154-62m123 76c-50-5-62-66-116-73"/></g>
+      <g stroke="#7b8678" stroke-width="5" stroke-linecap="round"><path d="M339 265v55l-12 5m126-52v55l12 5"/></g>
+      <path d="m344 216 74-14 44 47-73 18-45-51Z" fill="#303f35" stroke="#93a186"/>
+      <path d="m344 216 0 25 45 48 73-19v-21l-73 18Z" fill="#1d2821" stroke="#71806b"/>
+      <path d="m367 215 38-8 36 35-38 10Z" fill="#a9aa8b" stroke="#d6d2ad"/>
+      <path d="m374 222 35-8 13 13-35 8Z" fill="#272f28"/>
+      <path d="m380 238 35-8 12 12-35 8Z" fill="#272f28"/>
+      <path d="m351 240 16 16 16-4-16-16Z" fill="#9a6f3c"/>
+      <g stroke="#b0b3a0"><path d="M413 205v-40m-5 0h10"/></g>
+      {motors.map(([x,y],i)=><g>
+        <ellipse cx={x} cy={y+13} rx="17" ry="9" fill="#151e19" stroke="#5b685a"/>
+        <path d={`M${x-17} ${y+1}v12m34-12v12`} stroke="#748373"/>
+        <ellipse cx={x} cy={y} rx="17" ry="9" fill="#90927b" stroke="#d5cfad"/>
+        <g transform={`translate(${x} ${y-5}) scale(1 .48)`}>
+          <circle r="75" stroke="#d5d0af" stroke-width="1" opacity=".13"/>
+          <g class:list={['drone-rotor',{'rotor-reverse':i%2===1}]}>
+            <path d="M0-4C20-18 62-15 77-4 54 2 20 9 0 4c-20 14-62 11-77 0C-54-10-20-9 0-4Z" fill={i<2?'#c2baa0':'#85917c'} opacity=".9"/>
+            <circle r="5" fill="#e2d7b7"/>
+          </g>
+        </g>
+      </g>)}
+      <circle cx="359" cy="247" r="2.8" fill="#db7755"/>
+    </g>
+    <g stroke="#acae92" stroke-width=".8" opacity=".5"><path d="M570 214h75v-45M259 350h-72v34"/><circle cx="570" cy="214" r="2" fill="#acae92"/><circle cx="259" cy="350" r="2" fill="#acae92"/></g>
+    <g fill="#b4b69d" font-family="monospace" font-size="9" letter-spacing="1.5"><text x="579" y="159">A STUDY IN FLIGHT</text><text x="135" y="403">BUILT TO LEARN</text></g>
   </svg>
-  <canvas aria-hidden="true"></canvas>
-  <div class="drone-surface" data-drone-orbit tabindex="0" role="group" aria-label="3D drone view. Drag or use the arrow keys to orbit; Home resets the view." hidden></div>
-  <div class="drone-toolbar" data-drone-controls hidden>
-    <div class="seg" role="group" aria-label="Flight mode">
-      <button type="button" data-drone-flight="hover" aria-pressed="true">Hover</button>
-      <button type="button" data-drone-flight="orbit" aria-pressed="false">Orbit</button>
-    </div>
-    <div class="seg" role="group" aria-label="Camera">
-      <button type="button" data-drone-view="left" aria-label="Turn view left">←</button>
-      <button type="button" data-drone-view="right" aria-label="Turn view right">→</button>
-      <button type="button" data-drone-view="reset">Reset</button>
+  <canvas class="drone-canvas" aria-hidden="true"></canvas>
+  <div class="drone-interaction-ui" data-drone-controls hidden>
+    <div class="drone-orbit-surface" data-drone-orbit tabindex="0" role="group" aria-label="Drone view. Drag to orbit, use arrow keys to turn and tilt, or Home to reset."></div>
+    <div class="drone-control-dock">
+      <p class="drone-interaction-hint"><span class="drone-drag-hint">Drag to orbit</span><span class="drone-key-hint">Arrow keys to turn &amp; tilt</span><span aria-hidden="true">↔</span></p>
+      <div class="drone-toolbar" role="group" aria-label="Drone view and flight controls">
+        <div class="drone-flight-controls" role="group" aria-label="Flight study mode">
+          <button type="button" data-drone-flight="hover" aria-pressed="true">Hover</button>
+          <button type="button" data-drone-flight="orbit" aria-pressed="false">Orbit</button>
+        </div>
+        <div class="drone-view-controls" role="group" aria-label="Camera view">
+          <button type="button" data-drone-view="left" aria-label="Rotate drone view left" title="Turn left"><span aria-hidden="true">←</span></button>
+          <button type="button" data-drone-view="right" aria-label="Rotate drone view right" title="Turn right"><span aria-hidden="true">→</span></button>
+          <button type="button" data-drone-view="reset" aria-label="Reset drone view" title="Reset view">Reset</button>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="drone-coordinate eyebrow" aria-hidden="true"><span>RECONSTRUCTION / F450-CLASS</span><span class="drone-render-label">FLIGHT STUDY</span></div>
 </div>

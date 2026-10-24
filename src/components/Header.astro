@@ -1,34 +1,14 @@
 ---
-import Icon from './Icon.astro';
 import { getCollection } from 'astro:content';
+import Icon from './Icon.astro';
 const path = Astro.url.pathname;
+// The Notes link appears once a note is published.
 const hasNotes = (await getCollection('notes', ({ data }) => !data.draft)).length > 0;
-const links = [
-  { href: '/#work', label: 'Work', active: path.startsWith('/work/') },
-  { href: '/#services', label: 'Services', active: false },
-  { href: '/research/', label: 'Research', active: path.startsWith('/research/') },
-  ...(hasNotes ? [{ href: '/notes/', label: 'Notes', active: path.startsWith('/notes/') }] : []),
-  { href: '/cv/', label: 'CV', active: path.startsWith('/cv/') },
-  { href: '/#contact', label: 'Contact', active: false },
-];
 ---
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="header-inner container">
-    <a class="wordmark" href="/"><span class="wordmark-mark" aria-hidden="true">MR</span><span>Muttakin Rahman</span></a>
-    <nav class="nav" aria-label="Main">{links.map(l => <a href={l.href} aria-current={l.active ? 'page' : undefined}>{l.label}</a>)}</nav>
-    <div class="header-actions">
-      <button class="icon-button" type="button" data-theme-toggle aria-label="Switch colour theme" title="Switch colour theme"><Icon name="moon" class="when-light"/><Icon name="sun" class="when-dark"/></button>
-      <button class="icon-button" type="button" data-motion-toggle aria-pressed="false" aria-label="Pause animation" title="Pause animation"><Icon name="pause" class="when-on"/><Icon name="play" class="when-off"/></button>
-      <details class="menu">
-        <summary class="icon-button" aria-label="Open menu"><Icon name="menu"/></summary>
-        <nav class="menu-panel" aria-label="Mobile">{links.map(l => <a href={l.href}>{l.label}</a>)}</nav>
-      </details>
-    </div>
-  </div>
-</header>
-<style is:global>
-  .when-dark, html[data-motion="off"] .when-on, html[data-motion="on"] .when-off { display: none; }
-  html[data-theme="dark"] .when-dark { display: block; } html[data-theme="dark"] .when-light { display: none; }
-  @media (prefers-color-scheme: dark) { html:not([data-theme="light"]) .when-dark { display: block; } html:not([data-theme="light"]) .when-light { display: none; } }
-</style>
+<header class="site-header"><div class="header-inner container">
+  <a class="wordmark" href="/" aria-label="m/r — Muttakin Rahman home">m/r<span aria-hidden="true">✳</span></a>
+  <span class="header-edition eyebrow">A WORK IN PROGRESS<br/>ALWAYS CURIOUS.</span>
+  <nav class="desktop-nav" aria-label="Main navigation"><a href="/#work" aria-current={path.startsWith('/work/')?'page':undefined}>Work <sup>01—06</sup></a><a href="/#services">Services</a><a href="/research/" aria-current={path.startsWith('/research/')?'page':undefined}>Research</a><a href="/#about">About</a>{hasNotes&&<a href="/notes/" aria-current={path.startsWith('/notes/')?'page':undefined}>Notes</a>}<a href="/cv/" aria-current={path.startsWith('/cv/')?'page':undefined}>CV</a><a href="/#contact">Contact <Icon size={13}/></a></nav>
+  <div class="header-actions"><button class="motion-toggle" data-motion-toggle type="button" aria-pressed="false" hidden><span class="motion-dot"></span><span data-motion-label>Motion on</span></button><details class="mobile-menu"><summary aria-label="Open navigation"><span></span><span></span></summary><nav aria-label="Mobile navigation"><a href="/#work">Selected work</a><a href="/#services">Services</a><a href="/research/">Research</a><a href="/#about">About</a>{hasNotes&&<a href="/notes/">Notes</a>}<a href="/cv/">CV</a><a href="/#contact">Contact</a></nav></details></div>
+</div><div class="reading-progress" aria-hidden="true"></div></header>

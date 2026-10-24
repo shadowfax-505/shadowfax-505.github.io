@@ -2,6 +2,8 @@
 title: ResearchHub
 summary: A research discovery and collaboration app on Oracle — paper search, citations, collections, questions and messaging — with its business rules enforced in the database and covered by integration tests.
 kind: selected
+visual: researchhub
+category: Full-stack engineering
 order: 3
 year: 2026
 role: Database, API and web front end

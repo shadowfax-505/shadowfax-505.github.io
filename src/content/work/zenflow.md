@@ -2,6 +2,8 @@
 title: ZenFlow
 summary: A focus timer and screen-time tracker for desktop and Android, with an AI assistant that runs on a local model and has to pass the app's own checks before you see its answer.
 kind: selected
+visual: zenflow
+category: Desktop, mobile & local AI
 order: 4
 year: 2026
 role: Both apps end to end — redesign, AI pipeline, evaluation

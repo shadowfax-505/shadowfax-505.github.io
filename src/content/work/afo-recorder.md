@@ -2,6 +2,8 @@
 title: AFO research recorder
 summary: A wearable recorder for lower-limb research that samples two EMG channels at 8 kHz and two motion sensors at 200 Hz, and writes every sample to microSD with enough bookkeeping to prove nothing was lost.
 kind: selected
+visual: afo
+category: Embedded systems & research
 order: 1
 year: 2026
 role: Circuit, PCB, firmware, host tools and verification

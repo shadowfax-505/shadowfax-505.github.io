@@ -2,7 +2,9 @@
 title: GPS quadcopter
 summary: A GPS-equipped quadcopter built over a year and a half by a five-student team at Jhenaidah Government Boys' High School, flown at the 40th National Science and Technology Week.
 kind: early
-order: 5
+visual: drone
+category: Early build · Hardware
+order: 6
 year: 2019
 role: Team member (team of five)
 stack: [Quadcopter, Flight controller, Brushless motors, GPS]

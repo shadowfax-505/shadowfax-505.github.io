@@ -2,13 +2,16 @@
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import Notebook from '../../components/Notebook.astro';
+import Contact from '../../components/Contact.astro';
 import Icon from '../../components/Icon.astro';
-import Chips from '../../components/Chips.astro';
-import DroneStudy from '../../components/DroneStudy.astro';
 import SignalChain from '../../components/afo/SignalChain.astro';
 import LogicTrace from '../../components/afo/LogicTrace.astro';
 import ResponsePlot from '../../components/afo/ResponsePlot.astro';
 import Pipeline from '../../components/zenflow/Pipeline.astro';
+import { projectNotebooks } from '../../data/notebooks';
+import { editorial } from '../../data/editorial';
+import { statuses } from '../../data/status';
 import { profile, press } from '../../data/profile';
 
 export async function getStaticPaths() {
@@ -18,13 +21,15 @@ interface Props { project: CollectionEntry<'work'> }
 const { project } = Astro.props;
 const { Content } = await render(project);
 const { data } = project;
+const story = editorial[data.visual];
 const all = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const next = all[(all.findIndex(p => p.id === project.id) + 1) % all.length];
-const isScreen = ['researchhub', 'civiclens', 'zenflow'].includes(project.id);
-// Phone screenshots sit in their own row so they are not blown up to half the page width.
-const wide = data.figures.filter(f => f.width >= f.height);
-const tall = data.figures.filter(f => f.width < f.height);
-const article = project.id === 'drone' ? press[0] : undefined;
+const article = press.find(p => p.work === `/work/${project.id}/`);
+// Real captures and renders: the cover first, then the rest. Phone screenshots get their own row.
+const figures = [...(data.cover ? [data.cover] : []), ...data.figures];
+const wide = figures.filter(f => f.width >= f.height);
+const tall = figures.filter(f => f.width < f.height);
+let n = 1;
 const schema = [{
   '@context': 'https://schema.org', '@type': 'CreativeWork', name: data.title, description: data.summary,
   url: new URL(Astro.url.pathname, Astro.site).href, dateCreated: /^\d{4}$/.test(data.year) ? data.year : undefined,
@@ -32,81 +37,26 @@ const schema = [{
   image: data.cover ? new URL(data.cover.src, Astro.site).href : undefined,
 }];
 ---
-<Layout title={`${data.title} — ${profile.name}`} description={data.summary} schema={schema}>
-<main id="main" tabindex="-1">
-  <header class="case-head container">
-    <a class="crumb label" href="/#work"><Icon name="left" size={14}/> All work</a>
-    <Chips items={data.statuses}/>
-    <h1>{data.title}</h1>
-    <p class="case-summary">{data.summary}</p>
-    <dl class="facts">
-      <div><dt class="label">Year</dt><dd>{data.year}</dd></div>
-      <div><dt class="label">Role</dt><dd>{data.role}</dd></div>
-      <div><dt class="label">Stack</dt><dd>{data.stack.join(', ')}</dd></div>
-      <div><dt class="label">Links</dt><dd>{data.links.length ? data.links.map(l => <a href={l.url} target="_blank" rel="noopener">{l.label} ↗</a>) : <span class="muted">None public</span>}</dd></div>
-    </dl>
-  </header>
+<Layout title={`${data.title} — ${profile.name}`} description={data.summary} schema={schema}><main id="main" tabindex="-1" class={`case-page case-${data.visual}`}>
+  <section class="case-intro container"><div class="case-topline eyebrow"><a href="/#work">← ALL WORK</a><span>FIELD NOTES / 0{data.order}</span><span>{data.year}</span></div><div class="case-title-block"><p class="case-overline eyebrow">{story.label}</p><h1 data-reveal style={`view-transition-name: title-${data.visual}`}>{data.title}<span class="accent">.</span></h1><div class="case-heading-bottom"><p class="case-short"><em>{story.short}</em></p><p class="case-subtitle">{data.summary}</p></div><div class="case-statuses">{data.statuses.map(s => <span class="status-pill">{statuses[s]}</span>)}</div></div><div class="case-notebook"><Notebook book={projectNotebooks[data.visual]} cover={data.visual} detail/></div><div class="case-facts"><div><span class="eyebrow">DISCIPLINE</span><p>{data.category}</p></div><div><span class="eyebrow">MY CONTRIBUTION</span><p>{data.role}</p></div><div><span class="eyebrow">STACK / FOCUS</span><p>{data.stack.join(' · ')}</p></div></div></section>
 
-  {data.cover && <figure class:list={['case-cover container', { screen: isScreen }]}>
-    <div class="frame"><img src={data.cover.src} width={data.cover.width} height={data.cover.height} alt={data.cover.alt} fetchpriority="high"/></div>
-    {data.cover.caption && <figcaption>{data.cover.caption}</figcaption>}
-  </figure>}
+  {data.metrics.length > 0 && <section class="case-metrics container" aria-label="Key numbers">{data.metrics.map(m => <div class="case-metric" data-reveal><strong>{m.value}</strong><span>{m.label}</span>{m.status && <span class="status-pill">{statuses[m.status]}</span>}</div>)}</section>}
 
-  {project.id === 'drone' && <figure class="case-cover container">
-    <div class="drone-panel"><DroneStudy/></div>
-    <figcaption>3D reconstruction of an F450-class quadcopter with a GPS mast, the class of frame we used. Original photos lost. Drag to orbit.</figcaption>
-  </figure>}
+  <section class="case-thought container" aria-label="The engineering idea"><span class="eyebrow">THE THREAD<br/>THROUGH THE WORK</span><div><p data-reveal>{story.thought}</p><div class="process-strip" aria-label="Workflow">{story.steps.map((step, i) => <div><span class="eyebrow">0{i + 1}</span><span>{step}</span>{i < 3 && <Icon name="right" size={17}/>}</div>)}</div><small>{story.note}</small></div></section>
 
-  {data.metrics.length > 0 && <div class="container"><div class="metrics" style="margin-top:32px">{data.metrics.map(m => <div class="metric"><strong>{m.value}</strong><span>{m.label}</span>{m.status && <Chips items={[m.status]}/>}</div>)}</div></div>}
+  <div class="case-body container"><aside class="case-sidebar"><span class="section-label eyebrow">THE PROJECT RECORD</span><p>{data.summary}</p><div class="case-status"><span class="eyebrow">CURRENT STATE</span><p>{data.statuses.map(s => statuses[s]).join(' · ')}</p></div><div class="source-list"><span class="eyebrow">SOURCES & EVIDENCE</span>{data.links.length ? data.links.map(l => <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label}<Icon size={14}/></a>) : <p class="owner-source">No public source for this school build.</p>}</div>{article && <a class="press-card" href={article.url} target="_blank" rel="noopener noreferrer"><span class="eyebrow">{article.outlet} · 1 April 2019</span><span class="bn" lang="bn">{article.title}</span><span>“{article.translation}” <Icon size={13}/></span><small>{article.note}</small></a>}</aside><article class="prose case-prose"><Content/></article></div>
 
-  <div class="case-body container">
-    <aside class="case-aside">
-      <p class="label">Case study</p>
-      {article && <a class="press-card" href={article.url} target="_blank" rel="noopener" style="text-decoration:none">
-        <span class="label">{article.outlet} · 1 April 2019</span>
-        <span class="bn" lang="bn">{article.title}</span>
-        <span class="muted" style="font-size:14.5px">“{article.translation}” ↗</span>
-        <span class="muted" style="font-size:13px">{article.note}</span>
-      </a>}
-    </aside>
-    <article class="prose"><Content/></article>
-  </div>
-
-  {project.id === 'afo-recorder' && <section class="evidence container" aria-label="Evidence">
-    <figure>
-      <div class="frame"><SignalChain/></div>
-      <figcaption>Signal chain of the two-channel AD7606 build.</figcaption>
-    </figure>
-    <figure>
-      <div class="frame"><LogicTrace title="Logic-analyzer capture from the Wokwi simulation of firmware 1.12: three ADC conversion cycles"/></div>
-      <figcaption>Three conversion cycles from the Wokwi logic analyzer, running the production firmware (simulated). Each CONVST starts a conversion; after BUSY falls, the ESP32 reads the results in one 16 µs, 128-clock SPI transfer. The IMU's own SPI transaction shows on the last row.</figcaption>
-    </figure>
-    <figure>
-      <div class="frame"><LogicTrace from={22} to={24.2} rows={['CS', 'SCLK', 'DOUTA']} annotate={false} title="Zoom: the first two microseconds of one ADC read, SCLK at 8 MHz"/></div>
-      <figcaption>Zoomed into the start of one read: 8 MHz SCLK with data on DOUT A.</figcaption>
-    </figure>
-    <figure>
-      <div class="frame"><ResponsePlot/></div>
-      <figcaption>Anti-alias filter response from ngspice (simulated). Flat through the main EMG band, −3 dB at about 660 Hz, and falling steeply before the 4 kHz Nyquist limit.</figcaption>
-    </figure>
+  {(project.id === 'afo-recorder' || project.id === 'zenflow' || figures.length > 0) && <section class="case-evidence container" aria-label="Figures">
+    {project.id === 'afo-recorder' && <>
+      <figure class="case-supplement"><div class="evidence-frame"><SignalChain/></div><figcaption>Fig. 0{n++} / Signal chain of the two-channel AD7606 build.</figcaption></figure>
+      <figure class="case-supplement"><div class="evidence-frame"><LogicTrace title="Logic-analyzer capture from the Wokwi simulation of firmware 1.12: three ADC conversion cycles"/></div><figcaption>Fig. 0{n++} / Three conversion cycles from the Wokwi logic analyzer, running the production firmware (simulated). Each CONVST starts a conversion; after BUSY falls, the ESP32 reads the results in one 16 µs, 128-clock SPI transfer. The IMU’s own SPI transaction shows on the last row.</figcaption></figure>
+      <figure class="case-supplement"><div class="evidence-frame"><LogicTrace from={22} to={24.2} rows={['CS', 'SCLK', 'DOUTA']} annotate={false} title="Zoom: the first two microseconds of one ADC read, SCLK at 8 MHz"/></div><figcaption>Fig. 0{n++} / The start of one read: 8 MHz SCLK with data on DOUT A.</figcaption></figure>
+      <figure class="case-supplement"><div class="evidence-frame"><ResponsePlot/></div><figcaption>Fig. 0{n++} / Anti-alias filter response from ngspice (simulated). Flat through the main EMG band, −3 dB at about 660 Hz, and falling steeply before the 4 kHz Nyquist limit.</figcaption></figure>
+    </>}
+    {project.id === 'zenflow' && <figure class="case-supplement"><div class="evidence-frame scroll-x"><Pipeline/></div><figcaption>Fig. 0{n++} / Every AI feature goes through the same pipeline. Without a running model, ZenFlow goes straight to its rule-based answer.</figcaption></figure>}
+    {wide.length > 0 && <div class="figure-pair">{wide.map(f => <figure class="case-supplement"><img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/>{f.caption && <figcaption>Fig. 0{n++} / {f.caption}</figcaption>}</figure>)}</div>}
+    {tall.length > 0 && <figure class="case-supplement phone-row"><div class="phones">{tall.map(f => <img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/>)}</div>{tall[0].caption && <figcaption>Fig. 0{n++} / {tall[0].caption}</figcaption>}</figure>}
   </section>}
 
-  {(data.figures.length > 0 || project.id === 'zenflow') && <section class="evidence container" aria-label="More figures">
-    {project.id === 'zenflow' && <figure>
-      <div class="frame"><div class="scroll-x"><Pipeline/></div></div>
-      <figcaption>Every AI feature goes through the same pipeline. Without a running model, ZenFlow goes straight to its rule-based answer.</figcaption>
-    </figure>}
-    {wide.length > 0 && <div class="figure-pair">
-      {wide.map(f => <figure><div class="frame"><img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/></div>{f.caption && <figcaption>{f.caption}</figcaption>}</figure>)}
-    </div>}
-    {tall.length > 0 && <figure class="phone-row">
-      <div class="phones">{tall.map(f => <img src={f.src} width={f.width} height={f.height} alt={f.alt} loading="lazy"/>)}</div>
-      {tall[0].caption && <figcaption>{tall[0].caption}</figcaption>}
-    </figure>}
-  </section>}
-
-  <nav class="next container" aria-label="Next project">
-    <a href={`/work/${next.id}/`}><div><p class="label">Next project</p><h2>{next.data.title}</h2></div><Icon name="right" size={40}/></a>
-  </nav>
-</main>
-</Layout>
+  <section class="next-project container"><span class="eyebrow">TURN THE PAGE / NEXT PROJECT</span><a href={`/work/${next.id}/`}><h2>{next.data.title}<span class="accent">.</span></h2><Icon size={54}/></a></section><Contact/>
+</main></Layout>

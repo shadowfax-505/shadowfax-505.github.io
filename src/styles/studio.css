@@ -1,0 +1,51 @@
+@layer components {
+  .hero-composition{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);column-gap:5%;row-gap:0;min-height:0;padding-bottom:40px}
+  .hero h1{grid-column:1/-1;grid-row:1;align-self:start;z-index:9}
+  .hero-art{position:absolute;top:210px;right:0;bottom:auto;width:39%;max-width:none;margin:0;z-index:auto}
+  .robot-studio{grid-column:1;grid-row:2;position:relative;margin:0;min-width:0;align-self:end}
+  .studio-topline{position:relative;z-index:9;display:flex;justify-content:space-between;gap:10px;font-size:9px;color:var(--muted);margin:0 3%}
+  .studio-topline>span:first-child{color:var(--red)}
+  .robot-stage{position:relative;width:100%;aspect-ratio:2.15;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+  [data-motion='on'] [data-robot-ready='true'] .robot-stage{cursor:grab}
+  .robot-stage:focus-visible{outline:1px solid var(--cobalt);outline-offset:3px}
+  .robot-stage[data-orbiting='true']{cursor:grabbing}
+  .robot-poster{display:block;width:100%;height:100%;pointer-events:none}
+  .robot-poster img{width:100%;height:100%;object-fit:contain}
+  [data-robot-painted='true'] .robot-poster{visibility:hidden}
+  [data-robot-painted='true'] .studio-orbit-note{display:block}
+  .studio-orbit-note{display:none;position:absolute;bottom:4%;left:3%;z-index:9;color:var(--muted);font-size:8px;pointer-events:none}
+  .robot-studio figcaption{position:relative;z-index:9;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 3%;min-height:45px;border-top:1px solid var(--rule);font:italic 15px/1.4 var(--serif)}
+  .robot-studio figcaption button{min-height:44px;min-width:44px;font:9px var(--mono);color:var(--red);padding:9px 0 9px 12px}
+  .robot-studio figcaption button span{font-size:16px;margin-left:8px;display:inline-block}
+  .robot-studio figcaption button:hover span{transform:translate(2px,-2px)}
+  .hero-bottom{margin-top:48px}
+  .paper-margin{display:none}
+  .research-atlas{z-index:9}
+  /* Text and controls remain above the independent, click-through sheet silhouettes. */
+  .section-heading,.hero-kicker,.hero-bottom,.notebook-reading,.notebook-index,
+  .work-card-body,.research-list,.research-next,.recognition-intro,.achievements,
+  .about-grid,.community-strip,.case-topline,.case-title-block,.case-facts,.case-thought,
+  .case-body,.next-project,.contact-main,.contact-bottom,.contact-section>.section-label,.site-footer,
+  .page-intro,.research-brief>div,.research-brief>header,.research-brief aside>p,
+  .research-brief aside>h2,.research-brief aside>.section-label,.research-brief aside>.status-pill,
+  .compiler-study,.roadmap-grid,.roadmap-footnote,.roadmap-more,.future-intro,.future-list,.future-footnote,.all-code{
+    position:relative;z-index:9;
+  }
+}
+@layer responsive {
+  @media(min-width:801px){.hero-composition{min-height:0}.hero-art{max-width:580px}}
+  @media(min-width:701px) and (max-width:900px){.hero-composition{min-height:0;column-gap:4%;grid-template-columns:1.1fr 1fr}.hero-art{top:120px;width:45%}.studio-coordinate{display:none}.studio-topline{font-size:8px}.robot-studio figcaption{font-size:12px}.robot-studio figcaption button{font-size:8px}}
+  @media(max-width:700px){
+    .hero-composition{display:flex;flex-direction:column;min-height:0;gap:0;padding-bottom:0}
+    .hero h1{order:0}.robot-studio{order:1;width:100%;margin-top:24px}.hero-art{order:2;margin-top:38px;margin-bottom:0;width:100%;position:relative;inset:auto}
+    .robot-stage{aspect-ratio:1.68}.studio-topline{font-size:8px}.studio-coordinate{font-size:6px}
+    .hero-bottom{margin-top:38px}.robot-studio figcaption{font-size:14px}
+  }
+  @media(max-width:375px){.studio-coordinate{display:none}}
+}
+@layer preferences {
+  [data-motion='off'] .robot-poster{visibility:visible}
+  [data-motion='off'] .studio-orbit-note{display:none}
+  @media(prefers-reduced-motion:reduce){.robot-poster{visibility:visible!important}.studio-orbit-note{display:none}}
+  @media print{.robot-studio figcaption button,.studio-orbit-note{display:none}.robot-poster{visibility:visible!important}}
+}

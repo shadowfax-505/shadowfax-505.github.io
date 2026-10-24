@@ -1,50 +1,51 @@
 ---
 import Icon from './Icon.astro';
+import Notebook from './Notebook.astro';
+import RoboticStudio from './RoboticStudio.astro';
+import { heroNotebook } from '../data/notebooks';
 import { profile } from '../data/profile';
-// Static fallback: the same six EMG channels the particle field draws, as plain SVG.
-const lanes = Array.from({ length: 6 }, (_, lane) => {
-  const phase = lane * .17;
-  const pts = Array.from({ length: 241 }, (_, j) => {
-    const u = j / 240;
-    const burst = Math.exp(-Math.pow(((u + phase) % .5 - .26) / .055, 2)) + .55 * Math.exp(-Math.pow(((u + phase + .19) % .5 - .26) / .04, 2));
-    const carrier = Math.sin(u * 190 + lane * 3.1) * .6 + Math.sin(u * 77 + lane) * .4;
-    const y = 70 + lane * 52 - (.05 + burst * .42) * carrier * 62;
-    return `${j ? 'L' : 'M'}${(40 + u * 460).toFixed(1)} ${y.toFixed(1)}`;
-  }).join('');
-  return pts;
+// An original projected, folded ribbon, generated from parametric curves.
+const folds = Array.from({ length: 36 }, (_, i) => {
+  const v = (i / 35 - .5) * 2;
+  return Array.from({ length: 101 }, (_, j) => {
+    const u = j / 100 * Math.PI * 2;
+    const r = 145 + 62 * v * Math.cos(u / 2);
+    const x = r * Math.cos(u), y = r * Math.sin(u) * .64 + 62 * v * Math.sin(u / 2);
+    return `${j ? 'L' : 'M'}${(270 + x * .96 - y * .28).toFixed(1)},${(215 + x * .28 + y * .96).toFixed(1)}`;
+  }).join(' ');
+});
+const circuits = Array.from({ length: 19 }, (_, i) => {
+  const y = 100 + i * 12, offset = Math.sin(i * .6) * 62;
+  return `M88 ${y}h${92 + offset}l44 -44h90l44 44h${93 - offset}`;
+});
+const stars = Array.from({ length: 45 }, (_, i) => {
+  const t = i * Math.PI * (3 - Math.sqrt(5)), r = Math.sqrt(i / 44) * 165;
+  return { x: 270 + Math.cos(t) * r, y: 215 + Math.sin(t) * r * .8 };
 });
 ---
-<section class="hero" aria-labelledby="hero-title">
-  <div class="container hero-grid">
-    <div>
-      <p class="availability"><span class="dot" aria-hidden="true"></span>{profile.availability}</p>
-      <h1 id="hero-title">Muttakin<br/>Rahman<span class="accent">.</span></h1>
-      <p class="hero-lede">{profile.headline}</p>
-      <dl class="spec">
-        <dt>Study</dt><dd>{profile.degree}, {profile.universityShort}</dd>
-        <dt>Based</dt><dd>{profile.location} · works remotely</dd>
-        <dt>Builds</dt><dd>Sensor hardware and firmware · web platforms · research tooling</dd>
-      </dl>
-      <div class="button-row">
-        <a class="button" href="#work">See the work <Icon name="right" size={16}/></a>
-        <a class="button button-ghost" href={`mailto:${profile.email}`}><Icon name="mail" size={16}/> Email me</a>
-        <a class="button button-ghost" href="/cv/"><Icon name="doc" size={16}/> CV</a>
-      </div>
-    </div>
-    <div class="field" data-field data-webgl="pending" aria-label="Interactive particle field. Choose EMG, PCB or Loop; move or tap to disturb it.">
-      <svg class="field-fallback" viewBox="0 0 540 430" fill="none" aria-hidden="true">
-        {lanes.map((d, i) => <path d={d} stroke={i === 1 ? 'var(--accent)' : 'currentColor'} stroke-opacity={i === 1 ? 1 : .55} stroke-width="1.2"/>)}
+<section class="hero container" aria-labelledby="hero-title">
+  <div class="hero-kicker eyebrow"><span>AN ENGINEER’S FIELD JOURNAL</span><span>KHULNA, BD · CSE @ KUET</span></div>
+  <div class="hero-composition">
+    <h1 id="hero-title"><span class="hero-line hero-first"><span class="hero-echo" aria-hidden="true">Muttakin</span><span class="hero-ink">Muttakin</span></span><span class="hero-line hero-last"><span class="hero-echo" aria-hidden="true">Rahman.</span><span class="hero-ink">Rahman<span class="accent">.</span></span></span></h1>
+    <RoboticStudio/>
+    <div class="hero-art" data-hero-art data-form-state="0" data-hero-mode="paper">
+      <div class="art-coordinate eyebrow" aria-hidden="true"><span>FIG. 001</span><span data-art-coordinates>+ 22.90 / 89.50</span></div>
+      <Notebook book={heroNotebook}>
+      <svg class="hero-fallback" viewBox="0 0 540 430" fill="none" aria-hidden="true">
+        <g class="plot-marks" stroke="currentColor" stroke-width=".7" opacity=".25"><path d="M30 215h28m424 0h28M270 18v28m0 338v28"/><circle cx="270" cy="215" r="190" stroke-dasharray="1 9"/></g>
+        <g class="hero-form form-signal" stroke="currentColor" stroke-width="1.1">{folds.map((d,i)=><path d={d} pathLength="1" class={i>14&&i<20 ? 'ribbon-accent' : undefined}/>)}</g>
+        <g class="hero-form form-circuit" stroke="currentColor" stroke-width="1.1">{circuits.map((d,i)=><path d={d} class={i>7&&i<11?'ribbon-accent':undefined}/>)}<g class="ribbon-accent">{[100,172,244,316].map(y=><circle cx="88" cy={y} r="4"/>)}</g></g>
+        <g class="hero-form form-stars" stroke="currentColor">{stars.map((s,i)=><><circle cx={s.x} cy={s.y} r={i%7===0?3.5:1.7} fill="currentColor"/>{i>0&&i%3===0&&<path d={`M${stars[i-1].x} ${stars[i-1].y}L${s.x} ${s.y}`} opacity=".4"/>}</>)}<ellipse class="ribbon-accent" cx="270" cy="215" rx="185" ry="94" transform="rotate(-28 270 215)" stroke-width="1.2"/></g>
+        <g class="hero-interaction-marks" stroke="var(--red)" aria-hidden="true"><g data-art-cursor opacity="0"><circle r="13" stroke-width=".8"/><path d="M-20 0h7m26 0h7M0-20v7m0 26v7" stroke-width=".7"/></g>{[0,1,2].map(i=><circle data-art-ripple={i} opacity="0" stroke-width="1"/>)}</g>
       </svg>
-      <canvas aria-hidden="true"></canvas>
-      <div class="field-top"><span class="label" data-field-label>EMG · 6 ch</span><span class="label">Fig. 1</span></div>
-      <div class="field-bottom">
-        <div class="field-forms" role="group" aria-label="Field form">
-          <button type="button" data-form="0" aria-pressed="true">EMG</button>
-          <button type="button" data-form="1" aria-pressed="false">PCB</button>
-          <button type="button" data-form="2" aria-pressed="false">Loop</button>
-        </div>
-        <span class="label">Tap to pulse</span>
-      </div>
+      </Notebook>
+      <span class="paper-fold-hint" aria-hidden="true">try the corner</span>
+      <canvas class="hero-canvas" data-hero-canvas aria-hidden="true"></canvas>
+      <div class="art-footer"><span class="eyebrow" data-form-label>FOLDED SIGNAL</span><div class="art-actions"><button class="art-pulse" data-art-pulse hidden type="button" aria-label="Pulse — send a ripple through the signal study">Pulse ↗</button><button class="explore-3d" data-explore-3d hidden type="button">Particle study ↗</button><button type="button" data-return-paper hidden>Paper study ↗</button></div></div>
+      <div class="form-controls" data-form-controls hidden aria-label="Signal study forms"><button data-form="0" aria-pressed="true" type="button">01 Signal</button><button data-form="1" aria-pressed="false" type="button">02 Circuit</button><button data-form="2" aria-pressed="false" type="button">03 Constellation</button></div>
     </div>
+    <span class="paper-margin" aria-hidden="true">an idea, taking shape</span>
   </div>
+  <div class="hero-bottom"><p class="hero-role">Software, hardware,<br/><em>& the questions between.</em></p><div class="hero-copy"><p class="hero-description">{profile.headline}</p><p class="hero-note">Civic platforms. Research tools. Circuits that respond to the world. A collection of things I’ve built, and things I’m still figuring out.</p><p class="hero-availability eyebrow"><span class="status-dot" aria-hidden="true"></span>{profile.availability}</p></div><a class="hero-scroll" href="#work"><span class="eyebrow">STEP INSIDE<br/>SELECTED WORK</span><Icon name="down" size={38}/></a></div>
+<noscript><details class="hero-static-notes"><summary>Opening notebook — all three studies</summary>{heroNotebook.pages.map(page=><p><strong>{page.title}</strong> {page.text}</p>)}</details></noscript>
 </section>

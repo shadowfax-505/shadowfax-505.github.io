@@ -1,11 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 ---
-<Layout title="Page not found — Muttakin Rahman" noindex>
-<main id="main" tabindex="-1" class="notfound container">
-  <p class="label">404</p>
-  <h1>That page does not exist.</h1>
-  <p class="muted">It may have moved when the site was rebuilt in October 2026.</p>
-  <div class="button-row" style="margin-top:24px"><a class="button" href="/">Home</a><a class="button button-ghost" href="/#work">Work</a><a class="button button-ghost" href="/research/">Research</a></div>
-</main>
-</Layout>
+<Layout title="Page not found — Muttakin Rahman" noindex><main id="main" tabindex="-1" class="container not-found"><span class="eyebrow accent">404 / SIGNAL LOST</span><h1>This path<br/>is still <span class="accent">unexplored.</span></h1><p>The page may have moved when the site was rebuilt, or the address may be incomplete.</p><div class="button-row"><a class="button button-lime" href="/">Back to the portfolio <Icon name="right" size={18}/></a><a class="button" href="/research/">Research <Icon size={16}/></a></div></main></Layout>

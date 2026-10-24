@@ -2,7 +2,9 @@
 title: IoT gas safety system
 summary: A school project in which an ESP32 detects a gas leak, sounds an alarm, switches on a fan and sends an alert over the web.
 kind: early
-order: 6
+visual: gas
+category: Early build · IoT
+order: 5
 year: School
 role: Built it
 stack: [ESP32, Gas sensor, Alarm, Fan control, Web alerts]

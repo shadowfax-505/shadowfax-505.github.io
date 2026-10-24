@@ -2,6 +2,8 @@
 title: CivicLens
 summary: A Laravel platform that connects public projects, budgets, procurement, contractors and documents, and flags inconsistencies with rules that always show their evidence.
 kind: selected
+visual: civic
+category: Full-stack engineering
 order: 2
 year: 2026
 role: Full-stack developer — data model, workflows, integrity engine, tests
