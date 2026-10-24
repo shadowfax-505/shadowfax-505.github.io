@@ -56,6 +56,17 @@
   .proof-grid::before,.method-steps::before,.case-metrics::before,.service-grid::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--ink);transform:scaleX(var(--rule-scale));transform-origin:left;pointer-events:none}
   .method-steps::before{background:var(--rule)}
 
+  /* Notes teaser on the home page */
+  .note-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0;border-top:1px solid var(--ink)}
+  .note-card{display:flex;flex-direction:column;gap:14px;padding:30px 34px 34px 0;border-bottom:1px solid var(--rule);transition:background-color .35s ease}
+  .note-card+.note-card{padding-left:34px;border-left:1px solid var(--rule)}
+  .note-card h3{font-size:clamp(26px,2.3vw,34px);line-height:1.08}
+  .note-card p{color:var(--muted);font-size:13px;line-height:1.75;max-width:52ch}
+  .note-more{display:inline-flex;align-items:center;gap:8px;margin-top:auto;color:var(--accent)}
+  .note-card:hover{background-color:rgba(255,255,255,.4)}
+  .note-card:hover h3{color:var(--accent)}
+  .notes-section .section-description .text-link{margin-top:10px;font-size:12px;gap:10px}
+
   /* Services */
   .services-section{background:#e3e6de}
   .service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -143,7 +154,9 @@
   .crumb{display:inline-flex;gap:8px;font:9px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.055em}
   .research-full{list-style:none;padding:0;border-top:1px solid var(--ink);margin:0 0 90px}
   .research-full>li{display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;padding:34px 0;border-bottom:1px solid var(--rule)}
-  .research-full h2{font-size:clamp(30px,3vw,44px)}
+  .research-full h2{font-size:clamp(30px,3vw,44px);margin-bottom:12px}
+  .page-intro.note-head h1{font-size:clamp(44px,5.4vw,84px);line-height:1;max-width:18ch}
+  .page-intro.note-head .page-intro-description{margin-top:26px}
   .notfound{padding-block:90px 130px}
   .notfound h1{font-size:clamp(64px,10vw,150px);line-height:.94;margin:26px 0 22px}
   .notfound h1 em{color:var(--accent)}
@@ -180,6 +193,7 @@
     .method{grid-template-columns:1fr;gap:28px}
   }
   @media(max-width:800px){
+    .note-card,.note-card+.note-card{padding:24px 0 26px;border-left:0}
     .header-cta{display:none}
     .proof-head{flex-direction:column;gap:6px}
     .method-steps li{grid-template-columns:40px minmax(0,1fr)}

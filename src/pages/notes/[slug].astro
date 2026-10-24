@@ -13,7 +13,7 @@ const schema = [{ '@context': 'https://schema.org', '@type': 'BlogPosting', head
 ---
 <Layout title={`${note.data.title} — ${profile.name}`} description={note.data.summary} schema={schema}>
 <main id="main" tabindex="-1">
-  <header class="page-intro container"><a class="back-link eyebrow" href="/notes/">← ALL NOTES</a><h1 data-reveal>{note.data.title}</h1><p class="page-intro-description eyebrow">{note.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p></header>
+  <header class="page-intro note-head container"><a class="back-link eyebrow" href="/notes/">← ALL NOTES</a><h1 data-reveal>{note.data.title}</h1><p class="page-intro-description eyebrow">{note.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p></header>
   <article class="container prose" style="padding-bottom:80px"><Content/></article>
 </main>
 </Layout>

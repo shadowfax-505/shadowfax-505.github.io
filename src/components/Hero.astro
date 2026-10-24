@@ -7,8 +7,8 @@ import { profile } from '../data/profile';
 // An original projected, folded ribbon, generated from parametric curves.
 const folds = Array.from({ length: 36 }, (_, i) => {
   const v = (i / 35 - .5) * 2;
-  return Array.from({ length: 101 }, (_, j) => {
-    const u = j / 100 * Math.PI * 2;
+  return Array.from({ length: 73 }, (_, j) => {
+    const u = j / 72 * Math.PI * 2;
     const r = 145 + 62 * v * Math.cos(u / 2);
     const x = r * Math.cos(u), y = r * Math.sin(u) * .64 + 62 * v * Math.sin(u / 2);
     return `${j ? 'L' : 'M'}${(270 + x * .96 - y * .28).toFixed(1)},${(215 + x * .28 + y * .96).toFixed(1)}`;
