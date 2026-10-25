@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
+import Intro from '../components/Intro.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Contact from '../components/Contact.astro';
 import ResearchAtlas from '../components/ResearchAtlas.astro';
@@ -31,7 +32,7 @@ const method = [
   { title: 'Leave a record', text: 'Release notes, assembly guides, an evaluation report and, for CivicLens, 38 design documents kept next to the code.', href: '/work/civiclens/', label: 'CivicLens' },
 ];
 ---
-<Layout><main id="main" tabindex="-1"><Hero/>
+<Layout><Intro/><main id="main" tabindex="-1"><Hero/>
   <section class="proof-section container" id="proof" aria-labelledby="proof-title"><div class="proof-head"><p class="section-label eyebrow">THE SHORT VERSION</p><h2 id="proof-title" class="proof-title" data-reveal>Proof,<em> not adjectives.</em></h2></div><div class="proof-grid">{proof.map(p => <a class="proof-item" href={p.href}><strong>{p.value}</strong><span>{p.label}</span><span class="proof-foot"><span class="status-pill">{statuses[p.status]}</span><span class="eyebrow">{p.source} ↗</span></span></a>)}</div><div class="now-strip"><span class="eyebrow now-label">Now · <time datetime={now.updated}>{new Date(now.updated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</time></span><ul>{now.items.map(item => <li><a href={item.href}>{item.text}</a></li>)}</ul></div></section>
   <section class="section container work-section" id="work" aria-labelledby="work-title"><div class="section-heading"><div><p class="section-label eyebrow">01 / THINGS I’VE BUILT</p><h2 id="work-title" data-reveal>Selected <em>work.</em></h2></div><p class="section-description">From physical signals to public records.<br/>Four systems, with the checking left in.</p></div><div class="work-grid">{projects.filter(p => p.data.kind === 'selected').map(project => <ProjectCard project={project}/>)}</div><a class="text-link all-code" href={profile.github} target="_blank" rel="noopener noreferrer">The rest of the work lives on GitHub <Icon size={17}/></a></section>
 

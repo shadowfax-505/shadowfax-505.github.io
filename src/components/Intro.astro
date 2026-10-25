@@ -1,0 +1,34 @@
+---
+// The journal's cover: shown once per session on the home page, then turned like a book page to open the site.
+// Pure CSS once the head script sets html[data-intro="play"]; any click, key, wheel or touch turns it at once.
+import { profile } from '../data/profile';
+// A drawn EMG-like burst for the cover rule: illustrative, like the other signal art on the site.
+const signal = Array.from({ length: 321 }, (_, j) => {
+  const u = j / 320;
+  const burst = Math.exp(-Math.pow((u - .42) / .07, 2)) + .6 * Math.exp(-Math.pow((u - .71) / .045, 2));
+  const y = 60 - (.06 + burst * .9) * (Math.sin(u * 410) * .65 + Math.sin(u * 157) * .35) * 48;
+  return `${j ? 'L' : 'M'}${(u * 1000).toFixed(1)} ${y.toFixed(1)}`;
+}).join('');
+---
+<div class="intro" data-intro aria-hidden="true">
+  <div class="intro-cover">
+    <div class="intro-top eyebrow"><span>An engineer’s field journal</span><span>{profile.location} · CSE @ {profile.universityShort}</span></div>
+    <p class="intro-name"><span class="intro-line">MUTTAKIN</span><span class="intro-line intro-italic">Rahman<b>.</b></span></p>
+    <svg class="intro-signal" viewBox="0 0 1000 120" preserveAspectRatio="none" fill="none"><path d={signal} pathLength="1"/></svg>
+    <p class="intro-hook">I build the board, <em>the firmware, and the app.</em></p>
+    <div class="intro-bottom eyebrow"><span>Vol. 2026</span><span>Turn the page →</span></div>
+  </div>
+</div>
+<script>
+  // Ends the intro when the cover has turned, or turns it at once on the visitor's first input.
+  const root = document.documentElement;
+  const intro = document.querySelector<HTMLElement>('[data-intro]');
+  if (intro && root.dataset.intro === 'play') {
+    const cover = intro.querySelector<HTMLElement>('.intro-cover')!;
+    const done = () => { root.dataset.intro = 'done'; };
+    cover.addEventListener('animationend', event => { if (event.animationName === 'intro-open' || event.animationName === 'intro-open-now') done(); });
+    const skip = () => { if (root.dataset.intro === 'play') root.dataset.intro = 'skip'; };
+    for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart']) addEventListener(type, skip, { once: true, passive: true });
+    setTimeout(done, 4000);
+  }
+</script>

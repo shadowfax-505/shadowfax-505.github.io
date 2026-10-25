@@ -209,6 +209,20 @@ document.querySelectorAll<HTMLTableElement>('.prose table').forEach(table => {
   region.append(table);
 });
 
+// On the home page the header marks the section being read, with the same red underline as hover.
+if (location.pathname === '/') {
+  const links = new Map<string, HTMLAnchorElement>();
+  document.querySelectorAll<HTMLAnchorElement>('.desktop-nav a[href^="/#"]').forEach(link => links.set(link.getAttribute('href')!.slice(2), link));
+  const visible = new Map<string, number>();
+  const spy = new IntersectionObserver(entries => {
+    for (const entry of entries) visible.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
+    let best = '', ratio = 0;
+    visible.forEach((r, id) => { if (r > ratio) { ratio = r; best = id; } });
+    links.forEach((link, id) => link.toggleAttribute('data-active', id === best));
+  }, { rootMargin: '-35% 0px -50% 0px', threshold: [0, .25, .5, .75, 1] });
+  links.forEach((_, id) => { const section = document.getElementById(id); if (section) spy.observe(section); });
+}
+
 document.querySelectorAll<HTMLButtonElement>('[data-print]').forEach(button => {
   button.removeAttribute('hidden');
   button.addEventListener('click', () => window.print());

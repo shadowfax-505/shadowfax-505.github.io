@@ -241,6 +241,14 @@
   .cv-skills b{display:inline-block;min-width:92px;font-weight:600}
 }
 @layer responsive {
+  /* The line-art notebook sits in the hero grid (right column, beside the name and the board) at the same
+     offset it used to be absolutely positioned at, so the pitch below always clears it. */
+  @media(min-width:701px){
+    .hero-art{position:relative;inset:auto;width:auto;grid-column:2;grid-row:1 / span 2;align-self:start;justify-self:stretch;margin-top:210px}
+    .hero-composition>.hero-bottom{grid-row:3;margin-top:64px}
+  }
+  @media(min-width:801px){.hero-art{max-width:580px;justify-self:end;width:100%}}
+  @media(min-width:701px) and (max-width:900px){.hero-art{margin-top:120px}}
   /* The base layer's responsive h2 sizes must not reach the CV's small section titles. */
   .cv h2{font:400 10px/1.4 var(--mono);letter-spacing:.07em}
   @media(max-width:1100px){
@@ -274,14 +282,12 @@
     .qm dd{font-size:20px}
     .cv-contact{text-align:left}
   }
-  /* On phones the pitch and its buttons come straight after the board; the line-art notebook follows. */
+  /* The pitch sits inside the hero grid, after the board in the HTML, so phones show it straight after the
+     board without reordering (a visual reorder made the first paint jump). */
+  .hero-composition>.hero-bottom{grid-column:1/-1}
   @media(max-width:700px){
-    .hero{display:flex;flex-direction:column}
-    .hero-composition{display:contents}
-    .hero-kicker{order:0}.hero h1{order:1}.board-studio{order:2}
-    .hero-bottom{order:3;margin-top:26px}
-    .hero-art{order:4;margin-top:44px}
-    .paper-margin{order:5}
+    .hero-composition>.hero-bottom{order:1;margin-top:26px}
+    .hero-art{margin-top:44px}
   }
   @media(max-width:600px){
     .proof-grid{grid-template-columns:1fr}
@@ -307,6 +313,12 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
 @keyframes page-under{0%{filter:brightness(.86)}100%{filter:brightness(1)}}
 @keyframes page-under-out{0%{filter:brightness(1)}100%{filter:brightness(.86)}}
 @layer components {
+  /* The header follows the section being read (home page). */
+  .desktop-nav a[data-active]::after{transform:scaleX(1)}
+  .desktop-nav a[data-active]{color:var(--accent)}
+  /* Pressing gives immediate, small feedback. */
+  :is(.button,.header-cta,.brief-kinds span,.resolver-examples button,.notebook-controls button,.copy-email):active{transform:scale(.97)}
+  :is(.button,.header-cta,.resolver-examples button,.notebook-controls button,.copy-email){transition:transform .12s ease-out,background-color .25s ease,color .25s ease,border-color .25s ease}
   .service-card,.method-steps li,.proof-item{transition:background-color .35s ease}
   .service-number,.method-number{display:inline-block;transition:transform .45s cubic-bezier(.22,1,.36,1)}
   .service-card:hover{background-color:rgba(255,255,255,.32)}
@@ -316,6 +328,41 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   .proof-item:hover{background-color:color-mix(in srgb,var(--accent) 4%,transparent)}
   .header-cta{transition:background-color .25s ease}
 }
+/* The journal-cover intro (src/components/Intro.astro). */
+@keyframes intro-open{0%{transform:perspective(2400px) rotateY(0)}100%{transform:perspective(2400px) rotateY(-100deg);visibility:hidden}}
+@keyframes intro-open-now{to{transform:perspective(2400px) rotateY(-100deg);visibility:hidden}}
+@keyframes intro-shade{0%{opacity:0}100%{opacity:1}}
+@keyframes intro-rise{from{opacity:0;transform:translateY(.35em)}to{opacity:1;transform:none}}
+@keyframes intro-fade{from{opacity:0}to{opacity:1}}
+@layer components {
+  .intro{display:none}
+  html[data-intro='play'] .intro,html[data-intro='skip'] .intro{display:block;position:fixed;inset:0;z-index:200;cursor:pointer}
+  html[data-motion='off'] .intro{display:none!important}
+  .intro-cover{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto auto auto;gap:clamp(14px,2.4vh,28px);padding:clamp(22px,4.4vw,72px);background:var(--paper);color:var(--ink);transform-origin:0 50%;backface-visibility:hidden;box-shadow:24px 0 60px -30px rgba(27,33,38,.45)}
+  .intro-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(27,33,38,0) 20%,rgba(27,33,38,.35));opacity:0;pointer-events:none}
+  html[data-intro='play'] .intro-cover{animation:intro-open 1s cubic-bezier(.62,.02,.3,1) 1.9s forwards}
+  html[data-intro='play'] .intro-cover::after{animation:intro-shade 1s ease-in 1.9s forwards}
+  html[data-intro='skip'] .intro-cover{animation:intro-open-now .55s cubic-bezier(.5,0,.3,1) forwards}
+  html[data-intro='skip'] .intro-cover::after{animation:intro-shade .55s ease-in forwards}
+  .intro-top,.intro-bottom{display:flex;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+  .intro-top>span:first-child,.intro-bottom>span:last-child{color:var(--accent)}
+  .intro-bottom{padding:14px 0 0;border-bottom:0;border-top:1px solid var(--rule)}
+  .intro-name{align-self:end;display:grid;font:600 clamp(72px,15.5vw,250px)/.86 var(--sans);letter-spacing:-.07em}
+  .intro-italic{font:italic 400 1.08em/.95 var(--serif);letter-spacing:-.03em;margin-left:.06em}
+  .intro-italic b{color:var(--accent);font-weight:400}
+  .intro-signal{width:100%;height:clamp(54px,9vh,110px);overflow:visible}
+  .intro-signal path{stroke:var(--accent);stroke-width:1.6;stroke-dasharray:1;stroke-dashoffset:1;vector-effect:non-scaling-stroke}
+  .intro-hook{font-size:clamp(22px,2.6vw,40px);letter-spacing:-.04em;line-height:1.15;max-width:none}
+  .intro-hook em{color:var(--accent)}
+  html[data-intro='play'] .intro-line{display:block;animation:intro-rise .9s cubic-bezier(.22,1,.36,1) both}
+  html[data-intro='play'] .intro-line+.intro-line{animation-delay:.12s}
+  html[data-intro='play'] .intro-signal path{animation:draw-line 1.25s cubic-bezier(.45,0,.55,1) .35s forwards}
+  html[data-intro='play'] .intro-hook{animation:intro-rise .8s cubic-bezier(.22,1,.36,1) .75s both}
+  html[data-intro='play'] :is(.intro-top,.intro-bottom){animation:intro-fade .6s ease-out .1s both}
+  html[data-intro='skip'] .intro-signal path{stroke-dashoffset:0}
+  @media(max-width:700px){.intro-name{font-size:clamp(60px,19vw,120px)}.intro-top,.intro-bottom{font-size:8px}}
+}
+
 /* Hero entrance in CSS: it starts with the first paint and needs no script on the main thread. */
 @keyframes hero-rise{from{opacity:0;transform:translateY(28px) rotate(-.6deg)}to{opacity:1;transform:none}}
 @keyframes fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
