@@ -60,6 +60,19 @@ for (const file of pages) {
   for (const m of html.matchAll(/href="(https?:\/\/[^"]+)"/g)) externalLinks.add(m[1].replace(/&amp;/g, '&'));
 }
 
+// Size budgets, so the site stays fast as it grows. Raise one only on purpose.
+const KB = 1024;
+for (const file of pages) ok(statSync(file).size <= 450 * KB, file.slice(dist.length), `HTML over 450 KB (${Math.round(statSync(file).size / KB)} KB)`);
+(function walkAssets(dir) {
+  for (const f of readdirSync(dir)) {
+    const p = join(dir, f), rel = p.slice(dist.length), size = statSync(p).size;
+    if (statSync(p).isDirectory()) { walkAssets(p); continue; }
+    if (/\.js$/.test(f)) ok(size <= 650 * KB, rel, `script over 650 KB (${Math.round(size / KB)} KB)`);
+    else if (/\.(webp|png|jpe?g|svg)$/.test(f)) ok(size <= (rel.startsWith('og/') ? 200 : 300) * KB, rel, `image over budget (${Math.round(size / KB)} KB)`);
+    else if (/\.glb$/.test(f)) ok(size <= 1024 * KB, rel, `3D model over 1 MB (${Math.round(size / KB)} KB)`);
+  }
+})(dist);
+
 // Claims that must stay exactly as sourced.
 const drone = readFileSync(join(dist, 'work/drone/index.html'), 'utf8');
 ok(drone.includes('dainikshiksha.com'), 'work/drone', 'must link the Dainik Shiksha article');

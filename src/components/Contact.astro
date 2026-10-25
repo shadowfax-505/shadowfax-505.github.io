@@ -2,4 +2,56 @@
 import Icon from './Icon.astro';
 import { profile } from '../data/profile';
 ---
-<section class="contact-section container section" id="contact" aria-labelledby="contact-title"><p class="section-label eyebrow">THE NEXT PAGE STARTS WITH A CONVERSATION</p><div class="contact-main"><h2 id="contact-title" data-reveal>Have a good<br/><em>question?</em></h2><a class="contact-orb" href={`mailto:${profile.email}`} aria-label="Email Muttakin"><Icon size={54}/></a></div><div class="contact-bottom"><div><p>A board that needs firmware. An app that needs a backend.<br/>A research idea to unpack. I’d like to hear what you’re thinking.</p><p class="contact-availability eyebrow"><span class="status-dot" aria-hidden="true"></span>{profile.availability}</p><nav class="contact-links-row" aria-label="Elsewhere"><a href="/cv/">CV <Icon size={13}/></a><a href={profile.github} target="_blank" rel="me noopener noreferrer">GitHub <Icon size={13}/></a><a href={profile.linkedin} target="_blank" rel="me noopener noreferrer">LinkedIn <Icon size={13}/></a></nav></div><div class="email-group"><a class="email-link" href={`mailto:${profile.email}`}>{profile.email}</a><button class="copy-email" type="button" data-copy-email={profile.email} aria-label="Copy email address" hidden><Icon name="copy" size={18}/></button></div></div></section>
+<section class="contact-section container section" id="contact" aria-labelledby="contact-title"><p class="section-label eyebrow">THE NEXT PAGE STARTS WITH A CONVERSATION</p><div class="contact-main"><h2 id="contact-title" data-reveal>Have a good<br/><em>question?</em></h2><a class="contact-orb" href={`mailto:${profile.email}`} aria-label="Email Muttakin"><Icon size={54}/></a></div><div class="contact-bottom"><div><p>A board that needs firmware. An app that needs a backend.<br/>A research idea to unpack. I’d like to hear what you’re thinking.</p><p class="contact-availability eyebrow"><span class="status-dot" aria-hidden="true"></span>{profile.availability}</p><nav class="contact-links-row" aria-label="Elsewhere"><a href="/cv/">CV <Icon size={13}/></a><a href={profile.github} target="_blank" rel="me noopener noreferrer">GitHub <Icon size={13}/></a><a href={profile.linkedin} target="_blank" rel="me noopener noreferrer">LinkedIn <Icon size={13}/></a></nav></div><div class="email-group"><a class="email-link" href={`mailto:${profile.email}`}>{profile.email}</a><button class="copy-email" type="button" data-copy-email={profile.email} aria-label="Copy email address" hidden><Icon name="copy" size={18}/></button></div></div>
+  <details class="brief" data-brief hidden>
+    <summary><span class="eyebrow">Not sure what to write?</span><span class="brief-summary">Put a short brief together <Icon size={16}/></span></summary>
+    <form class="brief-form" data-brief-form>
+      <fieldset class="brief-kinds"><legend class="eyebrow">What do you need?</legend>
+        {['Embedded hardware or firmware', 'A web application', 'A local AI feature', 'Research software', 'Something else'].map((k, i) => <label><input type="radio" name="kind" value={k} checked={i === 0}/><span>{k}</span></label>)}
+      </fieldset>
+      <label class="brief-field"><span class="eyebrow">What is it, in a sentence or two?</span><textarea name="what" rows="3" maxlength="800" placeholder="A sensor board that logs to SD, a dashboard for our records…"></textarea></label>
+      <div class="brief-row">
+        <label class="brief-field"><span class="eyebrow">Where is it now?</span><select name="stage"><option>Just an idea</option><option>A prototype exists</option><option>It runs, but needs work</option></select></label>
+        <label class="brief-field"><span class="eyebrow">When do you need it?</span><input name="when" maxlength="80" placeholder="e.g. by December"/></label>
+      </div>
+      <div class="brief-row">
+        <label class="brief-field"><span class="eyebrow">Your name (optional)</span><input name="name" maxlength="80" autocomplete="name"/></label>
+        <label class="brief-field"><span class="eyebrow">Links (optional)</span><input name="links" maxlength="300" placeholder="repo, docs, a sketch"/></label>
+      </div>
+      <div class="brief-actions"><button class="button button-lime" type="submit">Open in my email app <Icon size={16}/></button><button class="button" type="button" data-brief-copy>Copy the brief <Icon name="copy" size={16}/></button></div>
+      <p class="brief-note">Nothing is sent from this page: the brief opens in your own email app, addressed to {profile.email}.</p>
+    </form>
+  </details>
+</section>
+<script define:vars={{ email: profile.email }}>
+  // Turns the brief into an email draft in the visitor's own mail app (or the clipboard). No server, nothing sent from here.
+  const brief = document.querySelector('[data-brief]');
+  const form = brief?.querySelector('[data-brief-form]');
+  if (brief && form) {
+    brief.hidden = false;
+    const compose = () => {
+      const f = new FormData(form);
+      const v = k => String(f.get(k) || '').trim();
+      const lines = ['Hi Muttakin,', '', `I need: ${v('kind')}.`];
+      if (v('what')) lines.push(`What it is: ${v('what')}`);
+      lines.push(`Where it is now: ${v('stage')}.`);
+      if (v('when')) lines.push(`When: ${v('when')}.`);
+      if (v('links')) lines.push(`Links: ${v('links')}`);
+      lines.push('', 'Thanks,');
+      if (v('name')) lines.push(v('name'));
+      return { subject: `Project brief: ${v('kind')}`, body: lines.join('\n') };
+    };
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const { subject, body } = compose();
+      location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+    form.querySelector('[data-brief-copy]')?.addEventListener('click', async event => {
+      const { subject, body } = compose();
+      const button = event.currentTarget;
+      try { await navigator.clipboard.writeText(`To: ${email}\nSubject: ${subject}\n\n${body}`); button.firstChild.textContent = 'Copied '; }
+      catch { button.firstChild.textContent = 'Copy failed '; }
+      setTimeout(() => { button.firstChild.textContent = 'Copy the brief '; }, 2500);
+    });
+  }
+</script>
