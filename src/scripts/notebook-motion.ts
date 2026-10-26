@@ -17,7 +17,9 @@ export function createNotebookMotion() {
       const length=path.getTotalLength();if(!length)return;
       const color=path.getAttribute('stroke')||svg.dataset.motionColor||'#176b4d';
       const ink=element('path',{d:path.getAttribute('d')||'',stroke:color,'stroke-width':'2.4',fill:'none','stroke-linecap':'round','stroke-dasharray':`${Math.min(36,length*.2)} ${length}`,opacity:'.72'});
-      const dot=element('circle',{r:i? '2.8':'4',fill:color,opacity:'.8'});
+      const start=path.getPointAtLength(0);
+      // Starts on its trace, so with motion off it rests there instead of at the drawing's corner.
+      const dot=element('circle',{cx:start.x.toFixed(1),cy:start.y.toFixed(1),r:i? '2.8':'4',fill:color,opacity:'.8'});
       path.parentElement!.append(ink,dot);traces.push({path,ink,dot,length});
     });
     const reaction=element('circle',{cx:'642',cy:'354',r:'12',stroke:svg.dataset.motionColor||'#176b4d','stroke-width':'1.1',fill:'none',opacity:'0'});svg.append(reaction);

@@ -20,6 +20,6 @@ const hasCover = Astro.slots.has('default');
     <button type="button" data-notebook-next aria-label={`Next page in ${book.title}`}>→</button>
   </div>
   <div class="notebook-reading">{book.pages.map((page,i)=><div data-notebook-note={i} hidden={i!==0}><p>{page.text}</p><small>{page.caption}</small></div>)}</div>
-  <details class="notebook-index"><summary>All notebook notes <span aria-hidden="true">↗</span></summary><ol>{book.pages.map(page=><li><strong>{page.title}</strong><p>{page.text}</p><small>{page.caption}</small></li>)}</ol></details>
+  <details class="notebook-index"><summary>Read every page as text <span aria-hidden="true">↗</span></summary><ol>{book.pages.map(page=><li><strong>{page.title}</strong><p>{page.text}</p><small>{page.caption}</small></li>)}</ol></details>
   <span class="visually-hidden" data-notebook-announcement aria-live="polite" aria-atomic="true"></span>
 </div>

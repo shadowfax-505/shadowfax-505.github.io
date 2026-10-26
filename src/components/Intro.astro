@@ -29,6 +29,6 @@ const signal = Array.from({ length: 321 }, (_, j) => {
     cover.addEventListener('animationend', event => { if (event.animationName === 'intro-open' || event.animationName === 'intro-open-now') done(); });
     const skip = () => { if (root.dataset.intro === 'play') root.dataset.intro = 'skip'; };
     for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart']) addEventListener(type, skip, { once: true, passive: true });
-    setTimeout(done, 4000);
+    setTimeout(done, 2200);
   }
 </script>

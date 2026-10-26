@@ -9,7 +9,7 @@
   .hero-art[data-hero-mode='field'] .hero-paper-surface{visibility:hidden}
   .art-footer{z-index:9;display:block;bottom:0;left:3%;right:3%}
   .art-actions{display:flex;justify-content:space-between;gap:8px;margin-top:3px}
-  .art-actions button{min-height:44px;min-width:44px;font:9px/1.3 var(--mono);padding:6px 2px;border-bottom:1px solid var(--rule);white-space:nowrap;color:var(--accent)}
+  .art-actions button{min-height:44px;min-width:44px;font:11px/1.3 var(--mono);padding:6px 2px;border-bottom:1px solid var(--rule);white-space:nowrap;color:var(--accent)}
   .art-actions button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
   .art-actions button[hidden]{display:none}
   .art-coordinate,.form-controls{z-index:9}
@@ -36,8 +36,8 @@
 @layer responsive {
   @media(min-width:801px){.hero-last{font-size:.86em;margin-left:2%}}
   @media(min-width:601px) and (max-width:800px){.hero-composition{min-height:540px}.hero-last{font-size:.92em;margin-left:2%}.hero-art{top:200px;width:48%}.hero-bottom{margin-top:50px}}
-  @media(max-width:800px){.hero-art{aspect-ratio:1.06}.art-actions button{font-size:8px}.art-actions{gap:6px}.paper-fold-hint{font-size:12px}}
-  @media(max-width:600px){.hero-composition{padding-bottom:375px}.hero-art{bottom:28px;width:94%;right:0;aspect-ratio:1.07}.hero-paper-surface{inset:8% 0 23%}.art-coordinate{top:2%;font-size:7px}.art-footer>.eyebrow{font-size:7px}.art-actions button{font-size:9px}.paper-fold-hint{font-size:14px;top:12%}.form-controls{bottom:-25px}.paper-margin{display:none}}
+  @media(max-width:800px){.hero-art{aspect-ratio:1.06}.art-actions button{font-size:11px}.art-actions{gap:6px}.paper-fold-hint{font-size:12px}}
+  @media(max-width:600px){.hero-composition{padding-bottom:375px}.hero-art{bottom:28px;width:94%;right:0;aspect-ratio:1.07}.hero-paper-surface{inset:8% 0 23%}.art-coordinate{top:2%;font-size:10px}.art-footer>.eyebrow{font-size:10px}.art-actions button{font-size:10px}.paper-fold-hint{font-size:14px;top:12%}.form-controls{bottom:-25px}.paper-margin{display:none}}
   @media(max-width:375px){.hero-composition{padding-bottom:350px}.hero-art{width:100%}}
 }
 @layer preferences {

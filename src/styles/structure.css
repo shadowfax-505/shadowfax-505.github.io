@@ -4,13 +4,13 @@
   :root{--ink-2:#3a4247;--rule-strong:#aeb4ad;--surface:#f6f7f2;--sunken:#e3e6de;--accent-ink:var(--accent);--accent-soft:color-mix(in srgb,var(--accent) 9%,var(--paper))}
   .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px}
   .muted{color:var(--muted)}
-  .label{font:400 10px/1.6 var(--mono);letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
-  .stack{font:400 10px/1.7 var(--mono);color:var(--muted)}
+  .label{font:400 11px/1.6 var(--mono);letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
+  .stack{font:400 11px/1.7 var(--mono);color:var(--muted)}
   .bn{font-family:'Noto Sans Bengali',var(--sans)}
   .visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 }
 @layer components {
-  .hero-availability{margin-top:18px;color:var(--ink);font-size:9px}
+  .hero-availability{margin-top:18px;color:var(--ink);font-size:11px}
 
   /* A notebook leaf turning without WebGL: the outgoing page swings around the spine. */
   .notebook-stage{perspective:2400px}
@@ -25,7 +25,7 @@
   /* Hero calls to action and the header's hire link */
   .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin-top:22px}
   .hero-actions .button{font-size:13px;gap:18px;padding:13px 20px}
-  .header-cta{display:inline-flex;align-items:center;gap:6px;font:9px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--paper);background:var(--ink);padding:9px 12px;white-space:nowrap}
+  .header-cta{display:inline-flex;align-items:center;gap:6px;font:11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--paper);background:var(--ink);padding:9px 12px;white-space:nowrap}
   .header-cta:hover{background:var(--accent)}
 
   /* Proof strip under the hero */
@@ -81,7 +81,7 @@
   .method-number{font:italic 400 34px/1 var(--serif);color:var(--accent)}
   .method-steps h4{font-size:20px;font-weight:500;letter-spacing:-.04em;line-height:1.2}
   .method-steps p{color:var(--muted);font-size:13px;line-height:1.75;margin-top:6px;max-width:62ch}
-  .method-steps .text-link{white-space:nowrap;font-size:12px;gap:10px;padding-top:4px}
+  .method-steps .text-link{white-space:nowrap;font-size:13px;gap:10px;padding-top:4px}
 
   /* The top rule of each grid is drawn, so motion can draw it in from the left. */
   .proof-grid,.method-steps,.case-metrics,.service-grid{position:relative;--rule-scale:1}
@@ -97,7 +97,7 @@
   .note-more{display:inline-flex;align-items:center;gap:8px;margin-top:auto;color:var(--accent)}
   .note-card:hover{background-color:rgba(255,255,255,.4)}
   .note-card:hover h3{color:var(--accent)}
-  .notes-section .section-description .text-link{margin-top:10px;font-size:12px;gap:10px}
+  .notes-section .section-description .text-link{margin-top:10px;font-size:13px;gap:10px}
 
   /* Services */
   .services-section{background:#e3e6de}
@@ -107,7 +107,7 @@
   .service-number{font:italic 400 56px/1 var(--serif);color:var(--accent);letter-spacing:-.02em}
   .service-card h3{font-size:clamp(28px,2.6vw,40px)}
   .service-card>p{color:var(--muted);font-size:14px;line-height:1.75;max-width:46ch}
-  .service-card ul{list-style:none;padding:0;display:grid;gap:9px;font:10px/1.6 var(--mono);text-transform:uppercase;letter-spacing:.04em}
+  .service-card ul{list-style:none;padding:0;display:grid;gap:9px;font:11px/1.6 var(--mono);text-transform:uppercase;letter-spacing:.04em}
   .service-card li{display:flex;gap:12px}
   .service-card li::before{content:'—';color:var(--accent)}
   .service-card .text-link{align-self:flex-start;margin-top:auto}
@@ -118,14 +118,14 @@
   .elsewhere-strip{display:grid;grid-template-columns:1fr 1.5fr 1.5fr;gap:40px;border-top:1px solid color-mix(in srgb,currentColor 35%,transparent);padding-top:32px;margin-top:44px}
   .elsewhere-item h3{font-size:22px;letter-spacing:-.04em}
   .elsewhere-item h3 a{display:inline-flex;gap:8px;align-items:center}
-  .elsewhere-item p{font-size:12px;line-height:1.75;margin-top:10px}
+  .elsewhere-item p{font-size:13px;line-height:1.75;margin-top:10px}
 
   .footer-links{flex-wrap:wrap;gap:12px 20px}
   .footer-links a{white-space:nowrap}
 
   /* Contact */
-  .contact-availability{margin-top:16px;font-size:9px;color:var(--ink)}
-  .contact-links-row{display:flex;flex-wrap:wrap;gap:22px;margin-top:20px;font-size:12px}
+  .contact-availability{margin-top:16px;font-size:11px;color:var(--ink)}
+  .contact-links-row{display:flex;flex-wrap:wrap;gap:22px;margin-top:20px;font-size:13px}
   .contact-links-row a{display:inline-flex;align-items:center;gap:6px;border-bottom:1px solid currentColor;padding-bottom:3px}
   .contact-links-row a:hover{color:var(--accent)}
 
@@ -139,10 +139,14 @@
   .case-metric .status-pill{margin-top:auto}
   .press-card{display:flex;flex-direction:column;gap:8px;margin-top:30px;padding:20px 22px;border:1px solid var(--ink);background:var(--surface);font-size:13px;line-height:1.5}
   .press-card .bn{font-size:17px}
-  .press-card small{font-size:10px;color:var(--muted)}
+  .press-card small{font-size:12px;color:var(--muted)}
   .press-card:hover{border-color:var(--accent)}
   .case-evidence{padding-block:20px 110px}
   .case-evidence>.case-supplement:first-child{margin-top:0}
+  /* Hardware case studies: the real board leads the page; the notebook study follows the figures. */
+  .case-intro>.case-lead{margin-block:12px 36px}
+  .case-study-notebook{padding-top:30px}
+  .case-prose>.case-supplement{margin-block:36px 44px}
   .evidence-frame{border:1px solid var(--rule);background:var(--surface);padding:clamp(14px,3vw,34px)}
   .figure-pair{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
   .figure-pair>.case-supplement{margin-top:50px}
@@ -154,11 +158,11 @@
   .table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
   .prose table{border-collapse:collapse;font-size:13px}
   .prose th,.prose td{text-align:left;padding:10px 20px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
-  .prose th{font:400 9px/1.4 var(--mono);letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
+  .prose th{font:400 11px/1.4 var(--mono);letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
   .prose td{font-variant-numeric:tabular-nums}
   .prose td:first-child{white-space:nowrap}
   .prose td:last-child{min-width:15em}
-  .prose code{font:12px var(--mono);background:var(--sunken);padding:1px 5px}
+  .prose code{font:13px var(--mono);background:var(--sunken);padding:1px 5px}
   .prose em{font-family:inherit;font-style:italic;letter-spacing:inherit}
 
   /* ZenFlow date-resolver demo */
@@ -195,8 +199,12 @@
   .chart .box{fill:var(--paper);stroke:var(--rule-strong)}
   .chart .box-key{fill:var(--accent-soft);stroke:var(--accent)}
   .chart .wire{fill:none;stroke:var(--ink-2);stroke-width:1.2}
+  /* The signal chain is drawn twice: across on wide screens, stacked on phones (src/components/afo/SignalChain.astro). */
+  .chain-tall{display:none}
   /* Interactive charts: a cursor that reads values, and a marker for differences. */
   .chart-interactive{cursor:crosshair;touch-action:pan-y}
+  /* In a sideways-scrolling frame a swipe scrolls the frame; a tap still places the cursor and the marker. */
+  .scroll-x>.chart-interactive{touch-action:pan-x pan-y}
   .chart-interactive:focus-visible{outline:2px solid var(--accent);outline-offset:6px}
   .chart .chart-hit{fill:transparent}
   .chart .chart-cursor,.chart .chart-marker{pointer-events:none}
@@ -208,11 +216,15 @@
   .chart .chart-readout{fill:var(--paper);font-size:10.5px}
   .chart .chart-readout-bg{fill:var(--ink)}
 
+  /* Small text links get a hit area of at least 24 × 24 px (WCAG 2.2, 2.5.8). */
+  :is(.research-anchor-nav a,.back-link,.case-topline a,.footer-links a,.achievement-source,.crumb a){display:inline-flex;align-items:center;min-height:24px}
+  .desktop-nav a{min-width:24px;justify-content:center}
+
   /* Notes, CV, 404 */
   .page-head{padding-block:32px 60px}
   .page-head h1{font-size:clamp(64px,9vw,130px);line-height:.94;margin:26px 0 22px}
   .page-head p{color:var(--muted);font-size:14px;line-height:1.8;max-width:58ch}
-  .crumb{display:inline-flex;gap:8px;font:9px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.055em}
+  .crumb{display:inline-flex;gap:8px;font:11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.055em}
   .research-full{list-style:none;padding:0;border-top:1px solid var(--ink);margin:0 0 90px}
   .research-full>li{display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;padding:34px 0;border-bottom:1px solid var(--rule)}
   .research-full h2{font-size:clamp(30px,3vw,44px);margin-bottom:12px}
@@ -226,16 +238,19 @@
   .cv{max-width:880px;margin:0 auto;padding:46px var(--gutter) 90px}
   .cv-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:34px}
   .cv-actions .button{font-size:13px;gap:14px;padding:12px 20px}
-  .cv-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px 32px;padding-bottom:22px;border-bottom:2px solid var(--ink)}
+  .cv-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px 32px;padding-bottom:22px;border-bottom:2px solid var(--ink)}
+  .cv-summary{font-size:15px;line-height:1.55;max-width:52ch;margin-top:10px}
+  .cv-item h3 a:hover{color:var(--accent)}
+  .cv-item .cv-outcome{color:var(--ink)}
   .cv-head h1{font-size:clamp(40px,5vw,58px)}
   .cv-head .muted{font-size:13px}
   .cv-contact{list-style:none;padding:0;font:11px/1.8 var(--mono);text-align:right}
   .cv-contact a{display:inline-block;min-height:24px;line-height:24px}
   .cv section{padding:24px 0 8px;border-bottom:1px solid var(--rule)}
-  .cv h2{font:400 10px/1.4 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+  .cv h2{font:400 11px/1.4 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
   .cv-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;margin-bottom:16px}
   .cv-item h3{font-size:17px;letter-spacing:-.03em;line-height:1.3}
-  .cv-item .when{font:10px/1.8 var(--mono);color:var(--muted)}
+  .cv-item .when{font:11px/1.8 var(--mono);color:var(--muted)}
   .cv-item p{grid-column:1/-1;font-size:13.5px;color:var(--ink-2);line-height:1.65;margin-top:3px}
   .cv-skills{display:grid;gap:7px;font-size:13.5px}
   .cv-skills b{display:inline-block;min-width:92px;font-weight:600}
@@ -250,7 +265,7 @@
   @media(min-width:801px){.hero-art{max-width:580px;justify-self:end;width:100%}}
   @media(min-width:701px) and (max-width:900px){.hero-art{margin-top:120px}}
   /* The base layer's responsive h2 sizes must not reach the CV's small section titles. */
-  .cv h2{font:400 10px/1.4 var(--mono);letter-spacing:.07em}
+  .cv h2{font:400 11px/1.4 var(--mono);letter-spacing:.07em}
   @media(max-width:1100px){
     .service-card{padding:34px 30px 38px 0}.service-card:nth-child(2n){padding:34px 0 38px 30px}
     .elsewhere-strip{grid-template-columns:1fr 1fr}.elsewhere-strip>.eyebrow{grid-column:1/-1}
@@ -265,7 +280,6 @@
     .now-strip{grid-template-columns:1fr;gap:10px}.now-strip ul{grid-template-columns:1fr}
     .brief-row{grid-template-columns:1fr}
     .note-card,.note-card+.note-card{padding:24px 0 26px;border-left:0}
-    .header-cta{display:none}
     .proof-head{flex-direction:column;gap:6px}
     .method-steps li{grid-template-columns:40px minmax(0,1fr)}
     .method-steps .text-link{grid-column:2}
@@ -280,7 +294,7 @@
     .phones{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .research-full>li{grid-template-columns:1fr;gap:12px}
     .qm dd{font-size:20px}
-    .cv-contact{text-align:left}
+    .cv-head{grid-template-columns:1fr}.cv-contact{text-align:left}
   }
   /* The pitch sits inside the hero grid, after the board in the HTML, so phones show it straight after the
      board without reordering (a visual reorder made the first paint jump). */
@@ -289,10 +303,60 @@
     .hero-composition>.hero-bottom{order:1;margin-top:26px}
     .hero-art{margin-top:44px}
   }
+  @media(max-width:700px){.chain-wide{display:none}.chain-tall{display:block;max-width:380px;margin-inline:auto}}
   @media(max-width:600px){
     .proof-grid{grid-template-columns:1fr}
     .proof-item,.proof-item+.proof-item,.proof-item:nth-child(3){padding:20px 0;border-left:0;border-top:1px solid var(--rule)}
     .proof-item:first-child{border-top:0}
+  }
+  /* First screen, wide: the name, then the pitch and its button on the left with the real board beside it,
+     so what I do and how to start a project are visible at 1280 × 800 and up. The line-art notebook follows
+     under the board, and the scroll cue closes the text column. */
+  @media(min-width:1101px){
+    .hero h1{font-size:clamp(90px,11.6vw,190px)}
+    .hero-composition{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);column-gap:5%}
+    .board-studio{grid-column:2;grid-row:1 / span 2;align-self:start;margin-top:clamp(120px,10.6vw,176px)}
+    .hero-composition>.hero-bottom{grid-column:1;grid-row:2 / span 2;margin-top:30px;grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr);grid-template-rows:auto 1fr;gap:20px 34px}
+    .hero-role{text-wrap:balance}
+    .hero-scroll{grid-column:1/-1;align-self:end;justify-self:start;margin-top:48px}
+    .hero-art{grid-column:2;grid-row:3;margin-top:56px;justify-self:end;width:100%;max-width:560px}
+  }
+  /* Narrower laptops: one column for the pitch, the role on one line, so nothing wraps to a lone word. */
+  @media(min-width:1101px) and (max-width:1360px){
+    .hero-composition>.hero-bottom{grid-template-columns:minmax(0,1fr)}
+    .hero-role br{display:none}
+    .hero-description,.hero-note{max-width:52ch}
+  }
+  /* Phones: keep "Start a project" in the header (the motion switch moves into the menu), and bring the pitch's
+     button into the first screen: tighter spacing, a shorter board, the button before the fine print. */
+  /* The header tagline only returns where the full navigation has room for it. */
+  @media(max-width:1359px){.header-edition{display:none}}
+  @media(max-width:1000px){
+    .header-actions>.motion-toggle{display:none}
+    .mobile-menu nav .menu-motion{justify-content:flex-start;min-height:44px;margin-top:4px;padding:12px 0 0;border-top:1px solid var(--rule);font-size:11px;letter-spacing:.04em}
+  }
+  @media(max-width:600px){
+    .header-edition{display:none}
+    .header-actions{gap:18px}
+    .header-cta{font-size:10px;padding:10px 11px}
+    .hero{padding-top:18px}
+    .hero-composition{margin-top:22px}
+    .board-studio{margin-top:12px}
+    .board-stage{aspect-ratio:1.95}
+    .hero-composition>.hero-bottom{margin-top:14px;padding-top:16px}
+    .hero-copy>.hero-actions{order:1;margin-top:14px}
+    .hero-copy>.hero-note{order:2;margin-top:10px}
+    .hero-copy>.hero-availability{order:3}
+    /* The address is the one thing a visitor copies from here: full size. */
+    .email-link{font-size:15px}
+    /* At readable sizes these drawing annotations would cover the captions, and each repeats one:
+       the record tags, the flow steps, the side note and the drone's frame label. */
+    .civic-records,.afo-flow,.zen-side-note,.drone-coordinate{display:none}
+    .artifact-annotation{bottom:26%;font-size:22px;padding:8px 14px}
+    /* The page title's ink mark sits beside the last line on phones, clear of the label row above. */
+    .page-intro h1.ink-host>.ink-mark[data-ink-variant]{top:auto;bottom:4px;right:0;width:40px;height:40px}
+    /* The sidebar no longer repeats the summary, so the current state takes the full row. */
+    .case-sidebar>.case-status{grid-column:1/-1}
   }
 }
 /* Moving between pages turns the page: the old one swings away around its left edge. */
@@ -328,7 +392,7 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   .proof-item:hover{background-color:color-mix(in srgb,var(--accent) 4%,transparent)}
   .header-cta{transition:background-color .25s ease}
 }
-/* The journal-cover intro (src/components/Intro.astro). */
+/* The journal-cover intro (src/components/Intro.astro): the signal draws, the cover holds a beat, then turns; about 1.5 s. */
 @keyframes intro-open{0%{transform:perspective(2400px) rotateY(0)}100%{transform:perspective(2400px) rotateY(-100deg);visibility:hidden}}
 @keyframes intro-open-now{to{transform:perspective(2400px) rotateY(-100deg);visibility:hidden}}
 @keyframes intro-shade{0%{opacity:0}100%{opacity:1}}
@@ -340,8 +404,8 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   html[data-motion='off'] .intro{display:none!important}
   .intro-cover{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto auto auto;gap:clamp(14px,2.4vh,28px);padding:clamp(22px,4.4vw,72px);background:var(--paper);color:var(--ink);transform-origin:0 50%;backface-visibility:hidden;box-shadow:24px 0 60px -30px rgba(27,33,38,.45)}
   .intro-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(27,33,38,0) 20%,rgba(27,33,38,.35));opacity:0;pointer-events:none}
-  html[data-intro='play'] .intro-cover{animation:intro-open 1s cubic-bezier(.62,.02,.3,1) 1.9s forwards}
-  html[data-intro='play'] .intro-cover::after{animation:intro-shade 1s ease-in 1.9s forwards}
+  html[data-intro='play'] .intro-cover{animation:intro-open .7s cubic-bezier(.62,.02,.3,1) .85s forwards}
+  html[data-intro='play'] .intro-cover::after{animation:intro-shade .7s ease-in .85s forwards}
   html[data-intro='skip'] .intro-cover{animation:intro-open-now .55s cubic-bezier(.5,0,.3,1) forwards}
   html[data-intro='skip'] .intro-cover::after{animation:intro-shade .55s ease-in forwards}
   .intro-top,.intro-bottom{display:flex;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
@@ -354,13 +418,13 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   .intro-signal path{stroke:var(--accent);stroke-width:1.6;stroke-dasharray:1;stroke-dashoffset:1;vector-effect:non-scaling-stroke}
   .intro-hook{font-size:clamp(22px,2.6vw,40px);letter-spacing:-.04em;line-height:1.15;max-width:none}
   .intro-hook em{color:var(--accent)}
-  html[data-intro='play'] .intro-line{display:block;animation:intro-rise .9s cubic-bezier(.22,1,.36,1) both}
-  html[data-intro='play'] .intro-line+.intro-line{animation-delay:.12s}
-  html[data-intro='play'] .intro-signal path{animation:draw-line 1.25s cubic-bezier(.45,0,.55,1) .35s forwards}
-  html[data-intro='play'] .intro-hook{animation:intro-rise .8s cubic-bezier(.22,1,.36,1) .75s both}
-  html[data-intro='play'] :is(.intro-top,.intro-bottom){animation:intro-fade .6s ease-out .1s both}
+  html[data-intro='play'] .intro-line{display:block;animation:intro-rise .6s cubic-bezier(.22,1,.36,1) both}
+  html[data-intro='play'] .intro-line+.intro-line{animation-delay:.08s}
+  html[data-intro='play'] .intro-signal path{animation:draw-line .75s cubic-bezier(.45,0,.55,1) .1s forwards}
+  html[data-intro='play'] .intro-hook{animation:intro-rise .5s cubic-bezier(.22,1,.36,1) .3s both}
+  html[data-intro='play'] :is(.intro-top,.intro-bottom){animation:intro-fade .4s ease-out both}
   html[data-intro='skip'] .intro-signal path{stroke-dashoffset:0}
-  @media(max-width:700px){.intro-name{font-size:clamp(60px,19vw,120px)}.intro-top,.intro-bottom{font-size:8px}}
+  @media(max-width:700px){.intro-name{font-size:clamp(60px,19vw,120px)}.intro-top,.intro-bottom{font-size:10px}}
 }
 
 /* Hero entrance in CSS: it starts with the first paint and needs no script on the main thread. */
@@ -405,20 +469,21 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
    and .rv-in when it arrives. Transitions only; nothing is measured on scroll. */
 @layer components {
   .rv-em{display:inline-block}
-  [data-motion='on'] .rv-rise{transition:opacity .8s cubic-bezier(.22,1,.36,1) calc(var(--i,0)*90ms),transform .9s cubic-bezier(.22,1,.36,1) calc(var(--i,0)*90ms),background-color .35s ease}
+  [data-motion='on'] .rv-rise{transition:opacity .5s cubic-bezier(.22,1,.36,1) calc(var(--i,0)*60ms),transform .55s cubic-bezier(.22,1,.36,1) calc(var(--i,0)*60ms),background-color .35s ease}
   [data-motion='on'] .rv-rise:not(.rv-in){opacity:0;transform:translateY(28px)}
-  [data-motion='on'] .rv-em{transition:opacity 1s ease .18s,transform 1s cubic-bezier(.22,1,.36,1) .18s}
+  [data-motion='on'] .rv-em{transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1)}
   [data-motion='on'] .rv-em:not(.rv-in){opacity:0;transform:translateX(-4%)}
-  [data-motion='on'] .rv-wipe{transition:clip-path 1.15s cubic-bezier(.65,0,.35,1),transform 1.15s cubic-bezier(.65,0,.35,1)}
+  [data-motion='on'] .rv-wipe{transition:clip-path .7s cubic-bezier(.65,0,.35,1),transform .7s cubic-bezier(.65,0,.35,1)}
   [data-motion='on'] .rv-wipe:not(.rv-in){clip-path:inset(0 0 100% 0);transform:translateY(24px)}
-  [data-motion='on'] .rv-clip{transition:clip-path 1.15s cubic-bezier(.65,0,.35,1)}
+  [data-motion='on'] .rv-clip{transition:clip-path .7s cubic-bezier(.65,0,.35,1)}
   [data-motion='on'] .rv-clip:not(.rv-in){clip-path:inset(0 0 100% 0)}
-  [data-motion='on'] .rv-clip-small{transition:clip-path 1.1s cubic-bezier(.22,1,.36,1)}
+  [data-motion='on'] .rv-clip-small{transition:clip-path .7s cubic-bezier(.22,1,.36,1)}
   [data-motion='on'] .rv-clip-small:not(.rv-in){clip-path:inset(0 0 8% 0)}
-  [data-motion='on'] .rv-rule::before{transition:transform 1.2s cubic-bezier(.65,0,.35,1)}
+  [data-motion='on'] .rv-rule::before{transition:transform .7s cubic-bezier(.65,0,.35,1)}
   [data-motion='on'] .rv-rule:not(.rv-in){--rule-scale:0}
-  [data-motion='on'] .rv-pop{transition:opacity .9s ease,transform 1.2s cubic-bezier(.34,1.56,.64,1)}
+  [data-motion='on'] .rv-pop{transition:opacity .6s ease,transform .8s cubic-bezier(.34,1.56,.64,1)}
   [data-motion='on'] .rv-pop:not(.rv-in){opacity:0;transform:scale(.4) rotate(-90deg)}
+  [data-motion='on'] .rv-now,[data-motion='on'] .rv-now::before{transition:none}
 }
 @layer preferences {
   [data-motion='off'] .leaf-flip{display:none}
@@ -431,7 +496,8 @@ html:active-view-transition-type(back)::view-transition-new(root){transform-orig
   html,body{background:#fff!important;color:#000}
   .site-header,.site-footer,.skip-link,.cv-actions,.toast,.no-print,.reading-progress{display:none!important}
   .cv{padding:0;max-width:none;font-size:9.5pt}
-  .cv-head{flex-wrap:nowrap;align-items:flex-start;padding-bottom:10pt}
+  .cv-head{align-items:start;padding-bottom:10pt}
+  .cv-summary{font-size:9pt;margin-top:3pt}
   .cv-head h1{font-size:22pt}
   .cv-head .muted{font-size:9pt}
   .cv-contact{font-size:7.5pt;line-height:1.55;text-align:right}

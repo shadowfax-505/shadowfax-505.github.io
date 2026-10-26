@@ -2,7 +2,7 @@
 // nothing is measured at startup, and an element only changes when it comes into view.
 type Reveal = { start: () => void; stop: () => void };
 
-const kinds = ['rv', 'rv-in', 'rv-rise', 'rv-em', 'rv-wipe', 'rv-clip', 'rv-clip-small', 'rv-rule', 'rv-pop', 'rv-draw'];
+const kinds = ['rv', 'rv-in', 'rv-now', 'rv-rise', 'rv-em', 'rv-wipe', 'rv-clip', 'rv-clip-small', 'rv-rule', 'rv-pop', 'rv-draw'];
 
 export function createReveals(): Reveal {
   const marked: HTMLElement[] = [];
@@ -19,10 +19,13 @@ export function createReveals(): Reveal {
     pending.set(element, { kind, index });
     io.observe(element);
   }
-  // Counts every number in the text up from zero, then puts the exact text back.
+  // Counts the number up from zero, then puts the exact text back. In a ratio such as 69 / 70 only the
+  // first number counts against a fixed total, so no frame shows a score the work did not get.
   function count(element: HTMLElement, text: string) {
     const started = performance.now();
-    const paint = (p: number) => { element.textContent = text.replace(/\d+(\.\d+)?/g, m => { const v = Number(m) * p; return m.includes('.') ? v.toFixed(1) : String(Math.round(v)).padStart(m.startsWith('0') ? m.length : 1, '0'); }); };
+    const slash = text.indexOf('/');
+    const head = slash < 0 ? text : text.slice(0, slash), tail = slash < 0 ? '' : text.slice(slash);
+    const paint = (p: number) => { element.textContent = head.replace(/\d+(\.\d+)?/g, m => { const v = Number(m) * p; return m.includes('.') ? v.toFixed(1) : String(Math.round(v)).padStart(m.startsWith('0') ? m.length : 1, '0'); }) + tail; };
     const step = (now: number) => {
       const t = Math.min(1, (now - started) / 1400);
       if (t >= 1) { element.textContent = text; return; }
@@ -35,9 +38,25 @@ export function createReveals(): Reveal {
     frames.add(id);
   }
 
+  // A jump link lands on finished content: everything inside the target section is shown at once.
+  function settle(target: Element | null) {
+    if (!target || !io) return;
+    for (const element of [...pending.keys()]) if (target.contains(element)) { pending.delete(element); io.unobserve(element); }
+    for (const element of marked) if (target.contains(element) && !element.classList.contains('rv-in')) { element.classList.add('rv-now', 'rv-in'); io.unobserve(element); }
+    for (const [element, text] of counters) if (target.contains(element)) { countable.delete(element); io.unobserve(element); element.textContent = text; delete element.dataset.countTo; }
+  }
+  function onJump(event: Event) {
+    const link = (event.target as Element).closest?.('a[href*="#"]') as HTMLAnchorElement | null;
+    if (!link || link.pathname !== location.pathname || !link.hash) return;
+    settle(document.getElementById(decodeURIComponent(link.hash.slice(1))));
+  }
+  const onHash = () => settle(location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null);
+
   return {
     start() {
       if (io) return;
+      document.addEventListener('click', onJump);
+      addEventListener('hashchange', onHash);
       io = new IntersectionObserver(entries => {
         for (const entry of entries) {
           const element = entry.target as HTMLElement;
@@ -53,7 +72,7 @@ export function createReveals(): Reveal {
             pending.delete(element);
             if (entry.isIntersecting) { io!.unobserve(element); continue; }
             element.classList.add('rv', plan.kind);
-            if (plan.index !== undefined) element.style.setProperty('--i', String(Math.min(plan.index, 8)));
+            if (plan.index !== undefined) element.style.setProperty('--i', String(Math.min(plan.index, 4)));
             marked.push(element);
             continue;
           }
@@ -81,7 +100,8 @@ export function createReveals(): Reveal {
       document.querySelectorAll('.next-project h2, .contact-main h2').forEach(element => mark(element, 'rv-rise'));
       document.querySelectorAll('.contact-orb').forEach(element => mark(element, 'rv-pop'));
       document.querySelectorAll('.future-map').forEach(element => mark(element, 'rv-draw'));
-      document.querySelectorAll<HTMLElement>('.proof-item strong, .case-metric strong, .service-number, .method-number').forEach(element => {
+      // Step numbers (01–05) are labels, not quantities: they rise with their card instead of counting.
+      document.querySelectorAll<HTMLElement>('.proof-item strong, .case-metric strong').forEach(element => {
         const text = element.textContent || '';
         if (!/\d/.test(text) || !io) return;
         counters.push([element, text]);
@@ -91,6 +111,8 @@ export function createReveals(): Reveal {
       });
     },
     stop() {
+      document.removeEventListener('click', onJump);
+      removeEventListener('hashchange', onHash);
       io?.disconnect(); io = undefined;
       pending.clear(); countable.clear();
       frames.forEach(id => cancelAnimationFrame(id)); frames.clear();

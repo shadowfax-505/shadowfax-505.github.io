@@ -5,7 +5,8 @@ export function createInkMotion(){
   const designs={
     rule:{view:'0 0 240 34',paths:['M3 22C49 18 131 19 230 15','M217 13c7 0 13 .7 19 2.1']},
     flourish:{view:'0 0 300 52',paths:['M4 35C61 17 172 17 274 24c11 .8 17-1 21-5','M24 40c59-11 147-11 203-10']},
-    compass:{view:'0 0 100 100',paths:['M20 71C5 39 24 13 55 15c24 2 37 22 28 42-7 16-27 20-42 13','M29 74 73 26M68 26h6v6','M17 48h10m24-33v10m30 23h9']},
+    // A dial with a clear arrowhead, so at heading size it reads as a pointer, not as a "no" sign.
+    compass:{view:'0 0 100 100',paths:['M20 71C5 39 24 13 55 15c24 2 37 22 28 42-7 16-27 20-42 13','M29 74 73 26M57 25h17v17','M17 48h10m24-33v10m30 23h9']},
     arrow:{view:'0 0 180 42',paths:['M4 28c39-4 106-2 161-12','M152 9c4 3 9 6 15 7-5 3-8 7-11 11']},
   };
   type Kind=keyof typeof designs;
@@ -19,7 +20,9 @@ export function createInkMotion(){
     ['.case-short,.contact-main h2,.not-found h1','flourish'],
     ['.text-link,.project-open','arrow'],
   ];
-  for(const [selector,kind] of selectors)document.querySelectorAll<HTMLElement>(selector).forEach(host=>{
+  // The dial marks every other heading on a page, so it stays an accent rather than a pattern.
+  for(const [selector,kind] of selectors)document.querySelectorAll<HTMLElement>(selector).forEach((host,index)=>{
+    if(kind==='compass'&&index%2===1)return;
     host.classList.add('ink-host');host.dataset.inkKind=kind;
     const design=designs[kind],svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',design.view);svg.setAttribute('aria-hidden','true');svg.classList.add('ink-mark');svg.dataset.inkVariant=kind;
     design.paths.forEach((d,i)=>{const path=document.createElementNS(ns,'path');path.setAttribute('d',d);path.setAttribute('pathLength','1');path.setAttribute('fill','none');path.style.setProperty('--pen-order',String(i));svg.append(path);});host.append(svg);

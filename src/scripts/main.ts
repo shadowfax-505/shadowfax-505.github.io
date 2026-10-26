@@ -8,7 +8,8 @@ type HeroController = { setEnabled: (enabled: boolean) => void; setForm: (index:
 
 const root = document.documentElement;
 const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
-const toggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+// The motion switch sits in the header on wide screens and in the menu on phones; both stay in step.
+const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle]'));
 let enabled = root.dataset.motion === 'on';
 let hero: HeroController | undefined;
 let animationGeneration = 0;
@@ -37,11 +38,9 @@ function notify(message: string) {
 
 function updateToggle() {
   root.dataset.motion = enabled ? 'on' : 'off';
-  toggle?.setAttribute('aria-pressed', String(!enabled));
-  toggle?.setAttribute('aria-label', enabled ? 'Motion on — pause motion' : 'Motion off — enable motion');
+  // A stable name, "Reduce motion", with its state in aria-pressed; the dot shows it to sighted visitors.
+  for (const toggle of toggles) toggle.setAttribute('aria-pressed', String(!enabled));
   if (explore3d) explore3d.disabled = !enabled || loadingHero || artwork?.dataset.webgl === 'unavailable';
-  const label = toggle?.querySelector('[data-motion-label]');
-  if (label) label.textContent = enabled ? 'Motion on' : 'Motion off';
 }
 
 async function animate() {
@@ -78,7 +77,7 @@ async function prepareHero() {
       explore3d?.setAttribute('hidden', '');
       returnPaper?.removeAttribute('hidden');
     }
-    else if (explore3d) { explore3d.textContent = 'Particle study ↗'; explore3d.disabled = !enabled; }
+    else if (explore3d) { explore3d.textContent = 'See it as particles ↗'; explore3d.disabled = !enabled; }
   }
 }
 
@@ -158,15 +157,15 @@ const droneObserver=new IntersectionObserver(entries=>{
 document.querySelectorAll<HTMLElement>('[data-drone-study]').forEach(element=>droneObserver.observe(element));
 document.addEventListener('visibilitychange',syncDrones);
 
-toggle?.removeAttribute('hidden');
+toggles.forEach(toggle => toggle.removeAttribute('hidden'));
 updateToggle();
-toggle?.addEventListener('click', () => {
+toggles.forEach(toggle => toggle.addEventListener('click', () => {
   enabled = !enabled;
   if (!enabled) targetAnimations.forEach(animation=>animation.cancel());
   try { localStorage.setItem('mr-motion', enabled ? 'on' : 'off'); } catch { /* Preference still applies for this page. */ }
   updateToggle();
   void animate();
-});
+}));
 preference.addEventListener('change', () => {
   // A newly enabled OS reduction takes priority without requiring another click.
   enabled = !preference.matches;

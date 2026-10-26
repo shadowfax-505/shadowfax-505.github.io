@@ -9,8 +9,19 @@ const boxes = [
   { x: 540, y: 130, w: 124, t1: 'microSD', t2: 'primary record' },
   { x: 672, y: 130, w: 118, t1: 'Wi-Fi', t2: 'live preview' },
 ];
+// The same chain stacked for phones, drawn at the width it is shown so the labels stay at full size.
+const tall = [
+  { x: 0, y: 0, w: 168, h: 52, lines: ['2 × surface EMG', 'MyoWare RAW out'] },
+  { x: 0, y: 74, w: 168, h: 52, lines: ['Buffers + 2-pole', 'RC anti-alias'] },
+  { x: 0, y: 148, w: 168, h: 52, lines: ['AD7606 ADC', '16-bit · 8 kHz'], key: true },
+  { x: 180, y: 126, w: 120, h: 74, lines: ['ICM-42688-P × 2', 'foot + shank', '200 Hz'] },
+  { x: 0, y: 222, w: 300, h: 52, lines: ['ESP32-S3', 'timestamps · PSRAM queue'], key: true },
+  { x: 0, y: 296, w: 145, h: 52, lines: ['microSD', 'primary record'] },
+  { x: 155, y: 296, w: 145, h: 52, lines: ['Wi-Fi', 'live preview'] },
+];
+const label = 'Signal chain: two EMG sensors through buffers and an anti-alias filter into an AD7606 ADC at 8 kilohertz, then an ESP32-S3 that also reads two ICM-42688-P motion sensors and writes to microSD with a Wi-Fi preview.';
 ---
-<svg class="chart" viewBox="-2 0 796 200" role="img" aria-label="Signal chain: two EMG sensors through buffers and an anti-alias filter into an AD7606 ADC at 8 kilohertz, then an ESP32-S3 that also reads two ICM-42688-P motion sensors and writes to microSD with a Wi-Fi preview.">
+<svg class="chart chain-wide" viewBox="-2 0 796 200" role="img" aria-label={label}>
   <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--ink-2)"/></marker></defs>
   <path class="wire" marker-end="url(#arr)" d="M150 46H180"/>
   <path class="wire" marker-end="url(#arr)" d="M332 46H362"/>
@@ -22,5 +33,19 @@ const boxes = [
     <rect class={b.key ? 'box box-key' : 'box'} x={b.x} y={b.y} width={b.w} height="52" rx="6"/>
     <text class="lbl" x={b.x + 12} y={b.y + 22} style="font-weight:500">{b.t1}</text>
     <text x={b.x + 12} y={b.y + 39}>{b.t2}</text>
+  </g>)}
+</svg>
+<svg class="chart chain-tall" viewBox="-1 -1 302 350" role="img" aria-label={label}>
+  {/* Its own arrowhead: a marker inside the hidden wide drawing would not render. */}
+  <defs><marker id="arr-tall" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--ink-2)"/></marker></defs>
+  <path class="wire" marker-end="url(#arr-tall)" d="M84 52V72"/>
+  <path class="wire" marker-end="url(#arr-tall)" d="M84 126V146"/>
+  <path class="wire" marker-end="url(#arr-tall)" d="M84 200V220"/>
+  <path class="wire" marker-end="url(#arr-tall)" d="M240 200V220"/>
+  <path class="wire" marker-end="url(#arr-tall)" d="M72 274V294"/>
+  <path class="wire" marker-end="url(#arr-tall)" d="M227 274V294" stroke-dasharray="4 3"/>
+  {tall.map(b => <g>
+    <rect class={b.key ? 'box box-key' : 'box'} x={b.x} y={b.y} width={b.w} height={b.h} rx="6"/>
+    {b.lines.map((line, i) => <text class={i ? undefined : 'lbl'} x={b.x + 10} y={b.y + 22 + i * 17} style={i ? undefined : 'font-weight:500'}>{line}</text>)}
   </g>)}
 </svg>
